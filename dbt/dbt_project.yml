@@ -19,10 +19,11 @@ clean-targets:
 models:
   hgi:
     bronze:
+      +schema: bronze
       +materialized: view
     silver:
       +schema: silver
-      +materialized: table
+      +materialized: view
     gold:
       +schema: gold
       +materialized: table
