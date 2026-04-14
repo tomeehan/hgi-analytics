@@ -1,18 +1,24 @@
 # Airbyte
 
-Airbyte is self-hosted on Fly.io (`hgi-airbyte`, region `lhr`) and handles
-ELT from Shopify and Klaviyo into Snowflake Bronze schemas.
+Airbyte is self-hosted on a Hetzner Cloud VM (`hgi-airbyte`, Falkenstein
+`fsn1`), installed via `abctl local install` (k3d-based). It handles ELT from
+Shopify and Klaviyo into Snowflake Bronze schemas.
 
 **Connection configs are not in Git** — they live in Airbyte's internal Postgres
-on the Fly.io volume. If the volume is ever lost, connections must be
-manually recreated from the documentation below.
+inside the k3d cluster on the VM's disk. **Hetzner auto-backups are enabled**
+on `hgi-airbyte` (daily, 7-day retention) — restore via
+`hcloud server rebuild hgi-airbyte --image <backup-id>` or the Hetzner console.
+The documentation below is the fallback if both the VM and all 7 backups are
+lost (unlikely).
+
+**Host:** `colmwca.pq47939.snowflakecomputing.com` (Snowflake account URL used by the destination below).
 
 ## Destination
 
 | Field | Value |
 |-------|-------|
 | Type | Snowflake |
-| Host | `<account>.snowflakecomputing.com` |
+| Host | `colmwca.pq47939.snowflakecomputing.com` |
 | Role | `LOADER` |
 | Warehouse | `HGI_WH` |
 | Database | `HGI` |

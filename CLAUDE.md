@@ -10,7 +10,7 @@ dbt, and serves dashboards via Lightdash.
 |------|------|---------|
 | Shopify | Source — 3+ stores (isClinical, Geske, Deese Pro; more anticipated) | SaaS |
 | Klaviyo | Source — 3+ accounts, paired 1:1 with Shopify stores | SaaS |
-| Airbyte | ELT — extracts from sources, writes raw into Snowflake Bronze | Self-hosted on Fly.io (`hgi-airbyte`, region `lhr`) |
+| Airbyte | ELT — extracts from sources, writes raw into Snowflake Bronze | Self-hosted on a Hetzner Cloud VM (`hgi-airbyte`, Falkenstein `fsn1`), installed via `abctl` |
 | Snowflake | Data warehouse | AWS `eu-west-2`, Standard edition |
 | dbt Core | Transformations (Bronze → Silver → Gold → Metrics) | Local + GitHub Actions |
 | Lightdash | BI / dashboards, reads the dbt project directly | Self-hosted on Fly.io (`hgi-lightdash`, region `lhr`) |
@@ -24,8 +24,10 @@ Snowflake is the only managed-only dependency — no BI/ingestion lock-in.
 | CLI | Purpose |
 |-----|---------|
 | `basecamp` (via the `basecamp` skill) | Read/update tickets on the Data Engineering board |
-| `flyctl` | Deploy + manage Airbyte and Lightdash on Fly.io |
-| `abctl` | Airbyte self-hosted install / lifecycle |
+| `flyctl` | Deploy + manage Lightdash on Fly.io |
+| `hcloud` | Provision + manage the Hetzner Cloud VM that hosts Airbyte |
+| `abctl` | Airbyte self-hosted install / lifecycle (run on the Hetzner VM via SSH) |
+| `ssh` | Operate the Hetzner VM (reboot, log into `abctl`, inspect the k3d cluster) |
 | `dbt` (with `dbt-snowflake` adapter) | Run/test/build models — always invoked from inside `dbt/` |
 | `gh` | GitHub repo, PRs, Actions, secrets |
 | Snowflake Snowsight (web UI) | Ad-hoc SQL, credit/cost monitoring, role grants |
@@ -65,7 +67,7 @@ Roles & service accounts:
 
 ```
 hgi-analytics/
-├── airbyte/              connection config docs only (no code; configs live in Airbyte UI / Fly volume)
+├── airbyte/              connection config docs only (no code; configs live in Airbyte UI / on the Hetzner VM's disk)
 ├── dbt/                  the dbt project
 │   ├── dbt_project.yml · packages.yml · profiles.yml (gitignored)
 │   ├── models/
@@ -112,7 +114,7 @@ Never commit credentials. Storage locations:
 | Secret | Lives in |
 |--------|----------|
 | dbt Snowflake password (`TRANSFORMER`) | `dbt/profiles.yml` (local, gitignored) |
-| Airbyte's Snowflake password (`LOADER`), Shopify Admin tokens, Klaviyo API keys | Airbyte UI (persisted in Airbyte's internal Postgres on the Fly volume) |
+| Airbyte's Snowflake password (`LOADER`), Shopify Admin tokens, Klaviyo API keys | Airbyte UI (persisted in Airbyte's internal Postgres on the Hetzner VM's disk) |
 | Lightdash secret + Snowflake `REPORTER` password | `fly secrets set --app hgi-lightdash` |
 | `SNOWFLAKE_ACCOUNT/USER/PASSWORD`, `SLACK_WEBHOOK_URL` | GitHub Actions secrets |
 | All of the above | 1Password (source of truth) |
@@ -146,5 +148,6 @@ architecture doc wins — update CLAUDE.md to match and flag the drift.
 - **Bronze is immutable** — never have dbt (or anything else) write to `BRONZE_*`. If Bronze data is wrong, fix Airbyte or re-sync.
 - **Slim CI** — `dbt_ci.yml` uses `state:modified+`, so a new Gold model only runs in production after it's merged to main and the next daily run fires.
 - **Snowflake cost control** — keep `HGI_WH` at X-SMALL with 60s auto-suspend. Don't leave long-running Snowsight sessions idle; don't disable auto-suspend.
-- **Airbyte config is not in Git** — it lives on the Fly volume. Document every connection (streams, sync mode, schedule, destination namespace) in `airbyte/README.md` so the setup can be rebuilt if the volume is lost.
+- **Airbyte config is not in Git** — it lives on the Hetzner VM's disk (inside Airbyte's internal Postgres, managed by the `abctl` k3d cluster). Document every connection (streams, sync mode, schedule, destination namespace) in `airbyte/README.md` so the setup can be rebuilt if the VM is lost. **Hetzner auto-backups are enabled** on `hgi-airbyte` (daily, 7-day retention) — that's the primary recovery mechanism; do not disable them.
+- **Airbyte hosting: Hetzner, not Fly** — Airbyte deprecated docker-compose OSS installs in favour of `abctl` (k3d/Kubernetes). `abctl` is designed for a plain Linux VM, not for Fly.io's Firecracker Machines — running it on Fly would require Docker-in-Docker + k3d-in-DinD, which is off-road. A single Hetzner Cloud VM with `abctl local install` is Airbyte's officially recommended OSS deploy path.
 - **Prefer `dbt build` over `dbt run` + `dbt test`** — `build` runs both in dependency order and stops downstream models if a test fails.
