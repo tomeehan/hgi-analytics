@@ -1,0 +1,67 @@
+name: dbt CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  dbt-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - run: pip install dbt-snowflake
+
+      - name: Generate profiles.yml
+        working-directory: dbt/
+        run: |
+          cat > profiles.yml <<'PROFILE'
+          hgi:
+            target: prod
+            outputs:
+              prod:
+                type: snowflake
+                account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+                user: "{{ env_var('SNOWFLAKE_USER') }}"
+                password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+                role: TRANSFORMER
+                database: HGI
+                warehouse: HGI_WH
+                schema: PUBLIC
+                threads: 4
+          PROFILE
+
+      - run: dbt deps
+        working-directory: dbt/
+
+      - name: Download production manifest
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: dbt_run.yml
+          name: dbt-prod-manifest
+          path: dbt/prod-state/
+        continue-on-error: true
+        id: download-manifest
+
+      - name: dbt build (modified only)
+        if: steps.download-manifest.outcome == 'success'
+        run: dbt build --select state:modified+ --defer --state prod-state/
+        working-directory: dbt/
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+
+      - name: dbt build (full — no prior manifest)
+        if: steps.download-manifest.outcome != 'success'
+        run: dbt build
+        working-directory: dbt/
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
