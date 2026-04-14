@@ -1,0 +1,69 @@
+name: dbt daily build
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: dbt-prod-build
+  cancel-in-progress: false
+
+jobs:
+  dbt-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - run: pip install 'dbt-snowflake==1.11.*'
+
+      - name: Generate profiles.yml
+        working-directory: dbt/
+        run: |
+          cat > profiles.yml <<'PROFILE'
+          hgi:
+            target: prod
+            outputs:
+              prod:
+                type: snowflake
+                account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+                user: "{{ env_var('SNOWFLAKE_USER') }}"
+                password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+                role: TRANSFORMER
+                database: HGI
+                warehouse: HGI_WH
+                schema: PUBLIC
+                threads: 4
+          PROFILE
+
+      - run: dbt deps
+        working-directory: dbt/
+
+      - name: dbt build
+        run: dbt build
+        working-directory: dbt/
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+
+      - name: Upload manifest for CI
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-prod-manifest
+          path: dbt/target/manifest.json
+          retention-days: 7
+
+      - name: Notify Slack on failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: '{"text": "dbt daily build FAILED :warning: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>"}'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
