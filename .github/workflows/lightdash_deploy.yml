@@ -1,0 +1,84 @@
+name: Deploy Lightdash
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dbt/**'
+      - '.github/workflows/lightdash_deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: lightdash-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dbt-snowflake
+        run: pip install dbt-snowflake
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Lightdash CLI
+        run: npm install -g @lightdash/cli@0.2755.0
+
+      - name: Write dbt profile
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+        run: |
+          cat > dbt/profiles.yml <<EOF
+          hgi:
+            target: prod
+            outputs:
+              prod:
+                type: snowflake
+                account: $SNOWFLAKE_ACCOUNT
+                user: $SNOWFLAKE_USER
+                password: $SNOWFLAKE_PASSWORD
+                role: $SNOWFLAKE_ROLE
+                warehouse: $SNOWFLAKE_WAREHOUSE
+                database: $SNOWFLAKE_DATABASE
+                schema: SILVER
+                threads: 4
+                client_session_keep_alive: false
+          EOF
+
+      - name: dbt deps
+        working-directory: dbt
+        run: dbt deps
+
+      - name: Lightdash deploy
+        working-directory: dbt
+        env:
+          LIGHTDASH_URL: ${{ secrets.LIGHTDASH_URL }}
+          LIGHTDASH_PROJECT: ${{ secrets.LIGHTDASH_PROJECT }}
+          LIGHTDASH_API_KEY: ${{ secrets.LIGHTDASH_API_KEY }}
+        run: lightdash deploy --target prod
+
+      - name: Notify Slack on failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -sS -X POST -H 'Content-Type: application/json' \
+            --data "{\"text\": \":x: Lightdash deploy failed on \`${GITHUB_REF_NAME}\` — <${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|view run>\"}" \
+            "$SLACK_WEBHOOK_URL"

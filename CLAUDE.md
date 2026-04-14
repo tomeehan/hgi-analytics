@@ -13,7 +13,8 @@ dbt, and serves dashboards via Lightdash.
 | Airbyte | ELT — extracts from sources, writes raw into Snowflake Bronze | Self-hosted on a Hetzner Cloud VM (`hgi-airbyte`, Falkenstein `fsn1`), installed via `abctl` |
 | Snowflake | Data warehouse | AWS `eu-west-2`, Standard edition |
 | dbt Core | Transformations (Bronze → Silver → Gold → Metrics) | Local + GitHub Actions |
-| Lightdash | BI / dashboards, reads the dbt project directly | Self-hosted on Fly.io (`hgi-lightdash`, region `lhr`) |
+| Lightdash | BI / dashboards, reads the dbt project directly | Self-hosted on Hetzner Cloud (`hgi-lightdash`, `cpx22` in `fsn1`); served by Caddy with auto Let's Encrypt TLS at `lightdash.hgi.tomeehan.net` |
+| Neon | Lightdash metadata Postgres (users, dashboards, saved queries) | Managed (`Lightdash` project in org `Harper grace`, region `aws-eu-west-2`) |
 | GitHub Actions | dbt CI on PRs + scheduled daily production dbt runs | SaaS |
 | Slack | Airbyte + dbt failure alerts | SaaS |
 
@@ -24,10 +25,10 @@ Snowflake is the only managed-only dependency — no BI/ingestion lock-in.
 | CLI | Purpose |
 |-----|---------|
 | `basecamp` (via the `basecamp` skill) | Read/update tickets on the Data Engineering board |
-| `flyctl` | Deploy + manage Lightdash on Fly.io |
-| `hcloud` | Provision + manage the Hetzner Cloud VM that hosts Airbyte |
+| `hcloud` | Provision + manage Hetzner Cloud servers (`hgi-airbyte`, `hgi-lightdash`) — context `harper-grace` (project `14181772`) |
 | `abctl` | Airbyte self-hosted install / lifecycle (run on the Hetzner VM via SSH) |
-| `ssh` | Operate the Hetzner VM (reboot, log into `abctl`, inspect the k3d cluster) |
+| `neonctl` | Manage Neon Postgres (Lightdash metadata DB) — org `Harper grace` (`org-bold-mouse-74970166`) |
+| `ssh` | Operate the Hetzner VMs (reboot, log into `abctl`, inspect Docker / the k3d cluster) |
 | `dbt` (with `dbt-snowflake` adapter) | Run/test/build models — always invoked from inside `dbt/` |
 | `gh` | GitHub repo, PRs, Actions, secrets |
 | Snowflake Snowsight (web UI) | Ad-hoc SQL, credit/cost monitoring, role grants |
@@ -75,7 +76,7 @@ hgi-analytics/
 │   │   ├── silver/       stg_* models
 │   │   └── gold/         fct_*, dim_*
 │   └── tests/            (macros/ and a metrics/ layer will be added when needed)
-├── lightdash/            fly.toml for Lightdash deployment
+├── lightdash/            deployment notes (live config lives on the Hetzner server at /opt/lightdash/)
 └── .github/workflows/
     ├── dbt_ci.yml        runs on PRs — `state:modified+` slim CI
     └── dbt_run.yml       scheduled daily production build + Slack on failure
@@ -115,7 +116,8 @@ Never commit credentials. Storage locations:
 |--------|----------|
 | dbt Snowflake password (`TRANSFORMER`) | `dbt/profiles.yml` (local, gitignored) |
 | Airbyte's Snowflake password (`LOADER`), Shopify Admin tokens, Klaviyo API keys | Airbyte UI (persisted in Airbyte's internal Postgres on the Hetzner VM's disk) |
-| Lightdash secret + Snowflake `REPORTER` password | `fly secrets set --app hgi-lightdash` |
+| Lightdash secret + Neon `PGCONNECTIONURI` (metadata DB) | `/opt/lightdash/.env` on the Hetzner `hgi-lightdash` server |
+| Snowflake `REPORTER` password | Lightdash app DB (entered via the Lightdash UI; stored encrypted in Neon) |
 | `SNOWFLAKE_ACCOUNT/USER/PASSWORD`, `SLACK_WEBHOOK_URL` | GitHub Actions secrets |
 | All of the above | 1Password (source of truth) |
 
