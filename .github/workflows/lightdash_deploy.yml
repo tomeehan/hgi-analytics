@@ -62,11 +62,23 @@ jobs:
                 client_session_keep_alive: false
           EOF
 
+      - name: Check for dbt models
+        id: models
+        run: |
+          if find dbt/models -name '*.sql' -print -quit | grep -q .; then
+            echo "has_models=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_models=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping Lightdash deploy — dbt project has no SQL models yet"
+          fi
+
       - name: dbt deps
+        if: steps.models.outputs.has_models == 'true'
         working-directory: dbt
         run: dbt deps
 
       - name: Lightdash deploy
+        if: steps.models.outputs.has_models == 'true'
         working-directory: dbt
         env:
           LIGHTDASH_URL: ${{ secrets.LIGHTDASH_URL }}
