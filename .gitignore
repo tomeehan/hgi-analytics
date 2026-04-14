@@ -21,6 +21,3 @@ venv/
 .DS_Store
 .vscode/
 .idea/
-
-# Basecamp CLI local cache
-.basecamp/
