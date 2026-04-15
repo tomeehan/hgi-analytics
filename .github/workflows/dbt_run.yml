@@ -20,8 +20,9 @@ jobs:
         with:
           python-version: '3.11'
           cache: pip
+          cache-dependency-path: dbt/requirements.txt
 
-      - run: pip install 'dbt-snowflake==1.11.*'
+      - run: pip install -r dbt/requirements.txt
 
       - name: Generate profiles.yml
         working-directory: dbt/
