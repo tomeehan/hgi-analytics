@@ -1,0 +1,194 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: "Shopify orders fact table with first-order flag and monthly grain."
+    meta:
+      label: "Orders"
+    columns:
+      - name: order_id
+        description: "Shopify order ID."
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            order_count:
+              type: count_distinct
+              label: "Order Count"
+      - name: store_id
+        description: "Brand identifier."
+        tests:
+          - not_null
+      - name: total_price
+        description: "Total order value in the order's currency."
+        meta:
+          metrics:
+            total_revenue:
+              type: sum
+              label: "Total Revenue"
+            aov:
+              type: average
+              label: "Avg Order Value"
+      - name: is_first_order
+        description: "True if this is the customer's first order."
+        meta:
+          metrics:
+            new_customer_orders:
+              type: sum
+              label: "New Customer Orders"
+      - name: order_month
+        description: "Month the order was placed (first day of month)."
+      - name: email
+        description: "Normalised customer email."
+      - name: customer_id
+        description: "Shopify customer ID."
+      - name: created_at
+        description: "Order creation timestamp."
+      - name: financial_status
+        description: "Payment status (paid, pending, refunded, etc.)."
+      - name: fulfillment_status
+        description: "Fulfillment status (fulfilled, partial, null)."
+      - name: currency
+        description: "ISO currency code for the order."
+
+  - name: dim_customers
+    description: "Shopify customer dimension enriched with lifetime order stats."
+    meta:
+      label: "Customers"
+    columns:
+      - name: customer_id
+        description: "Shopify customer ID."
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            customer_count:
+              type: count_distinct
+              label: "Customer Count"
+      - name: store_id
+        tests:
+          - not_null
+      - name: lifetime_revenue
+        description: "Sum of all order totals for this customer."
+        meta:
+          metrics:
+            total_customer_revenue:
+              type: sum
+              label: "Total Customer Revenue"
+      - name: lifetime_orders
+        description: "Number of orders placed by this customer."
+        meta:
+          metrics:
+            avg_orders_per_customer:
+              type: average
+              label: "Avg Orders per Customer"
+
+  - name: fct_campaign_performance
+    description: "Klaviyo campaign performance stats (opens, clicks, revenue) across all brands."
+    meta:
+      label: "Campaign Performance"
+    columns:
+      - name: campaign_id
+        description: "Klaviyo campaign ID."
+        tests:
+          - not_null
+        meta:
+          metrics:
+            campaign_count:
+              type: count_distinct
+              label: "Campaigns Sent"
+      - name: store_id
+        description: "Brand identifier."
+        tests:
+          - not_null
+      - name: delivered
+        description: "Emails delivered."
+        meta:
+          metrics:
+            total_delivered:
+              type: sum
+              label: "Emails Delivered"
+      - name: opens
+        description: "Total email opens."
+        meta:
+          metrics:
+            total_opens:
+              type: sum
+              label: "Total Opens"
+      - name: unique_opens
+        description: "Unique email opens."
+        meta:
+          metrics:
+            total_unique_opens:
+              type: sum
+              label: "Unique Opens"
+      - name: clicks
+        description: "Total email clicks."
+        meta:
+          metrics:
+            total_clicks:
+              type: sum
+              label: "Total Clicks"
+      - name: unique_clicks
+        description: "Unique email clicks."
+        meta:
+          metrics:
+            total_unique_clicks:
+              type: sum
+              label: "Unique Clicks"
+      - name: revenue
+        description: "Revenue attributed to this campaign."
+        meta:
+          metrics:
+            total_attributed_revenue:
+              type: sum
+              label: "Attributed Revenue"
+      - name: unsubscribed
+        description: "Unsubscribes resulting from this campaign."
+        meta:
+          metrics:
+            total_unsubscribes:
+              type: sum
+              label: "Unsubscribes"
+      - name: open_rate
+        description: "Unique opens / delivered."
+        meta:
+          metrics:
+            avg_open_rate:
+              type: average
+              label: "Avg Open Rate"
+      - name: click_rate
+        description: "Unique clicks / delivered."
+        meta:
+          metrics:
+            avg_click_rate:
+              type: average
+              label: "Avg Click Rate"
+      - name: campaign_name
+        description: "Campaign name."
+      - name: send_time
+        description: "When the campaign was sent."
+      - name: send_month
+        description: "Month the campaign was sent (first day of month)."
+
+  - name: dim_campaigns
+    description: "Klaviyo email campaigns across all brands."
+    meta:
+      label: "Campaigns"
+    columns:
+      - name: campaign_id
+        description: "Klaviyo campaign ID."
+        tests:
+          - not_null
+          - unique
+      - name: store_id
+        tests:
+          - not_null
+      - name: campaign_name
+        description: "Campaign name."
+      - name: status
+        description: "Campaign status (Sent, Draft, Scheduled, etc.)."
+      - name: send_time
+        description: "When the campaign was sent."

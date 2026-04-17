@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+  - name: bronze_shopify_isclinical
+    database: HGI
+    schema: BRONZE_SHOPIFY_ISCLINICAL
+    tables:
+      - name: orders
+      - name: customers
+      - name: order_line_items
+      - name: products
+      - name: product_variants
+
+  - name: bronze_klaviyo_isclinical
+    database: HGI
+    schema: BRONZE_KLAVIYO_ISCLINICAL
+    tables:
+      - name: events
+      - name: campaigns
+      - name: campaign_values_reports
+      - name: profiles
+
+  - name: bronze_klaviyo_deese_pro
+    database: HGI
+    schema: BRONZE_KLAVIYO_DEESE_PRO
+    tables:
+      - name: events
+      - name: campaigns
+      - name: campaign_values_reports
+      - name: profiles
+
+  - name: bronze_klaviyo_harper_grace
+    database: HGI
+    schema: BRONZE_KLAVIYO_HARPER_GRACE
+    tables:
+      - name: events
+      - name: campaigns
+      - name: campaign_values_reports
+      - name: profiles
