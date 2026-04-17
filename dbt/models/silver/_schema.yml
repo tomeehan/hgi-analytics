@@ -33,8 +33,7 @@ models:
         tests:
           - not_null
       - name: email
-        tests:
-          - not_null
+        description: "Normalised customer email (nullable for guest/partial records)."
 
   - name: stg_klaviyo__events
     description: "Klaviyo events unioned across isClinical, Deese Pro, and Harper Grace."
