@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: stg_shopify__orders
+    description: "Cleaned Shopify orders from isClinical brand."
+    columns:
+      - name: order_id
+        description: "Shopify order ID."
+        tests:
+          - not_null
+          - unique
+      - name: store_id
+        tests:
+          - not_null
+      - name: email
+        tests:
+          - not_null
+      - name: created_at
+        tests:
+          - not_null
+      - name: total_price
+        tests:
+          - not_null
+
+  - name: stg_shopify__customers
+    description: "Cleaned Shopify customers from isClinical brand."
+    columns:
+      - name: customer_id
+        description: "Shopify customer ID."
+        tests:
+          - not_null
+          - unique
+      - name: store_id
+        tests:
+          - not_null
+      - name: email
+        tests:
+          - not_null
+
+  - name: stg_klaviyo__events
+    description: "Klaviyo events unioned across isClinical, Deese Pro, and Harper Grace."
+    columns:
+      - name: event_id
+        description: "Klaviyo event ID."
+        tests:
+          - not_null
+          - unique
+      - name: store_id
+        tests:
+          - not_null
+      - name: occurred_at
+        tests:
+          - not_null
+
+  - name: stg_klaviyo__campaigns
+    description: "Klaviyo campaigns unioned across isClinical, Deese Pro, and Harper Grace."
+    columns:
+      - name: campaign_id
+        description: "Klaviyo campaign ID."
+        tests:
+          - not_null
+
+  - name: stg_klaviyo__campaign_stats
+    description: "Pre-aggregated campaign performance stats from Klaviyo Campaign Values Reports."
+    columns:
+      - name: campaign_id
+        description: "Klaviyo campaign ID."
+        tests:
+          - not_null
+      - name: store_id
+        tests:
+          - not_null
