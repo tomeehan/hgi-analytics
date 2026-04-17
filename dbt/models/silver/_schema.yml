@@ -13,8 +13,7 @@ models:
         tests:
           - not_null
       - name: email
-        tests:
-          - not_null
+        description: "Normalised customer email (nullable for guest/partial records)."
       - name: created_at
         tests:
           - not_null
