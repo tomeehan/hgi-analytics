@@ -54,6 +54,24 @@ Sync mode: incremental where supported; full refresh for small reference tables.
 Typical streams: `campaigns`, `events`, `profiles`, `flows`, `lists`,
 `list_members`, `metrics`.
 
+### Prospect CRM
+
+Custom connector — source is `source-prospect-crm` (Python CDK, built from
+`airbyte/source-prospect-crm/`). Docker image:
+`ghcr.io/tomeehan/hgi-analytics/source-prospect-crm:latest` (built by the
+`connector_prospect_crm.yml` GitHub Actions workflow on every push to `main`).
+
+To register in Airbyte UI: **Settings → Custom connectors → Add a custom source**,
+set the Docker image name above, click **Save**, then create a connection as
+usual. API key is in 1Password under _Prospect CRM → API Key_.
+
+| Destination schema | Streams | Sync mode |
+|--------------------|---------|-----------|
+| `BRONZE_PROSPECT_CRM` | `contacts`, `companies`, `sales_ledgers`, `leads`, `sales_transactions`, `product_items`, `addresses` | Incremental (`LastUpdatedTimestamp`) |
+| `BRONZE_PROSPECT_CRM` | `sales_order_headers`, `sales_invoice_headers` | Full refresh |
+
+Suggested schedule: 6 h for incremental streams; 24 h for full-refresh streams.
+
 ## Sync schedule
 
 | Stream group | Frequency | Sync type |

@@ -10,6 +10,8 @@ dbt, and serves dashboards via Lightdash.
 |------|------|---------|
 | Shopify | Source — 3+ stores (isClinical, Geske, Deese Pro; more anticipated) | SaaS |
 | Klaviyo | Source — 3+ accounts, paired 1:1 with Shopify stores | SaaS |
+| Cin7 Core | Source — inventory, sales orders, customers, products (formerly DEAR Systems) | SaaS |
+| Prospect CRM | Source — CRM (contacts, companies, leads, sales orders/invoices, transactions) — custom connector (`airbyte/source-prospect-crm/`) | SaaS (OData v1 API at `crm-odata-v1.prospect365.com`) |
 | Airbyte | ELT — extracts from sources, writes raw into Snowflake Bronze | Self-hosted on a Hetzner Cloud VM (`hgi-airbyte`, Falkenstein `fsn1`), installed via `abctl` |
 | Snowflake | Data warehouse | AWS `eu-west-2`, Standard edition |
 | dbt Core | Transformations (Bronze → Silver → Gold → Metrics) | Local + GitHub Actions |
@@ -31,6 +33,7 @@ Snowflake is the only managed-only dependency — no BI/ingestion lock-in.
 | `ssh` | Operate the Hetzner VMs (reboot, log into `abctl`, inspect Docker / the k3d cluster) |
 | `dbt` (with `dbt-snowflake` adapter) | Run/test/build models — always invoked from inside `dbt/` |
 | `gh` | GitHub repo, PRs, Actions, secrets |
+| `snow` (Snowflake CLI) | Ad-hoc SQL against Snowflake — two profiles: `hgi` (DBT_USER/TRANSFORMER, default) and `hgi-admin` (TOMEEHAN/ACCOUNTADMIN, for schema/grant work). Config at `~/.snowflake/config.toml`. |
 | Snowflake Snowsight (web UI) | Ad-hoc SQL, credit/cost monitoring, role grants |
 
 Prefer the dedicated CLIs over raw API calls (e.g. `gh` not cURL; `basecamp` not the Basecamp REST API).
@@ -53,13 +56,13 @@ Klaviyo accounts ┘                (raw, per-source)    (cleaned,         (fact
 
 - **Database:** `HGI`
 - **Compute warehouse:** `HGI_WH` (X-SMALL, `AUTO_SUSPEND = 60`, `AUTO_RESUME = TRUE`)
-- **Schemas:** `BRONZE_SHOPIFY_<BRAND>` · `BRONZE_KLAVIYO_<BRAND>` · `SILVER` · `GOLD` · `METRICS`
+- **Schemas:** `BRONZE_SHOPIFY_<BRAND>` · `BRONZE_KLAVIYO_<BRAND>` · `BRONZE_CIN7` · `BRONZE_PROSPECT_CRM` · `SILVER` · `GOLD` · `METRICS`
 
 Roles & service accounts:
 
 | Role | User | Access |
 |------|------|--------|
-| `LOADER` | `airbyte_user` | Read/write all `BRONZE_*` schemas |
+| `LOADER` | `airbyte_user` | Read/write all `BRONZE_*` schemas (including `BRONZE_CIN7`) |
 | `TRANSFORMER` | `dbt_user` | Read all Bronze, write `SILVER`/`GOLD`/`METRICS` |
 | `REPORTER` | `lightdash_user` | Read-only on `SILVER`/`GOLD`/`METRICS` |
 | `ANALYST` | humans | Same as `REPORTER` (+ optional Silver read) |
@@ -119,6 +122,7 @@ Never commit credentials. Storage locations:
 | Lightdash secret + Neon `PGCONNECTIONURI` (metadata DB) | `/opt/lightdash/.env` on the Hetzner `hgi-lightdash` server |
 | Snowflake `REPORTER` password | Lightdash app DB (entered via the Lightdash UI; stored encrypted in Neon) |
 | `SNOWFLAKE_ACCOUNT/USER/PASSWORD`, `SLACK_WEBHOOK_URL` | GitHub Actions secrets |
+| `snow` CLI credentials (`hgi` + `hgi-admin` profiles) | `~/.snowflake/config.toml` (local, never commit) |
 | All of the above | 1Password (source of truth) |
 
 ## Keeping this file current
