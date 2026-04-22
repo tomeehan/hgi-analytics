@@ -56,14 +56,13 @@ Typical streams: `campaigns`, `events`, `profiles`, `flows`, `lists`,
 
 ### Prospect CRM
 
-Custom connector — source is `source-prospect-crm` (Python CDK, built from
-`airbyte/source-prospect-crm/`). Docker image:
-`ghcr.io/tomeehan/hgi-analytics/source-prospect-crm:latest` (built by the
-`connector_prospect_crm.yml` GitHub Actions workflow on every push to `main`).
+Custom connector built using the Airbyte Connector Builder (low-code declarative
+YAML). The manifest lives at `airbyte/source-prospect-crm/manifest.yaml` — no
+Docker image or registry needed.
 
-To register in Airbyte UI: **Settings → Custom connectors → Add a custom source**,
-set the Docker image name above, click **Save**, then create a connection as
-usual. API key is in 1Password under _Prospect CRM → API Key_.
+To set up: open your Airbyte instance → **Builder** → **Import a YAML** → paste
+the contents of `manifest.yaml` → **Publish to workspace**. Then create a
+connection as usual. API key is in 1Password under _Prospect CRM → API Key_.
 
 | Destination schema | Streams | Sync mode |
 |--------------------|---------|-----------|

@@ -11,7 +11,7 @@ dbt, and serves dashboards via Lightdash.
 | Shopify | Source — 3+ stores (isClinical, Geske, Deese Pro; more anticipated) | SaaS |
 | Klaviyo | Source — 3+ accounts, paired 1:1 with Shopify stores | SaaS |
 | Cin7 Core | Source — inventory, sales orders, customers, products (formerly DEAR Systems) | SaaS |
-| Prospect CRM | Source — CRM (contacts, companies, leads, sales orders/invoices, transactions) — custom connector (`airbyte/source-prospect-crm/`) | SaaS (OData v1 API at `crm-odata-v1.prospect365.com`) |
+| Prospect CRM | Source — CRM (contacts, companies, leads, sales orders/invoices, transactions) — Connector Builder declarative YAML (`airbyte/source-prospect-crm/manifest.yaml`) | SaaS (OData v1 API at `crm-odata-v1.prospect365.com`) |
 | Airbyte | ELT — extracts from sources, writes raw into Snowflake Bronze | Self-hosted on a Hetzner Cloud VM (`hgi-airbyte`, Falkenstein `fsn1`), installed via `abctl` |
 | Snowflake | Data warehouse | AWS `eu-west-2`, Standard edition |
 | dbt Core | Transformations (Bronze → Silver → Gold → Metrics) | Local + GitHub Actions |

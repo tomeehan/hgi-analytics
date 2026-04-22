@@ -1,0 +1,172 @@
+version: "4.3.2"
+type: DeclarativeSource
+
+check:
+  type: CheckStream
+  stream_names:
+    - contacts
+
+definitions:
+  # ── Auth ──────────────────────────────────────────────────────────────────
+  authenticator:
+    type: ApiKeyAuthenticator
+    header: Authorization
+    api_token: "Bearer {{ config['api_key'] }}"
+
+  # ── Record selector ────────────────────────────────────────────────────────
+  # OData wraps every response in { "value": [...] }
+  selector:
+    type: RecordSelector
+    extractor:
+      type: DpathExtractor
+      field_path:
+        - value
+
+  # ── Pagination ─────────────────────────────────────────────────────────────
+  # OData uses $top / $skip offset pagination
+  paginator:
+    type: DefaultPaginator
+    pagination_strategy:
+      type: OffsetIncrement
+      page_size: 500
+    page_token_option:
+      type: RequestOption
+      inject_into: request_parameter
+      field_name: "$skip"
+    page_size_option:
+      type: RequestOption
+      inject_into: request_parameter
+      field_name: "$top"
+
+  # ── Incremental base stream ────────────────────────────────────────────────
+  # Cursor: LastUpdatedTimestamp
+  # Filter: $filter=LastUpdatedTimestamp gt <start_time>
+  # We build the filter in request_parameters (not start_time_option) because
+  # OData requires the full expression "Field gt value", not just the value.
+  incremental_stream:
+    type: DeclarativeStream
+    retriever:
+      type: SimpleRetriever
+      requester:
+        type: HttpRequester
+        url_base: "https://crm-odata-v1.prospect365.com/"
+        http_method: GET
+        path: "{{ parameters['entity'] }}"
+        authenticator:
+          $ref: "#/definitions/authenticator"
+        request_parameters:
+          "$orderby": "LastUpdatedTimestamp asc"
+          "$filter": "LastUpdatedTimestamp gt {{ stream_slice['start_time'] }}"
+      record_selector:
+        $ref: "#/definitions/selector"
+      paginator:
+        $ref: "#/definitions/paginator"
+    incremental_sync:
+      type: DatetimeBasedCursor
+      cursor_field: LastUpdatedTimestamp
+      datetime_format: "%Y-%m-%dT%H:%M:%S.%fZ"
+      cursor_datetime_formats:
+        - "%Y-%m-%dT%H:%M:%S.%fZ"
+        - "%Y-%m-%dT%H:%M:%SZ"
+      start_datetime:
+        type: MinMaxDatetime
+        datetime: "2020-01-01T00:00:00.000000Z"
+        datetime_format: "%Y-%m-%dT%H:%M:%S.%fZ"
+
+  # ── Full-refresh base stream ───────────────────────────────────────────────
+  full_refresh_stream:
+    type: DeclarativeStream
+    retriever:
+      type: SimpleRetriever
+      requester:
+        type: HttpRequester
+        url_base: "https://crm-odata-v1.prospect365.com/"
+        http_method: GET
+        path: "{{ parameters['entity'] }}"
+        authenticator:
+          $ref: "#/definitions/authenticator"
+      record_selector:
+        $ref: "#/definitions/selector"
+      paginator:
+        $ref: "#/definitions/paginator"
+
+# ── Streams ──────────────────────────────────────────────────────────────────
+
+streams:
+  # Incremental
+  - $ref: "#/definitions/incremental_stream"
+    name: contacts
+    primary_key: ContactId
+    $parameters:
+      entity: Contacts
+
+  - $ref: "#/definitions/incremental_stream"
+    name: companies
+    primary_key: CompanyId
+    $parameters:
+      entity: Companies
+
+  - $ref: "#/definitions/incremental_stream"
+    name: sales_ledgers
+    primary_key: SalesLedgerId
+    $parameters:
+      entity: SalesLedgers
+
+  - $ref: "#/definitions/incremental_stream"
+    name: leads
+    primary_key: LeadId
+    $parameters:
+      entity: Leads
+
+  - $ref: "#/definitions/incremental_stream"
+    name: sales_transactions
+    primary_key: Id
+    $parameters:
+      entity: SalesTransactions
+
+  - $ref: "#/definitions/incremental_stream"
+    name: product_items
+    primary_key: ProductItemId
+    $parameters:
+      entity: ProductItems
+
+  - $ref: "#/definitions/incremental_stream"
+    name: addresses
+    primary_key: AddressId
+    $parameters:
+      entity: Addresses
+
+  # Full refresh (no LastUpdatedTimestamp on these entities)
+  - $ref: "#/definitions/full_refresh_stream"
+    name: sales_order_headers
+    primary_key: OrderNumber
+    $parameters:
+      entity: SalesOrderHeaders
+
+  - $ref: "#/definitions/full_refresh_stream"
+    name: sales_invoice_headers
+    primary_key: InvoiceNumber
+    $parameters:
+      entity: SalesInvoiceHeaders
+
+# ── Connector spec ────────────────────────────────────────────────────────────
+
+spec:
+  type: Spec
+  documentation_url: https://prospect365.com/
+  connection_specification:
+    $schema: http://json-schema.org/draft-07/schema#
+    title: Prospect CRM
+    type: object
+    required:
+      - api_key
+    additionalProperties: true
+    properties:
+      api_key:
+        type: string
+        title: API Key
+        description: >-
+          Your Prospect CRM API key. Find it under Settings → Integrations → API
+          in your Prospect CRM account.
+        airbyte_secret: true
+        order: 0
