@@ -62,6 +62,15 @@ Metrics are defined in dbt YAML (`dbt/models/gold/_schema.yml`) under
 `meta.metrics` — never duplicated in Lightdash. Lightdash discovers them on
 sync.
 
+## Building dashboards locally
+
+The two `build_*.py` scripts in this directory create dashboards via the
+Lightdash REST API. They read auth from `.env` (see `.env.example`) — populate
+`LIGHTDASH_URL`, `LIGHTDASH_TOKEN`, `LIGHTDASH_PROJECT_UUID`, `LIGHTDASH_SPACE_UUID`,
+then run `python3 lightdash/build_prospect_crm_dashboards.py` (or
+`build_dashboards.py`). Note: the scripts POST new dashboards on every run —
+they don't upsert. Delete stale ones via the UI before re-running.
+
 ## Hardening
 
 See [Basecamp card 9784511568](https://3.basecamp.com/5735756/buckets/46863097/card_tables/cards/9784511568)

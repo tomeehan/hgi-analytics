@@ -1,17 +1,43 @@
 #!/usr/bin/env python3
 """
 Build HGI Analytics Lightdash dashboards via REST API.
+
+Prerequisite: .env populated with LIGHTDASH_URL / LIGHTDASH_TOKEN /
+LIGHTDASH_PROJECT_UUID / LIGHTDASH_SPACE_UUID (see .env.example).
+
 Run: python3 lightdash/build_dashboards.py
 """
 
 import json
-import requests
+import os
 import sys
+from pathlib import Path
 
-BASE_URL = "https://lightdash.hgi.tomeehan.net"
-TOKEN = "ldpat_bcd0f060f6f0540950c9398e439a8444"
-PROJECT_UUID = "d193767c-d1a9-4861-b591-085254192cce"
-SPACE_UUID = "0cc16ee1-6171-4fa8-859b-3a427b1ac506"
+import requests
+
+
+def _load_env():
+    """Populate os.environ from <repo_root>/.env if present (no extra dep)."""
+    env_path = Path(__file__).resolve().parent.parent / ".env"
+    if not env_path.exists():
+        return
+    for line in env_path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, _, v = line.partition("=")
+        os.environ.setdefault(k.strip(), v.strip())
+
+
+_load_env()
+
+try:
+    BASE_URL = os.environ["LIGHTDASH_URL"]
+    TOKEN = os.environ["LIGHTDASH_TOKEN"]
+    PROJECT_UUID = os.environ["LIGHTDASH_PROJECT_UUID"]
+    SPACE_UUID = os.environ["LIGHTDASH_SPACE_UUID"]
+except KeyError as e:
+    sys.exit(f"Missing required env var {e}. Populate .env (see .env.example).")
 
 HEADERS = {
     "Authorization": f"ApiKey {TOKEN}",
