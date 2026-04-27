@@ -8,7 +8,10 @@ with source as (
 ),
 
 deduped as (
-    select * from source where _rn = 1
+    select *
+    from source
+    where _rn = 1
+      and salesledgerid != 'CRMPRODTOUR'  -- Prospect CRM built-in demo ledger; produces null orderdate rows
 ),
 
 renamed as (
