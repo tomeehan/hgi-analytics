@@ -246,6 +246,16 @@ models:
         description: "This customer's Nth order overall."
       - name: status
         description: "Cin7 sale status."
+      - name: shipping_city
+        description: "Shipping city from the customer's default shipping address."
+      - name: shipping_country
+        description: "Shipping country from the customer's default shipping address."
+      - name: shipping_postcode
+        description: "Shipping postcode from the customer's default shipping address."
+      - name: postcode_area
+        description: "UK postcode area (letters before the digits)."
+      - name: uk_region
+        description: "UK region derived from the shipping postcode area; 'International' for non-UK."
 
   - name: dim_cin7_customers
     description: "Cin7 customer dimension enriched with lifetime order stats and segment."
