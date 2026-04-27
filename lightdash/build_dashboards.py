@@ -386,10 +386,10 @@ c15 = create_chart(
     "Top Customers by Lifetime Value",
     "Highest LTV customers across all channels",
     explore="dim_cin7_customers",
-    metrics=["lifetime_revenue", "lifetime_orders"],
+    metrics=["total_customer_ltv", "avg_orders_per_customer"],
     dimensions=["customer_id"],
     chart_type="table",
-    sort_field="lifetime_revenue",
+    sort_field="total_customer_ltv",
     sort_desc=True,
     limit=25,
 )
