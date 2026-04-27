@@ -449,8 +449,112 @@ dash_c = create_dashboard(
 )
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Dashboard D: DTC → B2B Lead Signals — DTC buyers who look like business
+# customers and aren't yet in CRM. Prioritise for B2B outreach.
+# ─────────────────────────────────────────────────────────────────────────────
+print("\n[4/4] DTC → B2B Lead Signals")
+
+lead_filter = {
+    "dimensions": {
+        "id": "dtc-b2b-leads",
+        "and": [{
+            "id": "f1",
+            "target": {"fieldId": "dim_customer_unified_is_dtc_b2b_lead"},
+            "operator": "equals",
+            "values": [True],
+        }],
+    },
+}
+
+c17 = create_chart(
+    "Likely B2B Leads from DTC",
+    "Total customers with business-looking email, real DTC spend, not in CRM",
+    explore="dim_customer_unified",
+    metrics=["customer_count"],
+    dimensions=["is_dtc_b2b_lead"],
+    chart_type="big_number",
+    limit=2,
+    filters=lead_filter,
+)
+
+c18 = create_chart(
+    "Top Domains by Lead Count",
+    "Email domains with the most non-CRM DTC buyers — clinics/businesses sourcing from us",
+    explore="dim_customer_unified",
+    metrics=["customer_count"],
+    dimensions=["email_domain"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="customer_count",
+    sort_desc=True,
+    limit=20,
+    filters=lead_filter,
+)
+
+c19 = create_chart(
+    "Top Domains by DTC Spend",
+    "Email domains contributing most uncaptured B2B revenue (DTC-only spend)",
+    explore="dim_customer_unified",
+    metrics=["total_dtc_spend"],
+    dimensions=["email_domain"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="total_dtc_spend",
+    sort_desc=True,
+    limit=20,
+    filters=lead_filter,
+)
+
+c20 = create_chart(
+    "Top Individual Leads",
+    "Highest-spending DTC-only buyers with business-looking emails — direct outreach list",
+    explore="dim_customer_unified",
+    metrics=["total_dtc_spend", "total_dtc_orders"],
+    dimensions=["display_name", "email", "email_domain", "country",
+                "seen_in_shopify_isclinical", "seen_in_shopify_deese_pro"],
+    chart_type="table",
+    sort_field="total_dtc_spend",
+    sort_desc=True,
+    limit=50,
+    filters=lead_filter,
+)
+
+c21 = create_chart(
+    "Total Uncaptured DTC Revenue",
+    "Sum of DTC spend from likely-B2B leads — the value of converting them to B2B accounts",
+    explore="dim_customer_unified",
+    metrics=["total_dtc_spend"],
+    dimensions=["is_dtc_b2b_lead"],
+    chart_type="big_number",
+    limit=2,
+    filters=lead_filter,
+)
+
+c22 = create_chart(
+    "Leads by Country",
+    "Geographic distribution of likely B2B leads (top 10)",
+    explore="dim_customer_unified",
+    metrics=["customer_count"],
+    dimensions=["country"],
+    chart_type="pie",
+    limit=10,
+    filters=lead_filter,
+)
+
+dash_d = create_dashboard(
+    "DTC → B2B Lead Signals",
+    "DTC Shopify customers who look like business buyers (non-consumer email "
+    "domains, real spend) and aren't yet in Prospect CRM. Each row is an "
+    "outreach candidate — typically a clinic/business sourcing product via "
+    "the consumer storefront. Use 'Top Domains' to spot fleet purchasing.",
+    [c17, c18, c19, c20, c21, c22],
+)
+
+
 print("\n" + "=" * 70)
 print("Done. Dashboards:")
 print(f"  A: {BASE_URL}/projects/{PROJECT_UUID}/dashboards/{dash_a}/view")
 print(f"  B: {BASE_URL}/projects/{PROJECT_UUID}/dashboards/{dash_b}/view")
 print(f"  C: {BASE_URL}/projects/{PROJECT_UUID}/dashboards/{dash_c}/view")
+print(f"  D: {BASE_URL}/projects/{PROJECT_UUID}/dashboards/{dash_d}/view")
