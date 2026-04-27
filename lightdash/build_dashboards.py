@@ -54,37 +54,59 @@ def api(method, path, body=None):
     return r.json()["results"]
 
 
+_TIME_DIMENSION_SUFFIXES = ("_month", "_at", "_date", "_year", "_day", "_week")
+
+
 def create_chart(name, description, explore, metrics, dimensions,
                  chart_type="cartesian", series_type="bar",
-                 sort_field=None, sort_desc=True, limit=20):
-    """Create a saved chart and return its UUID."""
+                 sort_field=None, sort_desc=True, limit=20,
+                 horizontal=None):
+    """Create a saved chart and return its UUID.
+
+    Bar charts default to horizontal orientation (flipAxes=true). When the
+    first dimension looks like a time series (e.g. order_month, ordered_at)
+    we keep vertical bars so a chronological axis reads naturally. Pass
+    horizontal=True or False to override the auto-detection.
+    """
     field_order = dimensions + metrics
 
     pivot_dimensions = []
     x_field = dimensions[0] if dimensions else None
     y_fields = metrics
 
+    if horizontal is None:
+        horizontal = not (x_field and any(x_field.endswith(s) for s in _TIME_DIMENSION_SUFFIXES))
+
     if chart_type == "cartesian":
+        echarts_config = {
+            "series": [
+                {
+                    "encode": {
+                        "xRef": {"field": f"{explore}_{x_field}"},
+                        "yRef": {"field": f"{explore}_{m}"},
+                    },
+                    "type": series_type,
+                }
+                for m in y_fields
+            ],
+        }
+        # If the categorical axis is a time dimension, format labels as
+        # 'Mar 2024' so we don't show full ISO timestamps. The time axis
+        # is xAxis on vertical charts (default) and yAxis on horizontal.
+        if x_field and any(x_field.endswith(s) for s in _TIME_DIMENSION_SUFFIXES):
+            axis_key = "yAxis" if horizontal else "xAxis"
+            echarts_config[axis_key] = [
+                {"axisLabel": {"formatter": "{MMM} {yyyy}", "hideOverlap": True}}
+            ]
         chart_config = {
             "type": "cartesian",
             "config": {
                 "layout": {
                     "xField": f"{explore}_{x_field}" if x_field else None,
                     "yField": [f"{explore}_{m}" for m in y_fields],
-                    "flipAxes": False,
+                    "flipAxes": bool(horizontal),
                 },
-                "eChartsConfig": {
-                    "series": [
-                        {
-                            "encode": {
-                                "xRef": {"field": f"{explore}_{x_field}"},
-                                "yRef": {"field": f"{explore}_{m}"},
-                            },
-                            "type": series_type,
-                        }
-                        for m in y_fields
-                    ],
-                },
+                "eChartsConfig": echarts_config,
             },
         }
     elif chart_type == "pie":
