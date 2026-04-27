@@ -47,7 +47,6 @@ docker compose pull && docker compose up -d
 | `LIGHTDASH_SECRET` (random 32-byte hex) | `/opt/lightdash/.env` on the server |
 | `PGCONNECTIONURI` (Neon metadata DB) | `/opt/lightdash/.env` on the server |
 | Snowflake `lightdash_user` password | Lightdash UI → Connections (stored encrypted in Neon) |
-| All of the above | 1Password (source of truth) |
 
 ## Project connection
 
