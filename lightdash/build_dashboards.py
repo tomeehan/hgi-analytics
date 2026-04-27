@@ -396,10 +396,10 @@ c15 = create_chart(
 
 c16 = create_chart(
     "Orders by Month — Shopify DTC",
-    "Shopify DTC order trend (store_id breakout)",
+    "Shopify DTC order trend across both stores",
     explore="fct_orders",
     metrics=["order_count"],
-    dimensions=["order_month", "store_id"],
+    dimensions=["order_month"],
     chart_type="cartesian",
     series_type="line",
     sort_field="order_month",
