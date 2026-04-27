@@ -1,0 +1,188 @@
+#!/usr/bin/env bash
+# bin/setup — bootstrap a fresh checkout of hgi-analytics for local development.
+#
+# Supports: macOS (Homebrew) and Ubuntu 24.04 (bothy remote servers).
+# Idempotent. Safe to re-run.
+#
+# What it does:
+#   1. Detects platform; on Linux, apt-get installs python3 + venv if missing.
+#   2. Verifies prerequisites (git, python3 ≥ 3.9).
+#   3. Creates a Python venv at .venv/ and installs dbt-snowflake + requests.
+#   4. Runs `dbt deps` to fetch dbt packages.
+#   5. Scaffolds dbt/profiles.yml + .env from templates if missing.
+#
+# Usage:  ./bin/setup           # full setup
+#         ./bin/setup --check   # only verify prerequisites, don't install
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT"
+
+PLATFORM="$(uname -s)"
+
+# ── output helpers ──────────────────────────────────────────────────────────
+if [ -t 1 ]; then
+  BOLD=$(printf '\033[1m'); DIM=$(printf '\033[2m'); RED=$(printf '\033[31m')
+  GREEN=$(printf '\033[32m'); YELLOW=$(printf '\033[33m'); RESET=$(printf '\033[0m')
+else
+  BOLD=""; DIM=""; RED=""; GREEN=""; YELLOW=""; RESET=""
+fi
+step()  { printf "\n${BOLD}==> %s${RESET}\n" "$*"; }
+ok()    { printf "  ${GREEN}✓${RESET} %s\n" "$*"; }
+warn()  { printf "  ${YELLOW}!${RESET} %s\n" "$*"; }
+fail()  { printf "  ${RED}✗${RESET} %s\n" "$*" >&2; }
+info()  { printf "  ${DIM}%s${RESET}\n" "$*"; }
+
+CHECK_ONLY=0
+[ "${1:-}" = "--check" ] && CHECK_ONLY=1
+
+case "$PLATFORM" in
+  Darwin) ok "Platform: macOS" ;;
+  Linux)  ok "Platform: Linux (Ubuntu/bothy)" ;;
+  *)      fail "Unsupported OS: $PLATFORM"; exit 1 ;;
+esac
+
+# ── Linux: install python3 + venv via apt if missing (bothy runs as root) ───
+if [ "$PLATFORM" = "Linux" ] && [ "$CHECK_ONLY" -eq 0 ]; then
+  if ! command -v python3 >/dev/null 2>&1 || ! python3 -c 'import venv' 2>/dev/null; then
+    step "Installing python3 + python3-venv via apt"
+    apt-get update -qq
+    apt-get install -y -qq python3 python3-venv python3-pip
+    ok "python3 + venv installed"
+  fi
+fi
+
+# ── prerequisites ───────────────────────────────────────────────────────────
+step "Checking prerequisites"
+
+MISSING=0
+need() {
+  local cmd="$1" hint="$2"
+  if command -v "$cmd" >/dev/null 2>&1; then
+    ok "$cmd ($(command -v "$cmd"))"
+  else
+    fail "$cmd not found — $hint"
+    MISSING=1
+  fi
+}
+
+if [ "$PLATFORM" = "Darwin" ]; then
+  need git     "install Xcode Command Line Tools (xcode-select --install)"
+  need python3 "brew install python@3.11"
+else
+  need git     "apt-get install -y git"
+  need python3 "apt-get install -y python3 python3-venv"
+fi
+
+# Python version: dbt-snowflake 1.11 needs Python 3.9+
+PY_VERSION=$(python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])')
+PY_MAJOR=${PY_VERSION%.*}; PY_MINOR=${PY_VERSION#*.}
+if [ "$PY_MAJOR" -lt 3 ] || { [ "$PY_MAJOR" -eq 3 ] && [ "$PY_MINOR" -lt 9 ]; }; then
+  fail "Python $PY_VERSION is too old — need 3.9+"
+  MISSING=1
+else
+  ok "python3 version $PY_VERSION"
+fi
+
+# Optional CLIs — warn but don't fail. These are managed-separately tools
+# (Homebrew/curl installs); we don't try to apt-get them on Linux.
+optional() {
+  local cmd="$1" purpose="$2"
+  if command -v "$cmd" >/dev/null 2>&1; then
+    ok "$cmd (optional, $purpose)"
+  else
+    warn "$cmd not installed — $purpose. See CLAUDE.md → CLIs."
+  fi
+}
+optional gh        "GitHub CLI"
+optional snow      "Snowflake CLI for ad-hoc queries"
+optional hcloud    "Hetzner Cloud CLI"
+optional neonctl   "Neon Postgres CLI"
+
+if [ "$MISSING" -eq 1 ]; then
+  fail "Missing required tools — install the above and re-run."
+  exit 1
+fi
+
+if [ "$CHECK_ONLY" -eq 1 ]; then
+  step "Check complete"
+  exit 0
+fi
+
+# ── Python venv ─────────────────────────────────────────────────────────────
+step "Creating Python virtualenv at .venv/"
+if [ ! -d .venv ]; then
+  python3 -m venv .venv
+  ok "Created .venv/"
+else
+  ok ".venv/ already exists"
+fi
+
+# shellcheck disable=SC1091
+source .venv/bin/activate
+python -m pip install --quiet --upgrade pip
+ok "pip upgraded"
+
+step "Installing dbt-snowflake from dbt/requirements.txt"
+pip install --quiet -r dbt/requirements.txt
+ok "$(dbt --version 2>&1 | head -1)"
+
+# `requests` is used by lightdash/build_*.py scripts.
+step "Installing helper Python deps (requests)"
+pip install --quiet requests
+ok "requests installed"
+
+# ── dbt deps ────────────────────────────────────────────────────────────────
+step "Fetching dbt packages"
+( cd dbt && dbt deps --quiet )
+ok "dbt packages installed"
+
+# ── profiles.yml scaffold ──────────────────────────────────────────────────
+step "Setting up dbt/profiles.yml"
+if [ -f dbt/profiles.yml ]; then
+  ok "dbt/profiles.yml already present — leaving it alone"
+else
+  cat > dbt/profiles.yml <<'PROFILE'
+# Local dbt profile for hgi-analytics. Gitignored — fill in your password.
+# Snowflake credentials live in 1Password (look for "HGI Snowflake — dbt_user").
+hgi:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: REPLACE_ME       # e.g. abc12345.eu-west-2.aws
+      user: DBT_USER
+      password: REPLACE_ME
+      role: TRANSFORMER
+      database: HGI
+      warehouse: HGI_WH
+      schema: DBT_DEV_<your-initials>   # personal dev schema
+      threads: 4
+      client_session_keep_alive: false
+PROFILE
+  ok "Wrote dbt/profiles.yml — edit it with your Snowflake creds (see 1Password)"
+fi
+
+# ── .env scaffold ──────────────────────────────────────────────────────────
+step "Setting up .env"
+if [ -f .env ]; then
+  ok ".env already present — leaving it alone"
+elif [ -f .env.example ]; then
+  cp .env.example .env
+  ok "Copied .env.example → .env — fill in creds from 1Password"
+else
+  warn ".env.example missing; skipping .env scaffold"
+fi
+
+# ── final hint ─────────────────────────────────────────────────────────────
+step "Setup complete"
+cat <<EOF
+  Next steps:
+    1. Edit ${BOLD}dbt/profiles.yml${RESET} with your Snowflake password (1Password → "HGI Snowflake — dbt_user").
+    2. Activate the venv:        ${BOLD}source .venv/bin/activate${RESET}
+    3. Verify the connection:    ${BOLD}cd dbt && dbt debug${RESET}
+    4. Build the project:        ${BOLD}cd dbt && dbt build${RESET}
+
+  See CLAUDE.md for the full architecture and conventions.
+EOF
