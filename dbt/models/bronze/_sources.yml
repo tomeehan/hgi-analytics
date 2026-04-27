@@ -45,6 +45,13 @@ sources:
       - name: orders
       - name: customers
 
+  - name: bronze_shopify_revitalash
+    database: HGI
+    schema: BRONZE_SHOPIFY_REVITALASH
+    tables:
+      - name: orders
+      - name: customers
+
   - name: bronze_cin7
     database: HGI
     schema: BRONZE_CIN7
