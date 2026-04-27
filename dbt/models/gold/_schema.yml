@@ -393,3 +393,165 @@ models:
             avg_repeat_rate:
               type: average
               label: "Avg Repeat Rate %"
+
+  - name: dim_customer_unified
+    description: "One row per email (lowered, trimmed) — the cross-source customer 360, unioning Prospect CRM ledgers, CRM contacts, and Shopify customers across both stores."
+    meta:
+      label: "Unified Customers"
+    columns:
+      - name: email
+        description: "Lowercased, trimmed email — primary key."
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            customer_count:
+              type: count_distinct
+              label: "Customers"
+      - name: display_name
+        description: "Best available customer name (CRM ledger name, or contact full name, or Shopify first/last)."
+      - name: country
+        description: "Country from the CRM ledger (nullable for Shopify-only customers)."
+      - name: customer_universe
+        description: "Where this customer is seen: crm_only, crm_and_shopify, shopify_isclinical_only, shopify_deese_pro_only, both_shopify_stores."
+      - name: seen_in_crm
+        description: "'b2b' if CRM ledger is_b2c=false, 'b2c' if true, null if not in CRM."
+      - name: seen_in_shopify_isclinical
+        description: "True if this email exists in the Shopify isClinical store."
+      - name: seen_in_shopify_deese_pro
+        description: "True if this email exists in the Shopify Deese Pro store."
+      - name: crm_sales_ledger_id
+      - name: crm_contact_id
+      - name: klaviyo_id
+        description: "Klaviyo profile id, populated on ~11k contacts."
+      - name: crm_balance
+      - name: crm_credit_limit
+      - name: crm_last_invoice_at
+      - name: shopify_isclinical_total_spent
+        description: "Lifetime Shopify isClinical spend for this email."
+        meta:
+          metrics:
+            total_isclinical_spend:
+              type: sum
+              label: "Shopify isClinical Spend"
+      - name: shopify_isclinical_orders_count
+      - name: shopify_deese_pro_total_spent
+        meta:
+          metrics:
+            total_deese_pro_spend:
+              type: sum
+              label: "Shopify Deese Pro Spend"
+      - name: shopify_deese_pro_orders_count
+      - name: total_shopify_spend
+        description: "Sum of Shopify spend across both stores."
+        meta:
+          metrics:
+            total_dtc_spend:
+              type: sum
+              label: "Total DTC Spend"
+            avg_dtc_spend_per_customer:
+              type: average
+              label: "Avg DTC Spend"
+      - name: total_shopify_orders
+        meta:
+          metrics:
+            total_dtc_orders:
+              type: sum
+              label: "Total DTC Orders"
+      - name: accepts_marketing
+        description: "True if customer accepts marketing on either Shopify store."
+
+  - name: fct_b2b_sales
+    description: "Line-level B2B sales from Prospect CRM (filtered to ledgers where is_b2c=false), enriched with product and order context. The richest B2B revenue/margin truth in the warehouse."
+    meta:
+      label: "B2B Sales"
+    columns:
+      - name: transaction_id
+        description: "Prospect CRM transaction line ID — primary key."
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            b2b_line_count:
+              type: count_distinct
+              label: "B2B Line Items"
+      - name: sales_ledger_id
+        description: "B2B customer (CRM SalesLedgerId)."
+        tests:
+          - not_null
+        meta:
+          metrics:
+            b2b_active_customers:
+              type: count_distinct
+              label: "B2B Active Customers"
+      - name: order_number
+        description: "Prospect CRM sales-order number."
+        meta:
+          metrics:
+            b2b_order_count:
+              type: count_distinct
+              label: "B2B Orders"
+      - name: customer_name
+        description: "Customer (account) name from the CRM ledger."
+      - name: country
+        description: "Country from the CRM ledger."
+      - name: line_value
+        description: "Line revenue (currency = currency_code)."
+        meta:
+          metrics:
+            b2b_revenue:
+              type: sum
+              label: "B2B Revenue"
+            b2b_aov:
+              type: average
+              label: "B2B AOV"
+      - name: cost_value
+        description: "Line cost."
+        meta:
+          metrics:
+            b2b_cost:
+              type: sum
+              label: "B2B Cost"
+      - name: margin_value
+        description: "Line margin (line_value - cost_value)."
+        meta:
+          metrics:
+            b2b_margin:
+              type: sum
+              label: "B2B Margin"
+      - name: margin_percent
+        description: "Per-line margin %."
+        meta:
+          metrics:
+            avg_margin_pct:
+              type: average
+              label: "Avg Margin %"
+      - name: qty_invoiced
+        meta:
+          metrics:
+            b2b_units:
+              type: sum
+              label: "B2B Units"
+      - name: currency_code
+        description: "Line currency. Multi-currency — currency normalisation deferred."
+      - name: sku
+        description: "Product SKU from CRM PRODUCT_ITEMS."
+      - name: manufacturer
+      - name: category_id
+        description: "CRM product category id (free text)."
+      - name: product_family_id
+      - name: product_type
+      - name: ordered_at
+        description: "Order timestamp (preferring SALES_ORDER_HEADERS, falling back to transaction)."
+      - name: order_month
+        description: "First day of the order month."
+      - name: transacted_at
+      - name: invoiced_at
+      - name: warehouse_code
+      - name: platform
+      - name: source_channel
+      - name: order_status
+      - name: delivery_country
+      - name: delivery_postcode

@@ -91,5 +91,5 @@ with_order_num as (
 
 select
     *,
-    customer_order_number = 1 as is_first_order
+    (customer_order_number = 1)::integer as is_first_order
 from with_order_num
