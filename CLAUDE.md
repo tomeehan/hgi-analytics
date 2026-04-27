@@ -77,6 +77,7 @@ Roles & service accounts:
 
 ```
 hgi-analytics/
+├── bin/setup             one-shot bootstrap for a fresh checkout (mac + linux): venv, dbt deps, scaffolds profiles.yml + .env
 ├── airbyte/              connection config docs only (no code; configs live in Airbyte UI / on the Hetzner VM's disk)
 ├── dbt/                  the dbt project
 │   ├── dbt_project.yml · packages.yml · profiles.yml (gitignored)
