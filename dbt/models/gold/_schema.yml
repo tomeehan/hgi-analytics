@@ -461,6 +461,12 @@ models:
               label: "Total DTC Orders"
       - name: accepts_marketing
         description: "True if customer accepts marketing on either Shopify store."
+      - name: email_domain
+        description: "Domain part of the email (after the '@'). Used to spot fleet/business buyers."
+      - name: is_likely_business_email
+        description: "True if email_domain is not a known consumer provider (gmail/yahoo/etc.) and not a spam-pattern TLD (.fun, .in.net). Imperfect proxy for 'this email looks business-y'."
+      - name: is_dtc_b2b_lead
+        description: "True if the customer is a 'DTC → B2B lead': has a business-looking email, has actually bought on a Shopify DTC store, and isn't yet in Prospect CRM. Targets these for B2B outreach."
 
   - name: fct_b2b_sales
     description: "Line-level B2B sales from Prospect CRM (filtered to ledgers where is_b2c=false), enriched with product and order context. The richest B2B revenue/margin truth in the warehouse."

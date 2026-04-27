@@ -145,8 +145,54 @@ with_universe as (
             when seen_in_shopify_deese_pro
                 then 'shopify_deese_pro_only'
             else 'unknown'
-        end                                                     as customer_universe
+        end                                                     as customer_universe,
+        split_part(email, '@', 2)                               as email_domain
     from joined
+),
+
+-- A "business-looking" email is one not from a known consumer provider and
+-- not from a spam/throwaway TLD. Used as a proxy for "this email belongs
+-- to a business" — imperfect but cheap. Tune the consumer list as needed.
+with_email_class as (
+    select
+        *,
+        case
+            when email_domain is null or email_domain = '' then false
+            when email_domain like '%.fun' then false
+            when email_domain like '%.in.net' then false
+            when email_domain in (
+                'gmail.com','googlemail.com',
+                'yahoo.com','yahoo.co.uk','yahoo.co.jp',
+                'hotmail.com','hotmail.co.uk','outlook.com','outlook.co.uk',
+                'live.com','live.co.uk','msn.com',
+                'icloud.com','me.com','mac.com',
+                'aol.com','aim.com','ymail.com','rocketmail.com',
+                'btinternet.com','btopenworld.com','blueyonder.co.uk',
+                'virginmedia.com','virgin.net','sky.com','ntlworld.com',
+                'talktalk.net','tiscali.co.uk',
+                'mail.com','gmx.com','gmx.de','gmx.co.uk',
+                'protonmail.com','proton.me','pm.me',
+                'fastmail.com','fastmail.fm',
+                'yandex.com','yandex.ru','mail.ru','rambler.ru','ukr.net',
+                'web.de','t-online.de','freenet.de',
+                '163.com','qq.com','sina.com','naver.com','daum.net',
+                'orange.fr','wanadoo.fr','laposte.net'
+            ) then false
+            else true
+        end                                                     as is_likely_business_email
+    from with_universe
+),
+
+with_lead_flag as (
+    select
+        *,
+        -- A "DTC → B2B lead": looks like a business buyer, has actually
+        -- purchased on a Shopify DTC store, and isn't yet known to the CRM.
+        (is_likely_business_email
+            and seen_in_crm is null
+            and (seen_in_shopify_isclinical or seen_in_shopify_deese_pro)
+            and total_shopify_spend > 0)                        as is_dtc_b2b_lead
+    from with_email_class
 )
 
-select * from with_universe
+select * from with_lead_flag
