@@ -8,7 +8,7 @@ dbt, and serves dashboards via Lightdash.
 
 | Tool | Role | Hosting |
 |------|------|---------|
-| Shopify | Source — 3+ stores (isClinical, Geske, Deese Pro; more anticipated) | SaaS |
+| Shopify | Source — 4+ stores (isClinical, Geske, Deese Pro, Revitalash; more anticipated) | SaaS |
 | Klaviyo | Source — 3+ accounts, paired 1:1 with Shopify stores | SaaS |
 | Cin7 Core | Source — inventory, sales orders, customers, products (formerly DEAR Systems) | SaaS |
 | Prospect CRM | Source — CRM (contacts, companies, leads, sales orders/invoices, transactions) — Connector Builder declarative YAML (`airbyte/source-prospect-crm/manifest.yaml`) | SaaS (OData v1 API at `crm-odata-v1.prospect365.com`) |
@@ -47,9 +47,12 @@ Klaviyo accounts ┘                (raw, per-source)    (cleaned,         (fact
                                                        unioned)          dimensions)
 ```
 
-- **Bronze** — raw, untouched Airbyte output. One schema per source: `BRONZE_SHOPIFY_<BRAND>`, `BRONZE_KLAVIYO_<BRAND>`. Only Airbyte writes here.
-- **Silver** — cleaned, typed, unioned across brands. Every table has a `store_id` column. Built via `dbt_utils.union_relations`.
-- **Gold** — business-facing facts & dims (`fct_orders`, `dim_customers`, `fct_campaign_events`, etc.). Lightdash reads from here.
+- **Bronze** — raw, untouched Airbyte output. One schema per source: `BRONZE_SHOPIFY_<BRAND>`, `BRONZE_KLAVIYO_<BRAND>`, `BRONZE_CIN7`. Only Airbyte writes here.
+- **Silver** — cleaned, typed, unioned across brands. Shopify/Klaviyo tables carry a `store_id` column; Cin7 tables use `channel_group`. Multi-brand Shopify/Klaviyo unions are done manually (CTEs + `union all`), not via `dbt_utils.union_relations`.
+- **Gold** — business-facing facts & dims. Lightdash reads from here:
+  - `fct_orders` / `dim_customers` — Shopify orders & customers (isClinical + Deese Pro; grows as stores are added)
+  - `fct_cin7_sales` / `dim_cin7_customers` — Cin7 sales & customers across all channels (Shopify DTC, B2B, WooCommerce, Amazon UK); 165K+ sales, 9-year history
+  - `fct_campaign_performance` / `dim_campaigns` — Klaviyo email campaigns
 - **Metrics** — pre-aggregated tables for dashboard speed.
 
 ## Snowflake layout
@@ -88,12 +91,12 @@ hgi-analytics/
 ## Conventions
 
 - **Model prefixes** — `stg_` (Silver staging), `fct_` (Gold fact), `dim_` (Gold dimension).
-- **Multi-brand union** — every `stg_*` model uses `dbt_utils.union_relations(..., source_column_name='store_id')` across all brand Bronze sources. **Adding a new store:**
-  1. Create `BRONZE_SHOPIFY_<NEW>` + `BRONZE_KLAVIYO_<NEW>` schemas.
-  2. Add the matching Airbyte connections.
-  3. Add both to `dbt/models/silver/_sources.yml`.
-  4. Append to the `relations=[...]` list in every `stg_*` model that includes that source type.
+- **Multi-brand Shopify/Klaviyo union** — staging models use a manual CTE-per-store pattern (`with isclinical as (...), deese_pro as (...), unioned as (select * from isclinical union all select * from deese_pro)`). **Adding a new Shopify store:**
+  1. Create `BRONZE_SHOPIFY_<NEW>` schema (Airbyte provisions this).
+  2. Add `bronze_shopify_<new>` source to `dbt/models/bronze/_sources.yml`.
+  3. Add a new CTE to `stg_shopify__orders` and `stg_shopify__customers` with `store_id = '<new>'`, and add to the `unioned` CTE.
   Gold and Lightdash require no changes.
+- **Cin7 deduplication** — `BRONZE_CIN7.SALE_LIST` and `BRONZE_CIN7.CUSTOMERS` contain ~36× duplicate rows from Airbyte incremental inserts. Silver models deduplicate via `row_number() over (partition by <pk> order by _airbyte_extracted_at desc) = 1` before any transformation.
 - **`store_id` is the universal brand key** — present on every Silver+ table. Use it for joins and Lightdash dashboard filters (portfolio view = unfiltered; per-brand view = filtered).
 - **Email normalisation** — `LOWER(TRIM(email))` in Silver before joining Shopify customers to Klaviyo profiles.
 - **Currency** — Shopify returns a per-order `currency`. Normalisation strategy (query-time vs GBP in Silver) is undecided — preserve the `currency` column everywhere until a decision is made.

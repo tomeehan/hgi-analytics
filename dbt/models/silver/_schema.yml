@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: stg_shopify__orders
-    description: "Cleaned Shopify orders from isClinical brand."
+    description: "Cleaned Shopify orders unioned across all active stores (isClinical, Deese Pro)."
     columns:
       - name: order_id
         description: "Shopify order ID."
@@ -22,7 +22,7 @@ models:
           - not_null
 
   - name: stg_shopify__customers
-    description: "Cleaned Shopify customers from isClinical brand."
+    description: "Cleaned Shopify customers unioned across all active stores (isClinical, Deese Pro)."
     columns:
       - name: customer_id
         description: "Shopify customer ID."
@@ -63,6 +63,56 @@ models:
     columns:
       - name: campaign_id
         description: "Klaviyo campaign ID."
+        tests:
+          - not_null
+      - name: store_id
+        tests:
+          - not_null
+
+  - name: stg_cin7__sales
+    description: "Deduplicated Cin7 sales across all channels (Shopify DTC, B2B, WooCommerce, Amazon UK)."
+    columns:
+      - name: sale_id
+        description: "Cin7 sale ID."
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        tests:
+          - not_null
+      - name: ordered_at
+        tests:
+          - not_null
+      - name: channel_group
+        tests:
+          - not_null
+
+  - name: stg_cin7__customers
+    description: "Deduplicated Cin7 customer records."
+    columns:
+      - name: customer_id
+        description: "Cin7 customer ID."
+        tests:
+          - not_null
+          - unique
+
+  - name: stg_cin7__customer_addresses
+    description: "Flattened Cin7 customer address records (one row per address per customer)."
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+      - name: address_type
+        description: "Shipping or Billing."
+
+  - name: stg_shopify__order_line_items
+    description: "Flattened Shopify order line items across all stores."
+    columns:
+      - name: line_item_id
+        tests:
+          - not_null
+          - unique
+      - name: order_id
         tests:
           - not_null
       - name: store_id

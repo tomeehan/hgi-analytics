@@ -37,3 +37,19 @@ sources:
       - name: campaigns
       - name: campaign_values_reports
       - name: profiles
+
+  - name: bronze_shopify_deese_pro
+    database: HGI
+    schema: BRONZE_SHOPIFY_DEESE_PRO
+    tables:
+      - name: orders
+      - name: customers
+
+  - name: bronze_cin7
+    database: HGI
+    schema: BRONZE_CIN7
+    tables:
+      - name: sale_list
+      - name: customers
+      - name: products
+      - name: purchase_list

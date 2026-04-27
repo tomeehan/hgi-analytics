@@ -192,3 +192,204 @@ models:
         description: "Campaign status (Sent, Draft, Scheduled, etc.)."
       - name: send_time
         description: "When the campaign was sent."
+
+  - name: fct_cin7_sales
+    description: "Cin7 sales fact table across all channels, with first-order flag and monthly grain."
+    meta:
+      label: "Cin7 Sales"
+    columns:
+      - name: sale_id
+        description: "Cin7 sale ID."
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            order_count:
+              type: count_distinct
+              label: "Orders"
+      - name: customer_id
+        description: "Cin7 customer ID."
+        tests:
+          - not_null
+        meta:
+          metrics:
+            active_customers:
+              type: count_distinct
+              label: "Active Customers"
+      - name: paid_amount
+        description: "Amount paid for the sale (GBP base currency)."
+        meta:
+          metrics:
+            total_revenue:
+              type: sum
+              label: "Revenue (GBP)"
+            aov:
+              type: average
+              label: "Avg Order Value"
+      - name: is_first_order
+        description: "True if this is the customer's first ever Cin7 sale."
+        meta:
+          metrics:
+            new_customer_orders:
+              type: sum
+              label: "New Customer Orders"
+      - name: channel_group
+        description: "Grouped channel: shopify_dtc, b2b, woocommerce, amazon_uk, other."
+      - name: source_channel
+        description: "Raw Cin7 source channel value."
+      - name: order_month
+        description: "Month the order was placed (first day of month)."
+      - name: ordered_at
+        description: "Order timestamp."
+      - name: customer_order_number
+        description: "This customer's Nth order overall."
+      - name: status
+        description: "Cin7 sale status."
+
+  - name: dim_cin7_customers
+    description: "Cin7 customer dimension enriched with lifetime order stats and segment."
+    meta:
+      label: "Cin7 Customers"
+    columns:
+      - name: customer_id
+        description: "Cin7 customer ID."
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            customer_count:
+              type: count_distinct
+              label: "Customers"
+      - name: lifetime_revenue
+        description: "Sum of all paid amounts for this customer."
+        meta:
+          metrics:
+            total_customer_ltv:
+              type: sum
+              label: "Total Customer LTV"
+            avg_ltv:
+              type: average
+              label: "Avg LTV"
+      - name: lifetime_orders
+        description: "Total number of orders placed by this customer."
+        meta:
+          metrics:
+            avg_orders_per_customer:
+              type: average
+              label: "Avg Orders per Customer"
+      - name: customer_segment
+        description: "no_orders / one_time / occasional (2-4 orders) / loyal (5+)."
+      - name: channels_used
+        description: "Number of distinct channel groups this customer has ordered through."
+      - name: first_order_at
+        description: "Timestamp of customer's first ever order."
+      - name: last_order_at
+        description: "Timestamp of customer's most recent order."
+
+  - name: fct_product_sales
+    description: "Shopify order line items joined to order context — one row per line item."
+    meta:
+      label: "Product Sales"
+    columns:
+      - name: line_item_id
+        description: "Shopify line item ID."
+        tests:
+          - not_null
+          - unique
+        meta:
+          metrics:
+            line_item_count:
+              type: count_distinct
+              label: "Line Items"
+      - name: order_id
+        meta:
+          metrics:
+            order_count:
+              type: count_distinct
+              label: "Orders"
+      - name: customer_id
+        meta:
+          metrics:
+            unique_buyers:
+              type: count_distinct
+              label: "Unique Buyers"
+      - name: quantity
+        meta:
+          metrics:
+            units_sold:
+              type: sum
+              label: "Units Sold"
+      - name: line_revenue_gbp
+        description: "quantity × unit_price_gbp."
+        meta:
+          metrics:
+            product_revenue:
+              type: sum
+              label: "Product Revenue (GBP)"
+            avg_unit_price:
+              type: average
+              label: "Avg Unit Price (GBP)"
+      - name: product_title
+        description: "Product name."
+      - name: sku
+        description: "Product SKU."
+      - name: store_id
+        description: "Brand identifier."
+      - name: order_month
+        description: "Month the order was placed."
+      - name: uk_region
+        description: "UK region derived from shipping postcode."
+      - name: is_first_order
+        description: "True if this line item belongs to the customer's first order."
+
+  - name: fct_product_pairs
+    description: "Cross-sell pairs — products bought together in the same Shopify order."
+    meta:
+      label: "Product Pairs (Cross-sell)"
+    columns:
+      - name: product_a
+        description: "First product in the pair (alphabetically lower product_id)."
+      - name: product_b
+        description: "Second product in the pair."
+      - name: orders_together
+        description: "Number of distinct orders containing both products."
+        meta:
+          metrics:
+            times_bought_together:
+              type: sum
+              label: "Times Bought Together"
+
+  - name: fct_product_repeat_rate
+    description: "Per-product repeat purchase rate — how many buyers came back for the same product."
+    meta:
+      label: "Product Repeat Rate"
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+          - unique
+      - name: product_title
+        description: "Product name."
+      - name: unique_buyers
+        description: "Distinct customers who bought this product."
+        meta:
+          metrics:
+            total_buyers:
+              type: sum
+              label: "Total Buyers"
+      - name: repeat_buyers
+        description: "Buyers who purchased this product more than once."
+        meta:
+          metrics:
+            total_repeat_buyers:
+              type: sum
+              label: "Repeat Buyers"
+      - name: repeat_rate_pct
+        description: "% of buyers who repurchased (repeat_buyers / unique_buyers × 100)."
+        meta:
+          metrics:
+            avg_repeat_rate:
+              type: average
+              label: "Avg Repeat Rate %"
