@@ -145,7 +145,7 @@ if [ -f dbt/profiles.yml ]; then
 else
   cat > dbt/profiles.yml <<'PROFILE'
 # Local dbt profile for hgi-analytics. Gitignored — fill in your password.
-# Snowflake credentials live in 1Password (look for "HGI Snowflake — dbt_user").
+# Ask Tom for Snowflake credentials.
 hgi:
   target: dev
   outputs:
@@ -161,25 +161,45 @@ hgi:
       threads: 4
       client_session_keep_alive: false
 PROFILE
-  ok "Wrote dbt/profiles.yml — edit it with your Snowflake creds (see 1Password)"
+  ok "Wrote dbt/profiles.yml — fill in your Snowflake creds (ask Tom)"
 fi
 
-# ── .env scaffold ──────────────────────────────────────────────────────────
+# ── .env scaffold + validation ──────────────────────────────────────────────
 step "Setting up .env"
-if [ -f .env ]; then
-  ok ".env already present — leaving it alone"
-elif [ -f .env.example ]; then
-  cp .env.example .env
-  ok "Copied .env.example → .env — fill in creds from 1Password"
-else
-  warn ".env.example missing; skipping .env scaffold"
+if [ ! -f .env.example ]; then
+  fail ".env.example is missing — it should be checked in. Restore it before re-running."
+  exit 1
 fi
+
+if [ ! -f .env ]; then
+  cp .env.example .env
+  ok "Copied .env.example → .env — fill in creds (ask Tom), then re-run."
+  fail ".env was just created with empty values — populate it and re-run ./bin/setup."
+  exit 1
+fi
+ok ".env present"
+
+# Validate: every key listed in .env.example must have a non-empty value in .env.
+EXAMPLE_KEYS=$(grep -E '^[A-Z_][A-Z0-9_]*=' .env.example | cut -d= -f1)
+EMPTY_KEYS=()
+for key in $EXAMPLE_KEYS; do
+  value=$(grep -E "^${key}=" .env | head -1 | cut -d= -f2-)
+  if [ -z "$value" ]; then
+    EMPTY_KEYS+=("$key")
+  fi
+done
+if [ "${#EMPTY_KEYS[@]}" -gt 0 ]; then
+  fail ".env is missing values for: ${EMPTY_KEYS[*]}"
+  info "Fill them in (ask Tom) and re-run ./bin/setup."
+  exit 1
+fi
+ok ".env has values for all keys in .env.example"
 
 # ── final hint ─────────────────────────────────────────────────────────────
 step "Setup complete"
 cat <<EOF
   Next steps:
-    1. Edit ${BOLD}dbt/profiles.yml${RESET} with your Snowflake password (1Password → "HGI Snowflake — dbt_user").
+    1. Edit ${BOLD}dbt/profiles.yml${RESET} with your Snowflake password (ask Tom).
     2. Activate the venv:        ${BOLD}source .venv/bin/activate${RESET}
     3. Verify the connection:    ${BOLD}cd dbt && dbt debug${RESET}
     4. Build the project:        ${BOLD}cd dbt && dbt build${RESET}

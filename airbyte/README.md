@@ -24,7 +24,7 @@ lost (unlikely).
 | Database | `HGI` |
 | Username | `airbyte_user` |
 
-Password is stored in 1Password and entered directly in the Airbyte UI.
+The `LOADER` password is entered directly in the Airbyte UI (ask Tom).
 
 ## Provisioning a Bronze schema
 
@@ -89,7 +89,7 @@ Docker image or registry needed.
 
 To set up: open your Airbyte instance → **Builder** → **Import a YAML** → paste
 the contents of `manifest.yaml` → **Publish to workspace**. Then create a
-connection as usual. API key is in 1Password under _Prospect CRM → API Key_.
+connection as usual. Ask Tom for the Prospect CRM API key.
 
 | Destination schema | Streams | Sync mode |
 |--------------------|---------|-----------|
@@ -112,7 +112,7 @@ Suggested schedule: 6 h for incremental streams; 24 h for full-refresh streams.
 ## Adding a new store
 
 1. Create new `BRONZE_SHOPIFY_<BRAND>` and `BRONZE_KLAVIYO_<BRAND>` schemas in Snowflake.
-2. Add Shopify and Klaviyo sources in the Airbyte UI with credentials from 1Password.
+2. Add Shopify and Klaviyo sources in the Airbyte UI (ask Tom for credentials).
 3. Create connections pointing at the new Bronze schemas with the sync schedule above.
 4. Document the new connections in the tables above.
 5. Follow the dbt steps in the root `CLAUDE.md` to add the new sources to `_sources.yml` and the Silver union models.

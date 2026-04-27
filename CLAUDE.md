@@ -146,7 +146,6 @@ Never commit credentials. Storage locations:
 | Snowflake `REPORTER` password | Lightdash app DB (entered via the Lightdash UI; stored encrypted in Neon) |
 | `SNOWFLAKE_ACCOUNT/USER/PASSWORD`, `SLACK_WEBHOOK_URL` | GitHub Actions secrets |
 | `snow` CLI credentials (`hgi` + `hgi-admin` profiles) | `~/.snowflake/config.toml` (local, never commit) |
-| All of the above | 1Password (source of truth) |
 
 ## Keeping this file current
 
