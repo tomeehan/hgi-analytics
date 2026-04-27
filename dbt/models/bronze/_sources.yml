@@ -53,3 +53,17 @@ sources:
       - name: customers
       - name: products
       - name: purchase_list
+
+  - name: bronze_prospect_crm
+    database: HGI
+    schema: BRONZE_PROSPECT_CRM
+    tables:
+      - name: contacts
+      - name: companies
+      - name: sales_ledgers
+      - name: leads
+      - name: sales_transactions
+      - name: product_items
+      - name: addresses
+      - name: sales_order_headers
+      - name: sales_invoice_headers

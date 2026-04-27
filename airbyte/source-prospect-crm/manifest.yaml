@@ -99,42 +99,524 @@ streams:
     primary_key: ContactId
     $parameters:
       entity: Contacts
+    schema_loader:
+      type: InlineSchemaLoader
+      schema:
+        $schema: "http://json-schema.org/draft-07/schema#"
+        type: object
+        properties:
+          ContactId: {type: [integer, "null"]}
+          DivisionId: {type: [integer, "null"]}
+          AddressId: {type: [integer, "null"]}
+          MainAddressId: {type: [integer, "null"]}
+          DeliveryAddressId: {type: [integer, "null"]}
+          Individual: {type: [integer, "null"]}
+          RoleCode: {type: [string, "null"]}
+          Title: {type: [string, "null"]}
+          Forename: {type: [string, "null"]}
+          Surname: {type: [string, "null"]}
+          PreferredName: {type: [string, "null"]}
+          Salutation: {type: [string, "null"]}
+          JobTitle: {type: [string, "null"]}
+          Department: {type: [string, "null"]}
+          PhoneNumber: {type: [string, "null"]}
+          Fax: {type: [string, "null"]}
+          Email: {type: [string, "null"]}
+          EmailBounced: {type: [integer, "null"]}
+          SecretaryName: {type: [string, "null"]}
+          SecretaryPhone: {type: [string, "null"]}
+          SecretaryEmail: {type: [string, "null"]}
+          MailFlag: {type: [integer, "null"]}
+          FaxFlag: {type: [integer, "null"]}
+          EmailFlag: {type: [integer, "null"]}
+          SwapFlag: {type: [integer, "null"]}
+          SpokeCode: {type: [string, "null"]}
+          SpokeDateTime: {type: [string, "null"], format: date-time}
+          DateOriginallyCreated: {type: [string, "null"], format: date-time}
+          SurnameSoundex: {type: [integer, "null"]}
+          ForenameSoundex: {type: [integer, "null"]}
+          StatusFlag: {type: [string, "null"]}
+          Source: {type: [string, "null"]}
+          AlternateReference: {type: [string, "null"]}
+          SearchTerms: {type: [string, "null"]}
+          Created: {type: [string, "null"], format: date-time}
+          CreatedByUserId: {type: [string, "null"]}
+          LastUpdated: {type: [string, "null"], format: date-time}
+          LastUpdatedByUserId: {type: [string, "null"]}
+          LastUpdatedTimestamp: {type: [string, "null"], format: date-time}
+          SystemObjectsKey: {type: [string, "null"]}
+          SearchCached: {type: [integer, "null"]}
+          OptIn: {type: [integer, "null"]}
+          MobilePhoneNumber: {type: [string, "null"]}
+          ImportSourceRunId: {type: [integer, "null"]}
+          RecordLink: {type: [string, "null"]}
+          SystemSearchTerms: {type: [string, "null"]}
+          KlaviyoId: {type: [string, "null"]}
+          MergedWith: {type: [integer, "null"]}
+          AccountsId: {type: [string, "null"]}
+          SyncFieldHash: {type: [string, "null"]}
+          LastSyncError: {type: [string, "null"]}
+          NextTaskId: {type: [integer, "null"]}
 
   - $ref: "#/definitions/incremental_stream"
     name: companies
     primary_key: CompanyId
     $parameters:
       entity: Companies
+    schema_loader:
+      type: InlineSchemaLoader
+      schema:
+        $schema: "http://json-schema.org/draft-07/schema#"
+        type: object
+        properties:
+          CompanyId: {type: [integer, "null"]}
+          Name: {type: [string, "null"]}
+          TypeId: {type: [string, "null"]}
+          AccountManagerId: {type: [string, "null"]}
+          LastUpdatedTimestamp: {type: [string, "null"], format: date-time}
+          LastUpdated: {type: [string, "null"], format: date-time}
+          LastUpdatedByUserId: {type: [string, "null"]}
+          Created: {type: [string, "null"], format: date-time}
+          CreatedByUserId: {type: [string, "null"]}
+          StatusFlag: {type: [string, "null"]}
+          SystemObjectsKey: {type: [string, "null"]}
+          Source: {type: [string, "null"]}
+          Soundex: {type: [integer, "null"]}
+          AlternateReference: {type: [string, "null"]}
+          SearchTerms: {type: [string, "null"]}
+          LongDescription: {type: [string, "null"]}
+          FirstOrder: {type: [string, "null"], format: date-time}
+          Lapsed: {type: [string, "null"], format: date-time}
+          Unlapsed: {type: [string, "null"], format: date-time}
+          CombinedEntity: {type: [string, "null"]}
+          ImportSourceRunId: {type: [integer, "null"]}
+          RequirePORef: {type: [boolean, "null"]}
+          RecordLink: {type: [string, "null"]}
+          SystemSearchTerms: {type: [string, "null"]}
+          MergedWith: {type: [integer, "null"]}
 
   - $ref: "#/definitions/incremental_stream"
     name: sales_ledgers
     primary_key: SalesLedgerId
     $parameters:
       entity: SalesLedgers
+    schema_loader:
+      type: InlineSchemaLoader
+      schema:
+        $schema: "http://json-schema.org/draft-07/schema#"
+        type: object
+        properties:
+          OperatingCompanyCode: {type: [string, "null"]}
+          SalesLedgerId: {type: [string, "null"]}
+          Name: {type: [string, "null"]}
+          AddressLine1: {type: [string, "null"]}
+          AddressLine2: {type: [string, "null"]}
+          AddressLine3: {type: [string, "null"]}
+          AddressLine4: {type: [string, "null"]}
+          Country: {type: [string, "null"]}
+          Postcode: {type: [string, "null"]}
+          Telephone: {type: [string, "null"]}
+          Fax: {type: [string, "null"]}
+          Email: {type: [string, "null"]}
+          OnStop: {type: [integer, "null"]}
+          Balance: {type: [number, "null"]}
+          CreditLimit: {type: [integer, "null"]}
+          LastInvoice: {type: [string, "null"], format: date-time}
+          LastReceipt: {type: [string, "null"], format: date-time}
+          CurrencyCode: {type: [string, "null"]}
+          LastUpdatedTimestamp: {type: [string, "null"], format: date-time}
+          LastUpdated: {type: [string, "null"], format: date-time}
+          LastUpdatedByUserId: {type: [string, "null"]}
+          Created: {type: [string, "null"], format: date-time}
+          CreatedByUserId: {type: [string, "null"]}
+          PriceList: {type: [string, "null"]}
+          DiscountGroup: {type: [string, "null"]}
+          IsModelAccount: {type: [integer, "null"]}
+          TaxCode: {type: [string, "null"]}
+          CountryCode: {type: [string, "null"]}
+          VatRegistrationCode: {type: [string, "null"]}
+          ModelAccountUsed: {type: [string, "null"]}
+          TempAccount: {type: [integer, "null"]}
+          DefaultWarehouseId: {type: [string, "null"]}
+          ModifiedOffline: {type: [integer, "null"]}
+          OverallDiscount: {type: [number, "null"]}
+          SettlementDiscount1: {type: [number, "null"]}
+          SettlementDiscount2: {type: [number, "null"]}
+          SettlementDays1: {type: [integer, "null"]}
+          SettlementDays2: {type: [integer, "null"]}
+          CompoundOverallDiscount: {type: [integer, "null"]}
+          Website: {type: [string, "null"]}
+          InvoiceTo: {type: [string, "null"]}
+          SystemObjectsKey: {type: [string, "null"]}
+          AddressLine5: {type: [string, "null"]}
+          Closed: {type: [integer, "null"]}
+          IsCashAccount: {type: [integer, "null"]}
+          SearchTerms: {type: [string, "null"]}
+          DeliveryAddressId: {type: [integer, "null"]}
+          Outcode: {type: [string, "null"]}
+          DisplayDescription: {type: [string, "null"]}
+          DefaultDivisionId: {type: [integer, "null"]}
+          AddressBlock: {type: [string, "null"]}
+          PriceBandId: {type: [integer, "null"]}
+          DecimalBalance: {type: [number, "null"]}
+          AccountsId: {type: [string, "null"]}
+          Taxable: {type: [boolean, "null"]}
+          SecondaryAccountsId: {type: [string, "null"]}
+          ContactId: {type: [integer, "null"]}
+          UserAccountsId: {type: [string, "null"]}
+          IsB2C: {type: [boolean, "null"]}
+          CustomerTypeId: {type: [string, "null"]}
+          ExchequerDepartmentCode: {type: [string, "null"]}
+          ExchequerCostCenterCode: {type: [string, "null"]}
+          ExchequerGeneralLedgerCode: {type: [integer, "null"]}
+          IsInvoiceToAccount: {type: [boolean, "null"]}
+          PaymentTermId: {type: [string, "null"]}
+          CustomerCode: {type: [string, "null"]}
+          BalanceOverdue: {type: [number, "null"]}
+          DeliveryInstructions: {type: [string, "null"]}
+          AnalysisCode: {type: [string, "null"]}
+          Duplicate: {type: [boolean, "null"]}
+          CustomerDefaultWarehouseCode: {type: [string, "null"]}
+          CustomerSalesOrderGroupCode: {type: [string, "null"]}
+          CustomerDefaultDeliveryMethodCode: {type: [string, "null"]}
+          UserAnalysisCode1: {type: [string, "null"]}
+          UserAnalysisCode2: {type: [string, "null"]}
+          UserAnalysisCode3: {type: [string, "null"]}
+          EORINumber: {type: [string, "null"]}
+          Reminder: {type: [string, "null"]}
 
   - $ref: "#/definitions/incremental_stream"
     name: leads
     primary_key: LeadId
     $parameters:
       entity: Leads
+    schema_loader:
+      type: InlineSchemaLoader
+      schema:
+        $schema: "http://json-schema.org/draft-07/schema#"
+        type: object
+        properties:
+          LeadId: {type: [integer, "null"]}
+          ContactId: {type: [integer, "null"]}
+          SourceId: {type: [string, "null"]}
+          CreatedByUserId: {type: [string, "null"]}
+          StatusId: {type: [string, "null"]}
+          StatusDetailId: {type: [string, "null"]}
+          SizeId: {type: [string, "null"]}
+          Guttometer: {type: [integer, "null"]}
+          Postponed: {type: [integer, "null"]}
+          SpokeCode: {type: [string, "null"]}
+          EstimatedClose: {type: [string, "null"], format: date-time}
+          Description: {type: [string, "null"]}
+          ResponsibleUser: {type: [string, "null"]}
+          MarginId: {type: [string, "null"]}
+          Analysis1Id: {type: [string, "null"]}
+          SituationSummary: {type: [string, "null"]}
+          SourceOther: {type: [string, "null"]}
+          LastUpdatedTimestamp: {type: [string, "null"], format: date-time}
+          LastUpdated: {type: [string, "null"], format: date-time}
+          LastUpdatedByUserId: {type: [string, "null"]}
+          Created: {type: [string, "null"], format: date-time}
+          StatusFlag: {type: [string, "null"]}
+          SourceActivityId: {type: [integer, "null"]}
+          SystemObjectsKey: {type: [string, "null"]}
+          TypeId: {type: [string, "null"]}
+          SalesPersonId: {type: [string, "null"]}
+          StatusChanged: {type: [string, "null"], format: date-time}
+          LastSpoke: {type: [string, "null"], format: date-time}
+          ProblemCount: {type: [integer, "null"]}
+          AlternateReference: {type: [string, "null"]}
+          SearchTerms: {type: [string, "null"]}
+          SearchCached: {type: [integer, "null"]}
+          DivisionId: {type: [integer, "null"]}
+          Value: {type: [number, "null"]}
+          AddressId: {type: [integer, "null"]}
+          PipelineId: {type: [string, "null"]}
+          WeightedValue: {type: [number, "null"]}
+          WorstValue: {type: [number, "null"]}
+          LikelyValue: {type: [number, "null"]}
+          BestValue: {type: [number, "null"]}
+          CombinedEntity: {type: [string, "null"]}
+          FirstActiveEngagement: {type: [string, "null"], format: date-time}
+          LastActiveEngagement: {type: [string, "null"], format: date-time}
+          CloseDate: {type: [string, "null"], format: date-time}
+          UtmSource: {type: [string, "null"]}
+          UtmMedium: {type: [string, "null"]}
+          UtmName: {type: [string, "null"]}
+          UtmTerm: {type: [string, "null"]}
+          UtmContent: {type: [string, "null"]}
+          RecordLink: {type: [string, "null"]}
+          EstimatedCloseYear: {type: [integer, "null"]}
+          EstimatedCloseMonth: {type: [integer, "null"]}
+          MergedWith: {type: [integer, "null"]}
+          AutocalculateValue: {type: [boolean, "null"]}
+          ObjectiveId: {type: [string, "null"]}
+          MarginValue: {type: [number, "null"]}
+          OwnerId: {type: [string, "null"]}
+          NextTaskId: {type: [integer, "null"]}
 
   - $ref: "#/definitions/incremental_stream"
     name: sales_transactions
     primary_key: Id
     $parameters:
       entity: SalesTransactions
+    schema_loader:
+      type: InlineSchemaLoader
+      schema:
+        $schema: "http://json-schema.org/draft-07/schema#"
+        type: object
+        properties:
+          Id: {type: [string, "null"]}
+          OperatingCompanyCode: {type: [string, "null"]}
+          DocumentId: {type: [string, "null"]}
+          LineNumber: {type: [integer, "null"]}
+          InvoiceNumber: {type: [string, "null"]}
+          AccountsKey: {type: [string, "null"]}
+          OrderNumber: {type: [string, "null"]}
+          ProductItemId: {type: [string, "null"]}
+          ProductDescription: {type: [string, "null"]}
+          ExtendedDescription: {type: [string, "null"]}
+          Price: {type: [integer, "null"]}
+          OrderQuantity: {type: [integer, "null"]}
+          InvoiceQuantity: {type: [integer, "null"]}
+          LineValue: {type: [integer, "null"]}
+          InvoiceDate: {type: [string, "null"], format: date-time}
+          DueDate: {type: [string, "null"], format: date-time}
+          ExpiryDate: {type: [string, "null"], format: date-time}
+          ContractReference: {type: [string, "null"]}
+          Account: {type: [string, "null"]}
+          Ledger: {type: [string, "null"]}
+          Obsolete: {type: [integer, "null"]}
+          PaidFlag: {type: [string, "null"]}
+          PaidDate: {type: [string, "null"], format: date-time}
+          TransactionType: {type: [string, "null"]}
+          GrossValue: {type: [integer, "null"]}
+          SellDecimals: {type: [integer, "null"]}
+          CurrencyDecimals: {type: [integer, "null"]}
+          CurrencyCode: {type: [string, "null"]}
+          BaseValue: {type: [integer, "null"]}
+          BaseGrossValue: {type: [integer, "null"]}
+          BaseCurrencyDecimals: {type: [integer, "null"]}
+          QuantityType: {type: [string, "null"]}
+          QuantityDecimals: {type: [integer, "null"]}
+          QuantityFactor: {type: [integer, "null"]}
+          CustomerReference: {type: [string, "null"]}
+          QuoteReference: {type: [string, "null"]}
+          ProformaReference: {type: [string, "null"]}
+          QuantityDelivered: {type: [integer, "null"]}
+          DeliveryReference: {type: [string, "null"]}
+          DeliveryDate: {type: [string, "null"], format: date-time}
+          Analysis1: {type: [string, "null"]}
+          WarehouseCode: {type: [string, "null"]}
+          GeneralLedgerCode: {type: [string, "null"]}
+          JobCode: {type: [string, "null"]}
+          DepartmentCode: {type: [string, "null"]}
+          QuoteDate: {type: [string, "null"], format: date-time}
+          ProformaDate: {type: [string, "null"], format: date-time}
+          OrderDate: {type: [string, "null"], format: date-time}
+          CostPrice: {type: [integer, "null"]}
+          CostValue: {type: [integer, "null"]}
+          CostDecimals: {type: [integer, "null"]}
+          PayDue: {type: [string, "null"], format: date-time}
+          UserDefinedField1: {type: [string, "null"]}
+          UserDefinedField2: {type: [string, "null"]}
+          UserDefinedField3: {type: [string, "null"]}
+          UserDefinedField4: {type: [string, "null"]}
+          UserDefinedField5: {type: [string, "null"]}
+          StatusFlag: {type: [string, "null"]}
+          TransactionDate: {type: [string, "null"], format: date-time}
+          Created: {type: [string, "null"], format: date-time}
+          LastUpdated: {type: [string, "null"], format: date-time}
+          LastUpdatedTimestamp: {type: [string, "null"], format: date-time}
+          CalculatedOrderQuantity: {type: [number, "null"]}
+          CalculatedDeliveredQuantity: {type: [number, "null"]}
+          CalculatedInvoiceQuantity: {type: [number, "null"]}
+          CalculatedPrice: {type: [number, "null"]}
+          CalculatedCostPrice: {type: [number, "null"]}
+          CalculatedLineValue: {type: [number, "null"]}
+          CalculatedLineGrossValue: {type: [number, "null"]}
+          CalculatedCostValue: {type: [number, "null"]}
+          CalculatedBaseLineValue: {type: [number, "null"]}
+          CalculatedBaseLineGrossValue: {type: [number, "null"]}
+          AccountsId: {type: [string, "null"]}
+          MarginValue: {type: [number, "null"]}
+          MarginPercent: {type: [number, "null"]}
+          QuoteId: {type: [integer, "null"]}
+          AccountsOrderId: {type: [string, "null"]}
+          Priority: {type: [integer, "null"]}
+          DiscountRate: {type: [number, "null"]}
+          ImportSourceRunId: {type: [integer, "null"]}
 
   - $ref: "#/definitions/incremental_stream"
     name: product_items
     primary_key: ProductItemId
     $parameters:
       entity: ProductItems
+    schema_loader:
+      type: InlineSchemaLoader
+      schema:
+        $schema: "http://json-schema.org/draft-07/schema#"
+        type: object
+        properties:
+          OperatingCompanyCode: {type: [string, "null"]}
+          ProductItemId: {type: [string, "null"]}
+          Description: {type: [string, "null"]}
+          CategoryId: {type: [string, "null"]}
+          SellingPrice: {type: [integer, "null"]}
+          DiscountMatrixId: {type: [string, "null"]}
+          Sequence: {type: [integer, "null"]}
+          Obsolete: {type: [integer, "null"]}
+          CostPrice: {type: [integer, "null"]}
+          ExtendedDescription: {type: [string, "null"]}
+          QuantityType: {type: [string, "null"]}
+          QuantityDecimal: {type: [integer, "null"]}
+          QuantityFactor: {type: [integer, "null"]}
+          AllowSplit: {type: [integer, "null"]}
+          Stocked: {type: [integer, "null"]}
+          SellDecimals: {type: [integer, "null"]}
+          CostDecimals: {type: [integer, "null"]}
+          Pack: {type: [string, "null"]}
+          AlternateReference1: {type: [string, "null"]}
+          AlternateReference2: {type: [string, "null"]}
+          AlternateReference3: {type: [string, "null"]}
+          AlternateReference4: {type: [string, "null"]}
+          InternalNotes: {type: [string, "null"]}
+          LastUpdatedTimestamp: {type: [string, "null"], format: date-time}
+          LastUpdated: {type: [string, "null"], format: date-time}
+          LastUpdatedByUserId: {type: [string, "null"]}
+          Created: {type: [string, "null"], format: date-time}
+          CreatedByUserId: {type: [string, "null"]}
+          AllowLineDiscount: {type: [integer, "null"]}
+          AllowOverallDiscount: {type: [integer, "null"]}
+          AllowSettlementDiscount: {type: [integer, "null"]}
+          SalePrice: {type: [integer, "null"]}
+          NextPrice: {type: [integer, "null"]}
+          SaleFrom: {type: [string, "null"], format: date-time}
+          SaleTo: {type: [string, "null"], format: date-time}
+          NextPriceStart: {type: [string, "null"], format: date-time}
+          VatCode: {type: [string, "null"]}
+          UnitDescription: {type: [string, "null"]}
+          PurchaseAnalysis: {type: [string, "null"]}
+          SalesAnalysis: {type: [string, "null"]}
+          Warranty: {type: [integer, "null"]}
+          WarrantyDefault: {type: [string, "null"]}
+          DefaultWarehouse: {type: [string, "null"]}
+          UnitWeight: {type: [integer, "null"]}
+          UnitWeightDecimals: {type: [integer, "null"]}
+          UnitWeightDescription: {type: [string, "null"]}
+          UnitVolume: {type: [integer, "null"]}
+          UnitVolumeDecimals: {type: [integer, "null"]}
+          UnitVolumeDescription: {type: [string, "null"]}
+          Type: {type: [string, "null"]}
+          WebCatalog: {type: [integer, "null"]}
+          WebProductReference: {type: [string, "null"]}
+          WebDescription: {type: [string, "null"]}
+          WebExtendedDescription: {type: [string, "null"]}
+          WebAllowSplit: {type: [integer, "null"]}
+          HazardousSubstance: {type: [integer, "null"]}
+          DateNextAvailable: {type: [string, "null"], format: date-time}
+          QuantityAvailable: {type: [integer, "null"]}
+          Barcode: {type: [string, "null"]}
+          ParentProductId: {type: [string, "null"]}
+          VariationDescription: {type: [string, "null"]}
+          Specification: {type: [string, "null"]}
+          SystemObjectsKey: {type: [string, "null"]}
+          PurchaseCurrencyId: {type: [string, "null"]}
+          PurchaseCostPrice: {type: [integer, "null"]}
+          PurchaseCostDecimals: {type: [integer, "null"]}
+          CatalogueCode: {type: [string, "null"]}
+          CatalogueReference: {type: [string, "null"]}
+          Manufacturer: {type: [string, "null"]}
+          ManufacturerReference: {type: [string, "null"]}
+          TemplateProductItemId: {type: [string, "null"]}
+          IsTemplate: {type: [integer, "null"]}
+          BinLocation: {type: [string, "null"]}
+          CostCentre: {type: [string, "null"]}
+          Department: {type: [string, "null"]}
+          WebValidation: {type: [string, "null"]}
+          DeliveryChargeType: {type: [string, "null"]}
+          ExcludeFromOverallPromotion: {type: [integer, "null"]}
+          DefaultSupersededBy: {type: [string, "null"]}
+          SupersededQuantityRatio: {type: [number, "null"]}
+          SupersededQuantityMultiply: {type: [integer, "null"]}
+          PreferredSupplier: {type: [string, "null"]}
+          SearchTerms: {type: [string, "null"]}
+          ImageVersion: {type: [integer, "null"]}
+          ImageName: {type: [string, "null"]}
+          RestrictionId: {type: [integer, "null"]}
+          PackId: {type: [string, "null"]}
+          MinimumUnitQuantity: {type: [integer, "null"]}
+          DecimalCostPrice: {type: [number, "null"]}
+          DecimalSellingPrice: {type: [number, "null"]}
+          DecimalPurchaseCostPrice: {type: [number, "null"]}
+          DecimalQuantityAvailable: {type: [number, "null"]}
+          DecimalTotalAvailable: {type: [number, "null"]}
+          QuantityAvailablePreseason: {type: [number, "null"]}
+          TotalAvailablePreseason: {type: [number, "null"]}
+          QuantityOvercommitted: {type: [number, "null"]}
+          QuantityOvercommittedPreseason: {type: [number, "null"]}
+          AccountsId: {type: [string, "null"]}
+          ProductFamilyId: {type: [string, "null"]}
+          Width: {type: [number, "null"]}
+          Height: {type: [number, "null"]}
+          Depth: {type: [number, "null"]}
+          MinimumStockLevel: {type: [number, "null"]}
+          MaximumStockLevel: {type: [number, "null"]}
+          ReorderStockLevel: {type: [number, "null"]}
+          Sku: {type: [string, "null"]}
+          OptionValue1: {type: [string, "null"]}
+          OptionValue2: {type: [string, "null"]}
+          OptionValue3: {type: [string, "null"]}
+          Taxable: {type: [number, "null"]}
+          IsSizedProduct: {type: [integer, "null"]}
+          ProductCostCentreCode: {type: [string, "null"]}
+          IsTrackedProduct: {type: [integer, "null"]}
+          ImageAccountsId: {type: [string, "null"]}
+          CreateInventory: {type: [boolean, "null"]}
+          InventoryTypeCode: {type: [string, "null"]}
+          InventoryStatusCode: {type: [string, "null"]}
+          Sellable: {type: [boolean, "null"]}
+          UnitWeightDisplay: {type: [string, "null"]}
+          UnitVolumeDisplay: {type: [string, "null"]}
+          MagicMatrixCategoryId: {type: [string, "null"]}
+          ImageAltText: {type: [string, "null"]}
+          IsAssembly: {type: [boolean, "null"]}
+          LowStockValue: {type: [number, "null"]}
+          SystemSearchTerms: {type: [string, "null"]}
+          WetTax: {type: [boolean, "null"]}
 
   - $ref: "#/definitions/incremental_stream"
     name: addresses
     primary_key: AddressId
     $parameters:
       entity: Addresses
+    schema_loader:
+      type: InlineSchemaLoader
+      schema:
+        $schema: "http://json-schema.org/draft-07/schema#"
+        type: object
+        properties:
+          AddressId: {type: [integer, "null"]}
+          AddressLine1: {type: [string, "null"]}
+          AddressLine2: {type: [string, "null"]}
+          AddressLine3: {type: [string, "null"]}
+          AddressLine4: {type: [string, "null"]}
+          AddressLine5: {type: [string, "null"]}
+          Country: {type: [string, "null"]}
+          Postcode: {type: [string, "null"]}
+          PostCodeType: {type: [string, "null"]}
+          RegionNumber: {type: [string, "null"]}
+          Description: {type: [string, "null"]}
+          Outcode: {type: [string, "null"]}
+          Created: {type: [string, "null"], format: date-time}
+          CreatedByUserId: {type: [string, "null"]}
+          LastUpdated: {type: [string, "null"], format: date-time}
+          LastUpdatedByUserId: {type: [string, "null"]}
+          LastUpdatedTimestamp: {type: [string, "null"], format: date-time}
+          PostcodeRegion: {type: [string, "null"]}
+          AddressBlock: {type: [string, "null"]}
+          Latitude: {type: [number, "null"]}
+          Longitude: {type: [number, "null"]}
 
   # Full refresh (no LastUpdatedTimestamp on these entities)
   - $ref: "#/definitions/full_refresh_stream"
@@ -142,12 +624,82 @@ streams:
     primary_key: OrderNumber
     $parameters:
       entity: SalesOrderHeaders
+    schema_loader:
+      type: InlineSchemaLoader
+      schema:
+        $schema: "http://json-schema.org/draft-07/schema#"
+        type: object
+        properties:
+          OperatingCompanyCode: {type: [string, "null"]}
+          OrderNumber: {type: [string, "null"]}
+          AccountsId: {type: [string, "null"]}
+          SalesLedgerId: {type: [string, "null"]}
+          OrderDate: {type: [string, "null"], format: date-time}
+          CurrencyCode: {type: [string, "null"]}
+          NetValue: {type: [number, "null"]}
+          TaxValue: {type: [number, "null"]}
+          GrossValue: {type: [number, "null"]}
+          BaseNetValue: {type: [number, "null"]}
+          BaseTaxValue: {type: [number, "null"]}
+          BaseGrossValue: {type: [number, "null"]}
+          CustomerReference: {type: [string, "null"]}
+          ShippedDate: {type: [string, "null"], format: date-time}
+          QuoteId: {type: [integer, "null"]}
+          Platform: {type: [string, "null"]}
+          Statusflag: {type: [string, "null"]}
+          SalesOrderGroupCode: {type: [string, "null"]}
+          Source: {type: [string, "null"]}
+          AlternateReference: {type: [string, "null"]}
+          Analysis: {type: [string, "null"]}
+          DeliveryName: {type: [string, "null"]}
+          DeliveryAddressLine1: {type: [string, "null"]}
+          DeliveryAddressLine2: {type: [string, "null"]}
+          DeliveryAddressLine3: {type: [string, "null"]}
+          DeliveryAddressLine4: {type: [string, "null"]}
+          DeliveryAddressLine5: {type: [string, "null"]}
+          DeliveryCountry: {type: [string, "null"]}
+          DeliveryPostcode: {type: [string, "null"]}
+          OrderStatus: {type: [string, "null"]}
+          DeliveryTrackingReferences: {type: [string, "null"]}
+          CustomOrderStatus: {type: [string, "null"]}
+          DivisionId: {type: [integer, "null"]}
+          SalespersonId: {type: [string, "null"]}
+          SalespersonAccountsId: {type: [string, "null"]}
+          Comments: {type: [string, "null"]}
+          DueDate: {type: [string, "null"], format: date-time}
+          ImportSourceRunId: {type: [integer, "null"]}
 
   - $ref: "#/definitions/full_refresh_stream"
     name: sales_invoice_headers
     primary_key: InvoiceNumber
     $parameters:
       entity: SalesInvoiceHeaders
+    schema_loader:
+      type: InlineSchemaLoader
+      schema:
+        $schema: "http://json-schema.org/draft-07/schema#"
+        type: object
+        properties:
+          OperatingCompanyCode: {type: [string, "null"]}
+          InvoiceNumber: {type: [string, "null"]}
+          CreditNoteNumber: {type: [string, "null"]}
+          TransactionTypeId: {type: [string, "null"]}
+          SalesOrderHeaderId: {type: [string, "null"]}
+          AccountsId: {type: [string, "null"]}
+          SalesLedgerId: {type: [string, "null"]}
+          InvoiceDate: {type: [string, "null"], format: date-time}
+          DueDate: {type: [string, "null"], format: date-time}
+          CurrencyCode: {type: [string, "null"]}
+          NetValue: {type: [number, "null"]}
+          TaxValue: {type: [number, "null"]}
+          GrossValue: {type: [number, "null"]}
+          BaseNetValue: {type: [number, "null"]}
+          BaseTaxValue: {type: [number, "null"]}
+          BaseGrossValue: {type: [number, "null"]}
+          QuoteId: {type: [integer, "null"]}
+          Platform: {type: [string, "null"]}
+          Statusflag: {type: [string, "null"]}
+          Comments: {type: [string, "null"]}
 
 # ── Connector spec ────────────────────────────────────────────────────────────
 

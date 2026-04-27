@@ -118,3 +118,93 @@ models:
       - name: store_id
         tests:
           - not_null
+
+  - name: stg_prospect_crm__sales_ledgers
+    description: "Prospect CRM customer-account records (both B2C and B2B). Email is the primary cross-source join key."
+    columns:
+      - name: sales_ledger_id
+        description: "Prospect CRM SalesLedgerId — string PK."
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: "Lowercased, trimmed customer email; nullable."
+      - name: is_b2c
+        description: "True for consumer accounts, false for B2B/wholesale (~3,000 ledgers)."
+
+  - name: stg_prospect_crm__contacts
+    description: "Prospect CRM individual contacts. KLAVIYOID populated on ~11k rows (Klaviyo bridge)."
+    columns:
+      - name: contact_id
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: "Lowercased, trimmed; nullable."
+
+  - name: stg_prospect_crm__companies
+    description: "Prospect CRM companies (typically the parent of B2B ledgers). No FK from sales_ledgers — link is via name."
+    columns:
+      - name: company_id
+        tests:
+          - not_null
+          - unique
+
+  - name: stg_prospect_crm__leads
+    description: "Prospect CRM sales leads with UTM attribution and pipeline state."
+    columns:
+      - name: lead_id
+        tests:
+          - not_null
+          - unique
+      - name: contact_id
+        description: "Linked CRM contact; not all leads have one."
+
+  - name: stg_prospect_crm__addresses
+    description: "Prospect CRM addresses; FK target for contacts and leads."
+    columns:
+      - name: address_id
+        tests:
+          - not_null
+          - unique
+
+  - name: stg_prospect_crm__sales_orders
+    description: "Prospect CRM sales-order headers (order-level, pre-invoice)."
+    columns:
+      - name: order_number
+        tests:
+          - not_null
+          - unique
+      - name: sales_ledger_id
+        tests:
+          - not_null
+      - name: ordered_at
+        tests:
+          - not_null
+
+  - name: stg_prospect_crm__sales_invoices
+    description: "Prospect CRM sales invoices. SALES_ORDER_HEADERID is a FK to sales_orders."
+    columns:
+      - name: invoice_number
+        tests:
+          - not_null
+          - unique
+
+  - name: stg_prospect_crm__sales_transactions
+    description: "Prospect CRM line-level sales transactions with cost and margin. The richest source of B2B revenue truth."
+    columns:
+      - name: transaction_id
+        tests:
+          - not_null
+          - unique
+      - name: sales_ledger_id
+        tests:
+          - not_null
+
+  - name: stg_prospect_crm__product_items
+    description: "Prospect CRM product/SKU master. Cross-source SKU mapping to Shopify is unreliable — see CLAUDE.md."
+    columns:
+      - name: product_item_id
+        tests:
+          - not_null
+          - unique

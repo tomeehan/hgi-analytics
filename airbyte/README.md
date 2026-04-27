@@ -26,6 +26,33 @@ lost (unlikely).
 
 Password is stored in 1Password and entered directly in the Airbyte UI.
 
+## Provisioning a Bronze schema
+
+Airbyte's `LOADER` role creates per-stream tables itself, but it can't create
+the parent schema. Run this once per new source as `accountadmin` (via
+`snow sql --connection hgi-admin`), substituting the schema name:
+
+```sql
+use role accountadmin;
+create schema if not exists HGI.BRONZE_<SOURCE>;
+
+-- Hand the schema to LOADER so it owns everything Airbyte creates.
+-- This is the canonical Airbyte+Snowflake pattern and is what makes
+-- TRANSFORMER's future-grants below fire reliably on full-refresh
+-- streams, which drop+recreate their tables every sync.
+grant ownership on schema HGI.BRONZE_<SOURCE> to role LOADER copy current grants;
+
+grant usage on schema HGI.BRONZE_<SOURCE> to role TRANSFORMER;
+grant select on all tables in schema HGI.BRONZE_<SOURCE> to role TRANSFORMER;
+grant select on future tables in schema HGI.BRONZE_<SOURCE> to role TRANSFORMER;
+```
+
+If the schema already exists and is owned by `ACCOUNTADMIN`, run the same
+`grant ownership ... copy current grants` line to migrate it. Without
+LOADER ownership, future-grants set up by ACCOUNTADMIN can fail to apply
+to tables LOADER recreates during `full_refresh_overwrite` syncs — the
+new tables end up readable only by LOADER and `dbt_user` loses access.
+
 ## Connections
 
 One connection per source (store / Klaviyo account). Each writes to its own

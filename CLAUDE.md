@@ -53,6 +53,9 @@ Klaviyo accounts ┘                (raw, per-source)    (cleaned,         (fact
   - `fct_orders` / `dim_customers` — Shopify orders & customers (isClinical + Deese Pro; grows as stores are added)
   - `fct_cin7_sales` / `dim_cin7_customers` — Cin7 sales & customers across all channels (Shopify DTC, B2B, WooCommerce, Amazon UK); 165K+ sales, 9-year history
   - `fct_campaign_performance` / `dim_campaigns` — Klaviyo email campaigns
+  - `fct_product_sales` — Shopify order line items (LATERAL FLATTEN on LINE_ITEMS JSON array), joined to order context; includes `uk_region`, `line_revenue_gbp`
+  - `fct_product_pairs` — cross-sell pairs (products bought together in the same order)
+  - `fct_product_repeat_rate` — per-product repeat purchase rate
 - **Metrics** — pre-aggregated tables for dashboard speed.
 
 ## Snowflake layout
@@ -97,11 +100,27 @@ hgi-analytics/
   3. Add a new CTE to `stg_shopify__orders` and `stg_shopify__customers` with `store_id = '<new>'`, and add to the `unioned` CTE.
   Gold and Lightdash require no changes.
 - **Cin7 deduplication** — `BRONZE_CIN7.SALE_LIST` and `BRONZE_CIN7.CUSTOMERS` contain ~36× duplicate rows from Airbyte incremental inserts. Silver models deduplicate via `row_number() over (partition by <pk> order by _airbyte_extracted_at desc) = 1` before any transformation.
+- **`is_first_order` is an integer (0/1), not boolean** — Gold models cast the boolean expression to `::integer` so that `SUM(is_first_order)` works in Snowflake (Snowflake cannot SUM a boolean directly).
+- **Airbyte Shopify connections** — four stores are connected; two are active in dbt, two are pending first-sync:
+  - `isclinical-store` → `BRONZE_SHOPIFY_ISCLINICAL` (active in Silver/Gold as `store_id = 'isclinical'`)
+  - `deese-pro` → `BRONZE_SHOPIFY_DEESE_PRO` (active in Silver/Gold as `store_id = 'deese_pro'`)
+  - `revitalash-co-uk.myshopify.com` → `BRONZE_SHOPIFY_REVITALASH` (full refresh in progress; add to dbt once sync completes)
+  - Geske → `BRONZE_SHOPIFY_GESKE` (schema created, no data yet)
+  - `BRONZE_KLAVIYO_REVITALASH` and `BRONZE_KLAVIYO_GESKE` schemas also exist (empty).
+- **Revitalash Bronze contamination** — prior to the namespace fix, the Revitalash Airbyte connection may have written rows into `BRONZE_SHOPIFY_ISCLINICAL`. Run `airbyte/cleanup_isclinical_contamination.sql` after the Revitalash full refresh completes to audit and delete any cross-contaminated rows.
 - **`store_id` is the universal brand key** — present on every Silver+ table. Use it for joins and Lightdash dashboard filters (portfolio view = unfiltered; per-brand view = filtered).
 - **Email normalisation** — `LOWER(TRIM(email))` in Silver before joining Shopify customers to Klaviyo profiles.
 - **Currency** — Shopify returns a per-order `currency`. Normalisation strategy (query-time vs GBP in Silver) is undecided — preserve the `currency` column everywhere until a decision is made.
 - **Testing** — `not_null` + `unique` on every primary key; range tests on revenue columns.
 - **Incremental sync in Airbyte** is the default; full refresh only for small reference tables (products, campaigns).
+- **Prospect CRM conventions:**
+  - **Email is the cross-source customer key.** `LOWER(TRIM(email))` everywhere. CRM↔Shopify isClinical email overlap is ~91% (53,905 of 59,160 CRM emails); CRM↔Deese Pro is ~30%. CRM↔Cin7 has no email link (Cin7 customer email is nested in a JSON `CONTACTS` array, not exposed at top level) — fall back to fuzzy company-name match for now.
+  - **`SALES_LEDGERS` ≠ `CONTACTS`.** Ledgers are customer-account records (with email built in); contacts are individual people. The `CONTACTID` column on `SALES_LEDGERS` is unreliable (one default value across ~99% of rows) — **join on email, not ContactId**.
+  - **`is_b2c` filter** — to isolate B2B-only views, filter `sales_ledgers.is_b2c = false`. ~3,000 of 63k ledgers are B2B; the remaining ~60k are consumer ledgers (CRM mirrors the full Shopify customer base, so it isn't a B2B-only silo).
+  - **Klaviyo bridge** — 11,045 contacts have `klaviyo_id` populated, all distinct — usable as a direct join to Klaviyo profile data when needed.
+  - **Cross-source SKU joins are deferred** — CRM `product_items.sku` does not align cleanly with Shopify SKUs and `web_product_reference` is null in samples. Build a manual mapping table when product-level analytics is needed.
+  - **Account manager names are not exposed** — `accountmanagerid` is an opaque GUID; revisit if Prospect adds a users API.
+  - **CRM Bronze schema is `LOADER`-owned** — unlike other Bronze schemas (which were ACCOUNTADMIN-owned), `BRONZE_PROSPECT_CRM` was migrated to `LOADER` ownership so future-grants fire reliably for the `full_refresh_overwrite` streams. See `airbyte/README.md` "Provisioning a Bronze schema" — the canonical pattern for new sources.
 
 ## Project management
 

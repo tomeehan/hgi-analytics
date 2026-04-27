@@ -6,10 +6,10 @@ with_flags as (
     select
         *,
         date_trunc('month', created_at)::date as order_month,
-        row_number() over (
+        (row_number() over (
             partition by customer_id
             order by created_at
-        ) = 1 as is_first_order
+        ) = 1)::integer as is_first_order
     from orders
 )
 

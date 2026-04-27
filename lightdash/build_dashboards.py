@@ -1,0 +1,570 @@
+#!/usr/bin/env python3
+"""
+Build HGI Analytics Lightdash dashboards via REST API.
+Run: python3 lightdash/build_dashboards.py
+"""
+
+import json
+import requests
+import sys
+
+BASE_URL = "https://lightdash.hgi.tomeehan.net"
+TOKEN = "ldpat_bcd0f060f6f0540950c9398e439a8444"
+PROJECT_UUID = "d193767c-d1a9-4861-b591-085254192cce"
+SPACE_UUID = "0cc16ee1-6171-4fa8-859b-3a427b1ac506"
+
+HEADERS = {
+    "Authorization": f"ApiKey {TOKEN}",
+    "Content-Type": "application/json",
+}
+
+
+def api(method, path, body=None):
+    url = f"{BASE_URL}/api/v1{path}"
+    r = requests.request(method, url, headers=HEADERS, json=body)
+    if not r.ok:
+        print(f"  ERROR {r.status_code}: {r.text[:300]}")
+        sys.exit(1)
+    return r.json()["results"]
+
+
+def create_chart(name, description, explore, metrics, dimensions,
+                 chart_type="cartesian", series_type="bar",
+                 sort_field=None, sort_desc=True, limit=20):
+    """Create a saved chart and return its UUID."""
+    field_order = dimensions + metrics
+
+    pivot_dimensions = []
+    x_field = dimensions[0] if dimensions else None
+    y_fields = metrics
+
+    if chart_type == "cartesian":
+        chart_config = {
+            "type": "cartesian",
+            "config": {
+                "layout": {
+                    "xField": f"{explore}_{x_field}" if x_field else None,
+                    "yField": [f"{explore}_{m}" for m in y_fields],
+                    "flipAxes": False,
+                },
+                "eChartsConfig": {
+                    "series": [
+                        {
+                            "encode": {
+                                "xRef": {"field": f"{explore}_{x_field}"},
+                                "yRef": {"field": f"{explore}_{m}"},
+                            },
+                            "type": series_type,
+                        }
+                        for m in y_fields
+                    ],
+                },
+            },
+        }
+    elif chart_type == "pie":
+        chart_config = {
+            "type": "pie",
+            "config": {
+                "metricId": f"{explore}_{metrics[0]}",
+                "groupFieldIds": [f"{explore}_{dimensions[0]}"],
+                "isDonut": False,
+            },
+        }
+    elif chart_type == "big_number":
+        chart_config = {
+            "type": "big_number",
+            "config": {
+                "label": name,
+                "defaultFormat": None,
+                "comparisonFormat": None,
+                "flipColors": False,
+            },
+        }
+    elif chart_type == "table":
+        chart_config = {
+            "type": "table",
+            "config": {
+                "showColumnCalculation": False,
+                "showRowCalculation": False,
+                "showTableNames": True,
+                "hideRowNumbers": False,
+                "metricsAsRows": False,
+                "columns": {},
+            },
+        }
+    else:
+        chart_config = {"type": chart_type, "config": {}}
+
+    sorts = []
+    if sort_field:
+        sorts = [{"fieldId": f"{explore}_{sort_field}", "descending": sort_desc}]
+    elif metrics:
+        sorts = [{"fieldId": f"{explore}_{metrics[0]}", "descending": sort_desc}]
+
+    body = {
+        "name": name,
+        "description": description,
+        "tableName": explore,
+        "metricQuery": {
+            "exploreName": explore,
+            "dimensions": [f"{explore}_{d}" for d in dimensions],
+            "metrics": [f"{explore}_{m}" for m in metrics],
+            "filters": {},
+            "sorts": sorts,
+            "limit": limit,
+            "tableCalculations": [],
+            "additionalMetrics": [],
+        },
+        "chartConfig": chart_config,
+        "tableConfig": {"columnOrder": [f"{explore}_{f}" for f in field_order]},
+        "spaceUuid": SPACE_UUID,
+    }
+
+    result = api("POST", f"/projects/{PROJECT_UUID}/saved", body)
+    uuid = result["uuid"]
+    print(f"  + Chart '{name}' → {uuid}")
+    return uuid
+
+
+def create_dashboard(name, description, chart_uuids):
+    """Create a dashboard with chart tiles in a 2-column grid."""
+    tiles = []
+    for i, uuid in enumerate(chart_uuids):
+        col = (i % 2) * 12
+        row = (i // 2) * 6
+        tiles.append({
+            "type": "saved_chart",
+            "x": col,
+            "y": row,
+            "w": 12,
+            "h": 6,
+            "properties": {"savedChartUuid": uuid, "title": ""},
+        })
+
+    body = {
+        "name": name,
+        "description": description,
+        "tiles": tiles,
+        "tabs": [],
+        "filters": {"dimensions": [], "metrics": [], "tableCalculations": []},
+        "spaceUuid": SPACE_UUID,
+    }
+    result = api("POST", f"/projects/{PROJECT_UUID}/dashboards", body)
+    uuid = result["uuid"]
+    print(f"\n=> Dashboard '{name}' → {uuid}")
+    print(f"   {BASE_URL}/projects/{PROJECT_UUID}/dashboards/{uuid}/view")
+    return uuid
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Dashboard 1: Group Overview — Revenue & Orders Across All Channels
+# ─────────────────────────────────────────────────────────────────────────────
+print("\n[1/6] Group Overview")
+
+c1 = create_chart(
+    "Total Revenue by Month (Cin7)",
+    "Monthly revenue across all channels from Cin7 ERP",
+    explore="fct_cin7_sales",
+    metrics=["total_revenue"],
+    dimensions=["order_month"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="order_month",
+    sort_desc=False,
+    limit=36,
+)
+
+c2 = create_chart(
+    "Revenue by Channel (Cin7)",
+    "Revenue split by sales channel",
+    explore="fct_cin7_sales",
+    metrics=["total_revenue"],
+    dimensions=["channel_group"],
+    chart_type="pie",
+    limit=10,
+)
+
+c3 = create_chart(
+    "Orders by Month — Shopify",
+    "Monthly Shopify order count across all stores",
+    explore="fct_orders",
+    metrics=["order_count"],
+    dimensions=["order_month"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="order_month",
+    sort_desc=False,
+    limit=36,
+)
+
+c4 = create_chart(
+    "Revenue by Store — Shopify",
+    "Revenue split by Shopify store",
+    explore="fct_orders",
+    metrics=["total_revenue"],
+    dimensions=["store_id"],
+    chart_type="pie",
+    limit=10,
+)
+
+c5 = create_chart(
+    "New vs Returning Orders (Cin7)",
+    "New customer orders vs repeat orders",
+    explore="fct_cin7_sales",
+    metrics=["order_count", "new_customer_orders"],
+    dimensions=["order_month"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="order_month",
+    sort_desc=False,
+    limit=36,
+)
+
+c6 = create_chart(
+    "Average Order Value by Channel (Cin7)",
+    "AOV across B2B, DTC, WooCommerce, Amazon",
+    explore="fct_cin7_sales",
+    metrics=["aov"],
+    dimensions=["channel_group"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="aov",
+    sort_desc=True,
+    limit=10,
+)
+
+dash1 = create_dashboard(
+    "Group Overview — Revenue & Orders",
+    "Unified view of revenue and orders across all Cin7 channels and Shopify stores",
+    [c1, c2, c3, c4, c5, c6],
+)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Dashboard 2: Returning Customers — This Month vs Last Month
+# ─────────────────────────────────────────────────────────────────────────────
+print("\n[2/6] Returning Customers")
+
+c7 = create_chart(
+    "New vs Repeat Orders by Month",
+    "Monthly trend of new vs returning customer orders",
+    explore="fct_cin7_sales",
+    metrics=["order_count", "new_customer_orders"],
+    dimensions=["order_month"],
+    chart_type="cartesian",
+    series_type="line",
+    sort_field="order_month",
+    sort_desc=False,
+    limit=24,
+)
+
+c8 = create_chart(
+    "Active Customers by Month",
+    "Number of unique customers ordering each month",
+    explore="fct_cin7_sales",
+    metrics=["active_customers"],
+    dimensions=["order_month"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="order_month",
+    sort_desc=False,
+    limit=24,
+)
+
+c9 = create_chart(
+    "Customer Segments",
+    "Breakdown: one-time, occasional (2-4x), loyal (5+) buyers",
+    explore="dim_cin7_customers",
+    metrics=["customer_count"],
+    dimensions=["customer_segment"],
+    chart_type="pie",
+    limit=10,
+)
+
+c10 = create_chart(
+    "Revenue by Customer Segment",
+    "Total LTV contribution per segment",
+    explore="dim_cin7_customers",
+    metrics=["total_customer_ltv"],
+    dimensions=["customer_segment"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="total_customer_ltv",
+    sort_desc=True,
+    limit=10,
+)
+
+c11 = create_chart(
+    "New vs Repeat Orders by Channel",
+    "Channel breakdown of new vs returning customers",
+    explore="fct_cin7_sales",
+    metrics=["order_count", "new_customer_orders"],
+    dimensions=["channel_group"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="order_count",
+    sort_desc=True,
+    limit=10,
+)
+
+c12 = create_chart(
+    "Returning Customers — Shopify by Store",
+    "New vs returning order count per Shopify store",
+    explore="fct_orders",
+    metrics=["order_count", "new_customer_orders"],
+    dimensions=["store_id"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="order_count",
+    sort_desc=True,
+    limit=10,
+)
+
+dash2 = create_dashboard(
+    "Returning Customers",
+    "New vs returning customers this month vs last month, across all channels and stores",
+    [c7, c8, c9, c10, c11, c12],
+)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Dashboard 3: Cross-Brand Customers
+# ─────────────────────────────────────────────────────────────────────────────
+print("\n[3/6] Cross-Brand Customers")
+
+c13 = create_chart(
+    "Customers by Number of Channels Used",
+    "How many Cin7 customers have ordered across multiple channels",
+    explore="dim_cin7_customers",
+    metrics=["customer_count"],
+    dimensions=["channels_used"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="channels_used",
+    sort_desc=False,
+    limit=10,
+)
+
+c14 = create_chart(
+    "Multi-Channel Customer LTV",
+    "Average LTV of customers who shop across channels vs single channel",
+    explore="dim_cin7_customers",
+    metrics=["avg_ltv", "avg_orders_per_customer"],
+    dimensions=["channels_used"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="channels_used",
+    sort_desc=False,
+    limit=10,
+)
+
+c15 = create_chart(
+    "Top Customers by Lifetime Value",
+    "Highest LTV customers across all channels",
+    explore="dim_cin7_customers",
+    metrics=["lifetime_revenue", "lifetime_orders"],
+    dimensions=["customer_id"],
+    chart_type="table",
+    sort_field="lifetime_revenue",
+    sort_desc=True,
+    limit=25,
+)
+
+c16 = create_chart(
+    "Orders by Month — Shopify DTC",
+    "Shopify DTC order trend (store_id breakout)",
+    explore="fct_orders",
+    metrics=["order_count"],
+    dimensions=["order_month", "store_id"],
+    chart_type="cartesian",
+    series_type="line",
+    sort_field="order_month",
+    sort_desc=False,
+    limit=36,
+)
+
+dash3 = create_dashboard(
+    "Cross-Brand Customers",
+    "Customers shopping across multiple brands and channels — LTV and order frequency",
+    [c13, c14, c15, c16],
+)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Dashboard 4: UK Regional Performance
+# ─────────────────────────────────────────────────────────────────────────────
+print("\n[4/6] UK Regional Performance")
+
+c17 = create_chart(
+    "Revenue by UK Region (Cin7)",
+    "Total revenue per UK region from Cin7 ERP",
+    explore="fct_cin7_sales",
+    metrics=["total_revenue", "order_count"],
+    dimensions=["uk_region"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="total_revenue",
+    sort_desc=True,
+    limit=15,
+)
+
+c18 = create_chart(
+    "AOV by UK Region (Cin7)",
+    "Average order value per UK region",
+    explore="fct_cin7_sales",
+    metrics=["aov"],
+    dimensions=["uk_region"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="aov",
+    sort_desc=True,
+    limit=15,
+)
+
+c19 = create_chart(
+    "Revenue by UK Region — Shopify",
+    "Total product revenue per UK region from Shopify orders",
+    explore="fct_product_sales",
+    metrics=["product_revenue", "order_count"],
+    dimensions=["uk_region"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="product_revenue",
+    sort_desc=True,
+    limit=15,
+)
+
+c20 = create_chart(
+    "Orders by UK Region — Shopify",
+    "Shopify order volume per UK region",
+    explore="fct_product_sales",
+    metrics=["order_count"],
+    dimensions=["uk_region"],
+    chart_type="pie",
+    limit=15,
+)
+
+dash4 = create_dashboard(
+    "UK Regional Performance",
+    "Revenue, orders, and AOV broken down by UK region across Cin7 and Shopify",
+    [c17, c18, c19, c20],
+)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Dashboard 5: Product Performance — Best Sellers & Revenue
+# ─────────────────────────────────────────────────────────────────────────────
+print("\n[5/6] Product Performance")
+
+c21 = create_chart(
+    "Top Products by Revenue",
+    "Top 20 products by total revenue (GBP)",
+    explore="fct_product_sales",
+    metrics=["product_revenue"],
+    dimensions=["product_title"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="product_revenue",
+    sort_desc=True,
+    limit=20,
+)
+
+c22 = create_chart(
+    "Top Products by Units Sold",
+    "Top 20 products by quantity sold",
+    explore="fct_product_sales",
+    metrics=["units_sold"],
+    dimensions=["product_title"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="units_sold",
+    sort_desc=True,
+    limit=20,
+)
+
+c23 = create_chart(
+    "Top Cross-Sell Pairs",
+    "Product pairs most frequently bought together in the same order",
+    explore="fct_product_pairs",
+    metrics=["times_bought_together"],
+    dimensions=["product_a", "product_b"],
+    chart_type="table",
+    sort_field="times_bought_together",
+    sort_desc=True,
+    limit=25,
+)
+
+c24 = create_chart(
+    "Product Revenue by Month",
+    "Monthly product revenue trend",
+    explore="fct_product_sales",
+    metrics=["product_revenue"],
+    dimensions=["order_month"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="order_month",
+    sort_desc=False,
+    limit=24,
+)
+
+c25 = create_chart(
+    "Revenue by Store — Product View",
+    "Product revenue contribution per Shopify store",
+    explore="fct_product_sales",
+    metrics=["product_revenue"],
+    dimensions=["store_id"],
+    chart_type="pie",
+    limit=10,
+)
+
+dash5 = create_dashboard(
+    "Product Performance",
+    "Best sellers by revenue and units, cross-sell pairs, and revenue trends",
+    [c21, c22, c23, c24, c25],
+)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Dashboard 6: Product Repeat Rate
+# ─────────────────────────────────────────────────────────────────────────────
+print("\n[6/6] Product Repeat Rate")
+
+c26 = create_chart(
+    "Top Products by Repeat Rate",
+    "Products with the highest % of buyers who repurchased",
+    explore="fct_product_repeat_rate",
+    metrics=["avg_repeat_rate"],
+    dimensions=["product_title"],
+    chart_type="cartesian",
+    series_type="bar",
+    sort_field="avg_repeat_rate",
+    sort_desc=True,
+    limit=20,
+)
+
+c27 = create_chart(
+    "Repeat Buyers vs Unique Buyers",
+    "Total buyers vs those who came back, per product",
+    explore="fct_product_repeat_rate",
+    metrics=["total_buyers", "total_repeat_buyers"],
+    dimensions=["product_title"],
+    chart_type="table",
+    sort_field="total_buyers",
+    sort_desc=True,
+    limit=25,
+)
+
+c28 = create_chart(
+    "Repeat Rate Distribution",
+    "Scatter of unique_buyers vs repeat_rate_pct to spot high-loyalty products",
+    explore="fct_product_repeat_rate",
+    metrics=["avg_repeat_rate", "total_buyers"],
+    dimensions=["product_title"],
+    chart_type="table",
+    sort_field="avg_repeat_rate",
+    sort_desc=True,
+    limit=50,
+)
+
+dash6 = create_dashboard(
+    "Product Repeat Rate",
+    "Which products bring customers back? Repeat purchase rate per product.",
+    [c26, c27, c28],
+)
+
+print("\n✓ All 6 dashboards created successfully.")
