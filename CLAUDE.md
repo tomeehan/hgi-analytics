@@ -105,10 +105,10 @@ hgi-analytics/
 - **Airbyte Shopify connections** — four stores are connected; two are active in dbt, two are pending first-sync:
   - `isclinical-store` → `BRONZE_SHOPIFY_ISCLINICAL` (active in Silver/Gold as `store_id = 'isclinical'`)
   - `deese-pro` → `BRONZE_SHOPIFY_DEESE_PRO` (active in Silver/Gold as `store_id = 'deese_pro'`)
-  - `revitalash-co-uk.myshopify.com` → `BRONZE_SHOPIFY_REVITALASH` (full refresh in progress; add to dbt once sync completes)
+  - `revitalash-co-uk.myshopify.com` → `BRONZE_SHOPIFY_REVITALASH` (active in Silver/Gold as `store_id = 'revitalash'`; 4,734 orders, 76,730 customers)
   - Geske → `BRONZE_SHOPIFY_GESKE` (schema created, no data yet)
   - `BRONZE_KLAVIYO_REVITALASH` and `BRONZE_KLAVIYO_GESKE` schemas also exist (empty).
-- **Revitalash Bronze contamination** — prior to the namespace fix, the Revitalash Airbyte connection may have written rows into `BRONZE_SHOPIFY_ISCLINICAL`. Run `airbyte/cleanup_isclinical_contamination.sql` after the Revitalash full refresh completes to audit and delete any cross-contaminated rows.
+- **Revitalash Bronze contamination — resolved** — prior to the namespace fix, the Revitalash Airbyte connection had written 4,727 orders and 76,724 customers into `BRONZE_SHOPIFY_ISCLINICAL`. These were deleted after the Revitalash full refresh completed (2026-04-27). The cleanup script is `airbyte/cleanup_isclinical_contamination.sql` (audit only; DELETEs are no longer needed).
 - **`store_id` is the universal brand key** — present on every Silver+ table. Use it for joins and Lightdash dashboard filters (portfolio view = unfiltered; per-brand view = filtered).
 - **Email normalisation** — `LOWER(TRIM(email))` in Silver before joining Shopify customers to Klaviyo profiles.
 - **Currency** — Shopify returns a per-order `currency`. Normalisation strategy (query-time vs GBP in Silver) is undecided — preserve the `currency` column everywhere until a decision is made.
