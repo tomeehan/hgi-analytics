@@ -554,6 +554,8 @@ models:
         description: "Line currency. Multi-currency — currency normalisation deferred."
       - name: sku
         description: "Product SKU from CRM PRODUCT_ITEMS."
+      - name: product_description
+        description: "Human-readable product name (e.g. 'Cleansing Complex 180ml')."
       - name: manufacturer
       - name: category_id
         description: "CRM product category id (free text)."

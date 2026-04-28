@@ -60,7 +60,7 @@ _TIME_DIMENSION_SUFFIXES = ("_month", "_at", "_date", "_year", "_day", "_week")
 def create_chart(name, description, explore, metrics, dimensions,
                  chart_type="cartesian", series_type="bar",
                  sort_field=None, sort_desc=True, limit=20,
-                 horizontal=None):
+                 horizontal=None, filters=None):
     """Create a saved chart and return its UUID.
 
     Bar charts default to horizontal orientation (flipAxes=true). When the
@@ -157,7 +157,7 @@ def create_chart(name, description, explore, metrics, dimensions,
             "exploreName": explore,
             "dimensions": [f"{explore}_{d}" for d in dimensions],
             "metrics": [f"{explore}_{m}" for m in metrics],
-            "filters": {},
+            "filters": filters or {},
             "sorts": sorts,
             "limit": limit,
             "tableCalculations": [],
@@ -440,9 +440,33 @@ dash3 = create_dashboard(
 # ─────────────────────────────────────────────────────────────────────────────
 print("\n[4/6] UK Regional Performance")
 
+cin7_uk_only = {
+    "dimensions": {
+        "id": "cin7-uk-only",
+        "and": [{
+            "id": "f1",
+            "target": {"fieldId": "fct_cin7_sales_uk_region"},
+            "operator": "notEquals",
+            "values": ["International"],
+        }],
+    },
+}
+
+shopify_uk_only = {
+    "dimensions": {
+        "id": "shopify-uk-only",
+        "and": [{
+            "id": "f1",
+            "target": {"fieldId": "fct_product_sales_uk_region"},
+            "operator": "notEquals",
+            "values": ["International"],
+        }],
+    },
+}
+
 c17 = create_chart(
     "Revenue by UK Region (Cin7)",
-    "Total revenue per UK region from Cin7 ERP",
+    "Total revenue per UK region from Cin7 ERP (UK only)",
     explore="fct_cin7_sales",
     metrics=["total_revenue", "order_count"],
     dimensions=["uk_region"],
@@ -451,11 +475,12 @@ c17 = create_chart(
     sort_field="total_revenue",
     sort_desc=True,
     limit=15,
+    filters=cin7_uk_only,
 )
 
 c18 = create_chart(
     "AOV by UK Region (Cin7)",
-    "Average order value per UK region",
+    "Average order value per UK region (UK only)",
     explore="fct_cin7_sales",
     metrics=["aov"],
     dimensions=["uk_region"],
@@ -464,11 +489,12 @@ c18 = create_chart(
     sort_field="aov",
     sort_desc=True,
     limit=15,
+    filters=cin7_uk_only,
 )
 
 c19 = create_chart(
     "Revenue by UK Region — Shopify",
-    "Total product revenue per UK region from Shopify orders",
+    "Total product revenue per UK region from Shopify orders (UK only)",
     explore="fct_product_sales",
     metrics=["product_revenue", "order_count"],
     dimensions=["uk_region"],
@@ -477,16 +503,18 @@ c19 = create_chart(
     sort_field="product_revenue",
     sort_desc=True,
     limit=15,
+    filters=shopify_uk_only,
 )
 
 c20 = create_chart(
     "Orders by UK Region — Shopify",
-    "Shopify order volume per UK region",
+    "Shopify order volume per UK region (UK only)",
     explore="fct_product_sales",
     metrics=["order_count"],
     dimensions=["uk_region"],
     chart_type="pie",
     limit=15,
+    filters=shopify_uk_only,
 )
 
 dash4 = create_dashboard(
