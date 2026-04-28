@@ -332,11 +332,11 @@ c8 = create_chart(
 )
 
 c9 = create_chart(
-    "B2B Margin % by Category",
-    "Average margin % per product category (top 15 by line count)",
+    "B2B Margin % by Product",
+    "Average margin % per product (top 15)",
     explore="fct_b2b_sales",
     metrics=["avg_margin_pct"],
-    dimensions=["category_id"],
+    dimensions=["product_description"],
     chart_type="cartesian",
     series_type="bar",
     sort_field="avg_margin_pct",
