@@ -23,13 +23,16 @@ models:
       - name: total_price
         description: "Total order value in the order's currency."
         meta:
+          format: gbp
           metrics:
             total_revenue:
               type: sum
               label: "Total Revenue"
+              format: gbp
             aov:
               type: average
               label: "Avg Order Value"
+              format: gbp
       - name: is_first_order
         description: "True if this is the customer's first order."
         meta:
@@ -73,10 +76,12 @@ models:
       - name: lifetime_revenue
         description: "Sum of all order totals for this customer."
         meta:
+          format: gbp
           metrics:
             total_customer_revenue:
               type: sum
               label: "Total Customer Revenue"
+              format: gbp
       - name: lifetime_orders
         description: "Number of orders placed by this customer."
         meta:
@@ -141,10 +146,12 @@ models:
       - name: revenue
         description: "Revenue attributed to this campaign."
         meta:
+          format: gbp
           metrics:
             total_attributed_revenue:
               type: sum
               label: "Attributed Revenue"
+              format: gbp
       - name: unsubscribed
         description: "Unsubscribes resulting from this campaign."
         meta:
@@ -220,13 +227,16 @@ models:
       - name: paid_amount
         description: "Amount paid for the sale (GBP base currency)."
         meta:
+          format: gbp
           metrics:
             total_revenue:
               type: sum
               label: "Revenue (GBP)"
+              format: gbp
             aov:
               type: average
               label: "Avg Order Value"
+              format: gbp
       - name: is_first_order
         description: "True if this is the customer's first ever Cin7 sale."
         meta:
@@ -275,13 +285,16 @@ models:
       - name: lifetime_revenue
         description: "Sum of all paid amounts for this customer."
         meta:
+          format: gbp
           metrics:
             total_customer_ltv:
               type: sum
               label: "Total Customer LTV"
+              format: gbp
             avg_ltv:
               type: average
               label: "Avg LTV"
+              format: gbp
       - name: lifetime_orders
         description: "Total number of orders placed by this customer."
         meta:
@@ -334,13 +347,16 @@ models:
       - name: line_revenue_gbp
         description: "quantity × unit_price_gbp."
         meta:
+          format: gbp
           metrics:
             product_revenue:
               type: sum
               label: "Product Revenue (GBP)"
+              format: gbp
             avg_unit_price:
               type: average
               label: "Avg Unit Price (GBP)"
+              format: gbp
       - name: product_title
         description: "Product name."
       - name: sku
@@ -436,33 +452,44 @@ models:
       - name: klaviyo_id
         description: "Klaviyo profile id, populated on ~11k contacts."
       - name: crm_balance
+        meta:
+          format: gbp
       - name: crm_credit_limit
+        meta:
+          format: gbp
       - name: crm_last_invoice_at
       - name: shopify_isclinical_total_spent
         description: "Lifetime Shopify isClinical spend for this email."
         meta:
+          format: gbp
           metrics:
             total_isclinical_spend:
               type: sum
               label: "Shopify isClinical Spend"
+              format: gbp
       - name: shopify_isclinical_orders_count
       - name: shopify_deese_pro_total_spent
         meta:
+          format: gbp
           metrics:
             total_deese_pro_spend:
               type: sum
               label: "Shopify Deese Pro Spend"
+              format: gbp
       - name: shopify_deese_pro_orders_count
       - name: total_shopify_spend
         description: "Sum of Shopify spend across both stores."
         meta:
+          format: gbp
           metrics:
             total_dtc_spend:
               type: sum
               label: "Total DTC Spend"
+              format: gbp
             avg_dtc_spend_per_customer:
               type: average
               label: "Avg DTC Spend"
+              format: gbp
       - name: total_shopify_orders
         meta:
           metrics:
@@ -516,27 +543,34 @@ models:
       - name: line_value
         description: "Line revenue (currency = currency_code)."
         meta:
+          format: gbp
           metrics:
             b2b_revenue:
               type: sum
               label: "B2B Revenue"
+              format: gbp
             b2b_aov:
               type: average
               label: "B2B AOV"
+              format: gbp
       - name: cost_value
         description: "Line cost."
         meta:
+          format: gbp
           metrics:
             b2b_cost:
               type: sum
               label: "B2B Cost"
+              format: gbp
       - name: margin_value
         description: "Line margin (line_value - cost_value)."
         meta:
+          format: gbp
           metrics:
             b2b_margin:
               type: sum
               label: "B2B Margin"
+              format: gbp
       - name: margin_percent
         description: "Per-line margin %."
         meta:
