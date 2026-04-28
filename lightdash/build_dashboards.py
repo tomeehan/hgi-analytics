@@ -60,7 +60,9 @@ _TIME_DIMENSION_SUFFIXES = ("_month", "_at", "_date", "_year", "_day", "_week")
 def create_chart(name, description, explore, metrics, dimensions,
                  chart_type="cartesian", series_type="bar",
                  sort_field=None, sort_desc=True, limit=20,
-                 horizontal=None, filters=None):
+                 horizontal=None, filters=None,
+                 table_calculations=None, pivot_columns=None,
+                 y_field=None):
     """Create a saved chart and return its UUID.
 
     Bar charts default to horizontal orientation (flipAxes=true). When the
@@ -78,16 +80,22 @@ def create_chart(name, description, explore, metrics, dimensions,
         horizontal = not (x_field and any(x_field.endswith(s) for s in _TIME_DIMENSION_SUFFIXES))
 
     if chart_type == "cartesian":
+        # y_field can be a table-calculation name (raw, no explore prefix) or
+        # default to the metric ids derived from `metrics`.
+        if y_field is not None:
+            y_axis_fields = y_field if isinstance(y_field, list) else [y_field]
+        else:
+            y_axis_fields = [f"{explore}_{m}" for m in y_fields]
         echarts_config = {
             "series": [
                 {
                     "encode": {
                         "xRef": {"field": f"{explore}_{x_field}"},
-                        "yRef": {"field": f"{explore}_{m}"},
+                        "yRef": {"field": yf},
                     },
                     "type": series_type,
                 }
-                for m in y_fields
+                for yf in y_axis_fields
             ],
         }
         # If the categorical axis is a time dimension, format labels as
@@ -103,7 +111,7 @@ def create_chart(name, description, explore, metrics, dimensions,
             "config": {
                 "layout": {
                     "xField": f"{explore}_{x_field}" if x_field else None,
-                    "yField": [f"{explore}_{m}" for m in y_fields],
+                    "yField": y_axis_fields,
                     "flipAxes": bool(horizontal),
                 },
                 "eChartsConfig": echarts_config,
@@ -160,13 +168,17 @@ def create_chart(name, description, explore, metrics, dimensions,
             "filters": filters or {},
             "sorts": sorts,
             "limit": limit,
-            "tableCalculations": [],
+            "tableCalculations": table_calculations or [],
             "additionalMetrics": [],
         },
         "chartConfig": chart_config,
         "tableConfig": {"columnOrder": [f"{explore}_{f}" for f in field_order]},
         "spaceUuid": SPACE_UUID,
     }
+    if pivot_columns:
+        body["pivotConfig"] = {
+            "columns": [f"{explore}_{c}" for c in pivot_columns],
+        }
 
     result = api("POST", f"/projects/{PROJECT_UUID}/saved", body)
     uuid = result["uuid"]
@@ -255,17 +267,26 @@ c4 = create_chart(
     limit=10,
 )
 
+return_rate_calc = [{
+    "name": "return_order_rate",
+    "displayName": "Return Order Rate",
+    "sql": "1 - (${fct_cin7_sales.new_customer_orders} / NULLIF(${fct_cin7_sales.order_count}, 0))",
+    "format": {"type": "percent", "round": 1},
+}]
+
 c5 = create_chart(
-    "New vs Returning Orders (Cin7)",
-    "New customer orders vs repeat orders",
+    "Return Order Rate (Cin7) — All HGI",
+    "Percentage of Cin7 orders that are repeat (non-first) orders, across all channels",
     explore="fct_cin7_sales",
     metrics=["order_count", "new_customer_orders"],
     dimensions=["order_month"],
     chart_type="cartesian",
-    series_type="bar",
+    series_type="line",
     sort_field="order_month",
     sort_desc=False,
-    limit=36,
+    limit=120,
+    table_calculations=return_rate_calc,
+    y_field="return_order_rate",
 )
 
 c6 = create_chart(
@@ -281,10 +302,26 @@ c6 = create_chart(
     limit=10,
 )
 
+c5b = create_chart(
+    "Return Order Rate (Cin7) — by Channel",
+    "Return order rate over time, broken out by Cin7 channel group",
+    explore="fct_cin7_sales",
+    metrics=["order_count", "new_customer_orders"],
+    dimensions=["order_month", "channel_group"],
+    chart_type="cartesian",
+    series_type="line",
+    sort_field="order_month",
+    sort_desc=False,
+    limit=600,
+    table_calculations=return_rate_calc,
+    y_field="return_order_rate",
+    pivot_columns=["channel_group"],
+)
+
 dash1 = create_dashboard(
     "Group Overview — Revenue & Orders",
     "Unified view of revenue and orders across all Cin7 channels and Shopify stores",
-    [c1, c2, c3, c4, c5, c6],
+    [c1, c2, c3, c4, c5, c6, c5b],
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
