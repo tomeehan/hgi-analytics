@@ -63,3 +63,29 @@ def api(method, path, body=None, *, allow_404=False):
     if r.status_code == 204 or not r.text:
         return None
     return r.json().get("results")
+
+
+# Read-only fields that come back from GET /saved/{uuid} but must NOT be
+# echoed back to POST /saved/{uuid}/version — Lightdash 500s if they are.
+_CHART_READONLY_FIELDS = {
+    "uuid", "projectUuid", "organizationUuid", "updatedAt", "updatedByUser",
+    "spaceUuid", "spaceName", "pinnedListUuid", "pinnedListOrder",
+    "dashboardUuid", "dashboardName", "slug", "verification",
+    "inheritsFromOrgOrProject", "access",
+}
+
+
+def save_chart_version(chart):
+    """POST a new version of a saved chart.
+
+    Pass the dict returned from `api("GET", f"/saved/{uuid}")`, mutated
+    in-place to whatever new state you want. This helper strips
+    read-only fields, posts the body to the version endpoint, and
+    returns the API response.
+
+    Use this for any change to metricQuery / chartConfig / tableConfig
+    / pivotConfig. For changes that only touch name/description/space,
+    use `api("PATCH", f"/saved/{uuid}", {...})` instead.
+    """
+    body = {k: v for k, v in chart.items() if k not in _CHART_READONLY_FIELDS}
+    return api("POST", f"/saved/{chart['uuid']}/version", body)
