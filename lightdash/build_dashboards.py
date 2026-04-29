@@ -247,8 +247,11 @@ c2 = create_chart(
 )
 
 c3 = create_chart(
-    "Orders by Month — Shopify",
-    "Monthly Shopify order count across all stores",
+    "Direct Shopify Orders by Month",
+    "Monthly order count from Shopify Admin API across all 3 active stores "
+    "(isClinical, Deese Pro, Revitalash). Volume looks low because most "
+    "orders flow through Cin7 — see 'Total Revenue by Month (Cin7)' for "
+    "the full B2B + DTC + WooCommerce + Amazon picture.",
     explore="fct_orders",
     metrics=["order_count"],
     dimensions=["order_month"],
@@ -641,10 +644,10 @@ print("\n[6/6] Product Repeat Rate")
 
 c26 = create_chart(
     "Top Products by Repeat Rate",
-    "Products with the highest % of buyers who repurchased",
+    "Products with the highest % of buyers who repurchased, split by store",
     explore="fct_product_repeat_rate",
     metrics=["avg_repeat_rate"],
-    dimensions=["product_title"],
+    dimensions=["product_title", "store_id"],
     chart_type="cartesian",
     series_type="bar",
     sort_field="avg_repeat_rate",
@@ -654,10 +657,10 @@ c26 = create_chart(
 
 c27 = create_chart(
     "Repeat Buyers vs Unique Buyers",
-    "Total buyers vs those who came back, per product",
+    "Total buyers vs those who came back, per product per store",
     explore="fct_product_repeat_rate",
     metrics=["total_buyers", "total_repeat_buyers"],
-    dimensions=["product_title"],
+    dimensions=["product_title", "store_id"],
     chart_type="table",
     sort_field="total_buyers",
     sort_desc=True,
@@ -666,10 +669,11 @@ c27 = create_chart(
 
 c28 = create_chart(
     "Repeat Rate Distribution",
-    "Scatter of unique_buyers vs repeat_rate_pct to spot high-loyalty products",
+    "Per-product, per-store repeat rate. Same product can show twice "
+    "if sold on both isClinical and Deese Pro.",
     explore="fct_product_repeat_rate",
     metrics=["avg_repeat_rate", "total_buyers"],
-    dimensions=["product_title"],
+    dimensions=["product_title", "store_id"],
     chart_type="table",
     sort_field="avg_repeat_rate",
     sort_desc=True,
