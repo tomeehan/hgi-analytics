@@ -448,7 +448,7 @@ c15 = create_chart(
     "Highest LTV customers across all channels",
     explore="dim_cin7_customers",
     metrics=["total_customer_ltv", "avg_orders_per_customer"],
-    dimensions=["customer_id"],
+    dimensions=["customer_name", "email", "customer_id"],
     chart_type="table",
     sort_field="total_customer_ltv",
     sort_desc=True,

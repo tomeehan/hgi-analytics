@@ -303,6 +303,14 @@ models:
               type: count_distinct
               label: "Customers"
               round: 0
+      - name: customer_name
+        description: "Customer name from Cin7."
+        meta:
+          label: "Customer Name"
+      - name: email
+        description: "Default contact email from Cin7 CONTACTS JSON (lowercased, trimmed)."
+        meta:
+          label: "Email"
       - name: lifetime_revenue
         description: "Sum of all paid amounts for this customer."
         meta:
