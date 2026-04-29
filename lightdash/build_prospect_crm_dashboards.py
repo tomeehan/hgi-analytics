@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
-Build Prospect CRM Lightdash dashboards via REST API.
+REFERENCE ONLY - DO NOT RE-RUN.
 
-Prerequisites:
-  1. cd dbt && dbt build --select stg_prospect_crm dim_customer_unified fct_b2b_sales
-  2. cd dbt && lightdash deploy
-  3. .env populated with LIGHTDASH_URL / LIGHTDASH_TOKEN / LIGHTDASH_PROJECT_UUID
-     / LIGHTDASH_SPACE_UUID (see .env.example).
+This is the one-shot script that originally seeded the Prospect CRM
+Lightdash dashboards. It POSTs new charts and dashboards with no upsert,
+so re-running creates duplicates. It is kept in the repo as a historical
+record of how the dashboards were initially constructed.
 
-Run: python3 lightdash/build_prospect_crm_dashboards.py
+For all subsequent chart/dashboard edits, add a timestamped migration in
+lightdash/migrations/ (see lightdash/migrations/README.md). Scaffold
+with `bin/new-lightdash-migration <slug>`.
 """
 
 import os

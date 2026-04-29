@@ -62,14 +62,30 @@ Metrics are defined in dbt YAML (`dbt/models/gold/_schema.yml`) under
 `meta.metrics` — never duplicated in Lightdash. Lightdash discovers them on
 sync.
 
-## Building dashboards locally
+## Dashboards
 
-The two `build_*.py` scripts in this directory create dashboards via the
-Lightdash REST API. They read auth from `.env` (see `.env.example`) — populate
-`LIGHTDASH_URL`, `LIGHTDASH_TOKEN`, `LIGHTDASH_PROJECT_UUID`, `LIGHTDASH_SPACE_UUID`,
-then run `python3 lightdash/build_prospect_crm_dashboards.py` (or
-`build_dashboards.py`). Note: the scripts POST new dashboards on every run —
-they don't upsert. Delete stale ones via the UI before re-running.
+`build_dashboards.py` and `build_prospect_crm_dashboards.py` are the
+**one-shot seed scripts** that originally created every dashboard via the
+Lightdash REST API. They are kept in the repo as a record of the initial
+build but **must not be re-run** — each call POSTs new charts with no
+upsert, so re-running creates duplicates.
+
+### Editing live charts: migrations
+
+For all subsequent chart/dashboard edits, write a timestamped one-shot
+migration in `migrations/`. See `migrations/README.md` for the full
+pattern. Quick start:
+
+```sh
+bin/new-lightdash-migration <slug>           # scaffold the file
+# fill in the docstring (PR ref, what it does) and main()
+python3 lightdash/migrations/<file>.py --dry-run   # preview
+python3 lightdash/migrations/<file>.py             # apply
+# flip Status: applied YYYY-MM-DD in the docstring, then commit
+```
+
+Migrations read auth from `.env` (`LIGHTDASH_URL`, `LIGHTDASH_TOKEN`,
+`LIGHTDASH_PROJECT_UUID`, `LIGHTDASH_SPACE_UUID`).
 
 ## Hardening
 

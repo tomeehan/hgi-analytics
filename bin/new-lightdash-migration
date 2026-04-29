@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Scaffold a new timestamped Lightdash migration from the template.
+#
+# Usage: bin/new-lightdash-migration <short_slug>
+# Example: bin/new-lightdash-migration drop_empty_command_centre
+
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  echo "usage: $(basename "$0") <short_slug>" >&2
+  echo "       slug should be lowercase_with_underscores" >&2
+  exit 64
+fi
+
+slug="$1"
+if ! [[ "$slug" =~ ^[a-z][a-z0-9_]*$ ]]; then
+  echo "slug must be lowercase letters/digits/underscores, starting with a letter" >&2
+  exit 64
+fi
+
+repo_root="$(cd "$(dirname "$0")/.." && pwd)"
+migrations_dir="$repo_root/lightdash/migrations"
+template="$migrations_dir/_template.py"
+
+if [[ ! -f "$template" ]]; then
+  echo "template not found: $template" >&2
+  exit 1
+fi
+
+timestamp="$(date "+%Y%m%d_%H%M%S")"
+target="$migrations_dir/${timestamp}_${slug}.py"
+
+if [[ -e "$target" ]]; then
+  echo "already exists: $target" >&2
+  exit 1
+fi
+
+cp "$template" "$target"
+chmod +x "$target"
+
+echo "Created $target"
+echo "Edit the docstring (PR ref, what it does), then implement main()."
