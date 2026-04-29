@@ -425,14 +425,19 @@ models:
               round: 0
 
   - name: fct_product_repeat_rate
-    description: "Per-product repeat purchase rate — how many buyers came back for the same product."
+    description: "Per-product repeat purchase rate — how many buyers came back for the same product. Grain: product_id × store_id."
     meta:
       label: "Product Repeat Rate"
     columns:
       - name: product_id
         tests:
           - not_null
-          - unique
+      - name: store_id
+        description: "Brand identifier — the Shopify store this row's repeat rate is computed against."
+        tests:
+          - not_null
+        meta:
+          label: "Store"
       - name: product_title
         description: "Product name."
       - name: unique_buyers
