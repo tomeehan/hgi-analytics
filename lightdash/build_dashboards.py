@@ -99,12 +99,14 @@ def create_chart(name, description, explore, metrics, dimensions,
             ],
         }
         # If the categorical axis is a time dimension, format labels as
-        # 'Mar 2024' so we don't show full ISO timestamps. The time axis
+        # 'March 2024' so we don't show full ISO timestamps. The time axis
         # is xAxis on vertical charts (default) and yAxis on horizontal.
+        # hideOverlap drops labels that don't fit, so dense 24-36 month
+        # axes render every Nth label cleanly.
         if x_field and any(x_field.endswith(s) for s in _TIME_DIMENSION_SUFFIXES):
             axis_key = "yAxis" if horizontal else "xAxis"
             echarts_config[axis_key] = [
-                {"axisLabel": {"formatter": "{MMM} {yyyy}", "hideOverlap": True}}
+                {"axisLabel": {"formatter": "{MMMM} {yyyy}", "hideOverlap": True}}
             ]
         chart_config = {
             "type": "cartesian",

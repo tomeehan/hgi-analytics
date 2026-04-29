@@ -16,6 +16,7 @@ models:
             order_count:
               type: count_distinct
               label: "Order Count"
+              round: 0
       - name: store_id
         description: "Brand identifier."
         tests:
@@ -27,9 +28,13 @@ models:
             total_revenue:
               type: sum
               label: "Total Revenue"
+              format: "gbp"
+              round: 0
             aov:
               type: average
               label: "Avg Order Value"
+              format: "gbp"
+              round: 0
       - name: is_first_order
         description: "True if this is the customer's first order."
         meta:
@@ -37,6 +42,7 @@ models:
             new_customer_orders:
               type: sum
               label: "New Customer Orders"
+              round: 0
       - name: order_month
         description: "Month the order was placed (first day of month)."
       - name: email
@@ -67,6 +73,7 @@ models:
             customer_count:
               type: count_distinct
               label: "Customer Count"
+              round: 0
       - name: store_id
         tests:
           - not_null
@@ -77,6 +84,8 @@ models:
             total_customer_revenue:
               type: sum
               label: "Total Customer Revenue"
+              format: "gbp"
+              round: 0
       - name: lifetime_orders
         description: "Number of orders placed by this customer."
         meta:
@@ -84,6 +93,7 @@ models:
             avg_orders_per_customer:
               type: average
               label: "Avg Orders per Customer"
+              round: 1
 
   - name: fct_campaign_performance
     description: "Klaviyo campaign performance stats (opens, clicks, revenue) across all brands."
@@ -99,6 +109,7 @@ models:
             campaign_count:
               type: count_distinct
               label: "Campaigns Sent"
+              round: 0
       - name: store_id
         description: "Brand identifier."
         tests:
@@ -110,6 +121,7 @@ models:
             total_delivered:
               type: sum
               label: "Emails Delivered"
+              round: 0
       - name: opens
         description: "Total email opens."
         meta:
@@ -117,6 +129,7 @@ models:
             total_opens:
               type: sum
               label: "Total Opens"
+              round: 0
       - name: unique_opens
         description: "Unique email opens."
         meta:
@@ -124,6 +137,7 @@ models:
             total_unique_opens:
               type: sum
               label: "Unique Opens"
+              round: 0
       - name: clicks
         description: "Total email clicks."
         meta:
@@ -131,6 +145,7 @@ models:
             total_clicks:
               type: sum
               label: "Total Clicks"
+              round: 0
       - name: unique_clicks
         description: "Unique email clicks."
         meta:
@@ -138,6 +153,7 @@ models:
             total_unique_clicks:
               type: sum
               label: "Unique Clicks"
+              round: 0
       - name: revenue
         description: "Revenue attributed to this campaign."
         meta:
@@ -145,6 +161,8 @@ models:
             total_attributed_revenue:
               type: sum
               label: "Attributed Revenue"
+              format: "gbp"
+              round: 0
       - name: unsubscribed
         description: "Unsubscribes resulting from this campaign."
         meta:
@@ -152,20 +170,25 @@ models:
             total_unsubscribes:
               type: sum
               label: "Unsubscribes"
+              round: 0
       - name: open_rate
-        description: "Unique opens / delivered."
+        description: "Unique opens / delivered (fraction 0-1)."
         meta:
           metrics:
             avg_open_rate:
               type: average
               label: "Avg Open Rate"
+              format: "percent"
+              round: 1
       - name: click_rate
-        description: "Unique clicks / delivered."
+        description: "Unique clicks / delivered (fraction 0-1)."
         meta:
           metrics:
             avg_click_rate:
               type: average
               label: "Avg Click Rate"
+              format: "percent"
+              round: 1
       - name: campaign_name
         description: "Campaign name."
       - name: send_time
@@ -208,6 +231,7 @@ models:
             order_count:
               type: count_distinct
               label: "Orders"
+              round: 0
       - name: customer_id
         description: "Cin7 customer ID."
         tests:
@@ -217,16 +241,21 @@ models:
             active_customers:
               type: count_distinct
               label: "Active Customers"
+              round: 0
       - name: paid_amount
         description: "Amount paid for the sale (GBP base currency)."
         meta:
           metrics:
             total_revenue:
               type: sum
-              label: "Revenue (GBP)"
+              label: "Revenue"
+              format: "gbp"
+              round: 0
             aov:
               type: average
               label: "Avg Order Value"
+              format: "gbp"
+              round: 0
       - name: is_first_order
         description: "True if this is the customer's first ever Cin7 sale."
         meta:
@@ -234,6 +263,7 @@ models:
             new_customer_orders:
               type: sum
               label: "New Customer Orders"
+              round: 0
       - name: channel_group
         description: "Grouped channel: shopify_dtc, b2b, woocommerce, amazon_uk, other."
       - name: source_channel
@@ -272,6 +302,7 @@ models:
             customer_count:
               type: count_distinct
               label: "Customers"
+              round: 0
       - name: lifetime_revenue
         description: "Sum of all paid amounts for this customer."
         meta:
@@ -279,9 +310,13 @@ models:
             total_customer_ltv:
               type: sum
               label: "Total Customer LTV"
+              format: "gbp"
+              round: 0
             avg_ltv:
               type: average
               label: "Avg LTV"
+              format: "gbp"
+              round: 0
       - name: lifetime_orders
         description: "Total number of orders placed by this customer."
         meta:
@@ -289,6 +324,7 @@ models:
             avg_orders_per_customer:
               type: average
               label: "Avg Orders per Customer"
+              round: 1
       - name: customer_segment
         description: "no_orders / one_time / occasional (2-4 orders) / loyal (5+)."
       - name: channels_used
@@ -313,34 +349,42 @@ models:
             line_item_count:
               type: count_distinct
               label: "Line Items"
+              round: 0
       - name: order_id
         meta:
           metrics:
             order_count:
               type: count_distinct
               label: "Orders"
+              round: 0
       - name: customer_id
         meta:
           metrics:
             unique_buyers:
               type: count_distinct
               label: "Unique Buyers"
+              round: 0
       - name: quantity
         meta:
           metrics:
             units_sold:
               type: sum
               label: "Units Sold"
+              round: 0
       - name: line_revenue_gbp
         description: "quantity × unit_price_gbp."
         meta:
           metrics:
             product_revenue:
               type: sum
-              label: "Product Revenue (GBP)"
+              label: "Product Revenue"
+              format: "gbp"
+              round: 0
             avg_unit_price:
               type: average
-              label: "Avg Unit Price (GBP)"
+              label: "Avg Unit Price"
+              format: "gbp"
+              round: 2
       - name: product_title
         description: "Product name."
       - name: sku
@@ -370,6 +414,7 @@ models:
             times_bought_together:
               type: sum
               label: "Times Bought Together"
+              round: 0
 
   - name: fct_product_repeat_rate
     description: "Per-product repeat purchase rate — how many buyers came back for the same product."
@@ -389,6 +434,7 @@ models:
             total_buyers:
               type: sum
               label: "Total Buyers"
+              round: 0
       - name: repeat_buyers
         description: "Buyers who purchased this product more than once."
         meta:
@@ -396,13 +442,15 @@ models:
             total_repeat_buyers:
               type: sum
               label: "Repeat Buyers"
+              round: 0
       - name: repeat_rate_pct
-        description: "% of buyers who repurchased (repeat_buyers / unique_buyers × 100)."
+        description: "% of buyers who repurchased (repeat_buyers / unique_buyers × 100). Already a percentage, do not apply percent format."
         meta:
           metrics:
             avg_repeat_rate:
               type: average
               label: "Avg Repeat Rate %"
+              round: 1
 
   - name: dim_customer_unified
     description: "One row per email (lowered, trimmed) — the cross-source customer 360, unioning Prospect CRM ledgers, CRM contacts, and Shopify customers across both stores."
@@ -419,18 +467,29 @@ models:
             customer_count:
               type: count_distinct
               label: "Customers"
+              round: 0
       - name: display_name
         description: "Best available customer name (CRM ledger name, or contact full name, or Shopify first/last)."
+        meta:
+          label: "Customer Name"
       - name: country
         description: "Country from the CRM ledger (nullable for Shopify-only customers)."
       - name: customer_universe
         description: "Where this customer is seen: crm_only, crm_and_shopify, shopify_isclinical_only, shopify_deese_pro_only, both_shopify_stores."
+        meta:
+          label: "Customer Universe"
       - name: seen_in_crm
         description: "'b2b' if CRM ledger is_b2c=false, 'b2c' if true, null if not in CRM."
+        meta:
+          label: "CRM Status"
       - name: seen_in_shopify_isclinical
         description: "True if this email exists in the Shopify isClinical store."
+        meta:
+          label: "Shops on isClinical"
       - name: seen_in_shopify_deese_pro
         description: "True if this email exists in the Shopify Deese Pro store."
+        meta:
+          label: "Shops on Deese Pro"
       - name: crm_sales_ledger_id
       - name: crm_contact_id
       - name: klaviyo_id
@@ -445,14 +504,22 @@ models:
             total_isclinical_spend:
               type: sum
               label: "Shopify isClinical Spend"
+              format: "gbp"
+              round: 0
       - name: shopify_isclinical_orders_count
+        meta:
+          label: "isClinical Orders"
       - name: shopify_deese_pro_total_spent
         meta:
           metrics:
             total_deese_pro_spend:
               type: sum
               label: "Shopify Deese Pro Spend"
+              format: "gbp"
+              round: 0
       - name: shopify_deese_pro_orders_count
+        meta:
+          label: "Deese Pro Orders"
       - name: total_shopify_spend
         description: "Sum of Shopify spend across both stores."
         meta:
@@ -460,23 +527,36 @@ models:
             total_dtc_spend:
               type: sum
               label: "Total DTC Spend"
+              format: "gbp"
+              round: 0
             avg_dtc_spend_per_customer:
               type: average
               label: "Avg DTC Spend"
+              format: "gbp"
+              round: 0
       - name: total_shopify_orders
         meta:
           metrics:
             total_dtc_orders:
               type: sum
               label: "Total DTC Orders"
+              round: 0
       - name: accepts_marketing
         description: "True if customer accepts marketing on either Shopify store."
+        meta:
+          label: "Accepts Marketing"
       - name: email_domain
         description: "Domain part of the email (after the '@'). Used to spot fleet/business buyers."
+        meta:
+          label: "Email Domain"
       - name: is_likely_business_email
         description: "True if email_domain is not a known consumer provider (gmail/yahoo/etc.) and not a spam-pattern TLD (.fun, .in.net). Imperfect proxy for 'this email looks business-y'."
+        meta:
+          label: "Business Email Domain"
       - name: is_dtc_b2b_lead
         description: "True if the customer is a 'DTC → B2B lead': has a business-looking email, has actually bought on a Shopify DTC store, and isn't yet in Prospect CRM. Targets these for B2B outreach."
+        meta:
+          label: "Likely DTC to B2B Lead"
 
   - name: fct_b2b_sales
     description: "Line-level B2B sales from Prospect CRM (filtered to ledgers where is_b2c=false), enriched with product and order context. The richest B2B revenue/margin truth in the warehouse."
@@ -493,6 +573,7 @@ models:
             b2b_line_count:
               type: count_distinct
               label: "B2B Line Items"
+              round: 0
       - name: sales_ledger_id
         description: "B2B customer (CRM SalesLedgerId)."
         tests:
@@ -502,6 +583,7 @@ models:
             b2b_active_customers:
               type: count_distinct
               label: "B2B Active Customers"
+              round: 0
       - name: order_number
         description: "Prospect CRM sales-order number."
         meta:
@@ -509,10 +591,16 @@ models:
             b2b_order_count:
               type: count_distinct
               label: "B2B Orders"
+              round: 0
       - name: customer_name
         description: "Customer (account) name from the CRM ledger."
+        meta:
+          label: "Customer"
       - name: country
         description: "Country from the CRM ledger."
+      # B2B revenue / cost / margin are multi-currency (see currency_code on
+      # this table). No GBP format applied — would mislabel non-GBP rows.
+      # Currency normalisation deferred per CLAUDE.md.
       - name: line_value
         description: "Line revenue (currency = currency_code)."
         meta:
@@ -520,9 +608,11 @@ models:
             b2b_revenue:
               type: sum
               label: "B2B Revenue"
+              round: 0
             b2b_aov:
               type: average
               label: "B2B AOV"
+              round: 0
       - name: cost_value
         description: "Line cost."
         meta:
@@ -530,6 +620,7 @@ models:
             b2b_cost:
               type: sum
               label: "B2B Cost"
+              round: 0
       - name: margin_value
         description: "Line margin (line_value - cost_value)."
         meta:
@@ -537,19 +628,22 @@ models:
             b2b_margin:
               type: sum
               label: "B2B Margin"
+              round: 0
       - name: margin_percent
-        description: "Per-line margin %."
+        description: "Per-line margin % (already × 100, e.g. 23.5 means 23.5%)."
         meta:
           metrics:
             avg_margin_pct:
               type: average
               label: "Avg Margin %"
+              round: 1
       - name: qty_invoiced
         meta:
           metrics:
             b2b_units:
               type: sum
               label: "B2B Units"
+              round: 0
       - name: currency_code
         description: "Line currency. Multi-currency — currency normalisation deferred."
       - name: sku
