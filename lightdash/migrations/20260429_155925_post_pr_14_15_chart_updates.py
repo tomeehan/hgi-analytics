@@ -5,7 +5,7 @@ Apply the chart-level changes from PRs #14 and #15 to the live Lightdash.
 PR: #14 (full-month time labels, currency/percent format) +
     #15 (Top Customers + repeat-rate-by-store + rename Shopify orders)
 Run after: lightdash_deploy.yml has finished on main for both PRs.
-Status: pending  # flip to "applied YYYY-MM-DD" once it's run cleanly
+Status: applied 2026-04-29
 
 This is a ONE-SHOT migration. It is idempotent in practice (each step
 checks before mutating), but the audit trail is the point — re-running
@@ -36,7 +36,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from _lib import api, BASE_URL, PROJECT_UUID, SPACE_UUID  # noqa: E402
+from _lib import api, save_chart_version, BASE_URL, PROJECT_UUID, SPACE_UUID  # noqa: E402
 
 
 DRY_RUN = False
@@ -48,6 +48,14 @@ def write(method, path, body=None, *, allow_404=False):
         print(f"    DRY_RUN: would {method} {path}")
         return None
     return api(method, path, body, allow_404=allow_404)
+
+
+def save_chart(chart):
+    """Save a new version of `chart`, honouring DRY_RUN."""
+    if DRY_RUN:
+        print(f"    DRY_RUN: would POST /saved/{chart['uuid']}/version")
+        return None
+    return save_chart_version(chart)
 
 
 def step_1_delete_empty_dashboard():
@@ -79,11 +87,7 @@ def step_2_swap_time_formatter():
         if not changed:
             skipped += 1
             continue
-        write("POST", f"/saved/{q['uuid']}/version", {
-            "metricQuery": chart["metricQuery"],
-            "chartConfig": chart["chartConfig"],
-            "tableConfig": chart["tableConfig"],
-        })
+        save_chart(chart)
         print(f"    + {chart['name']}")
         swapped += 1
     print(f"    -> {swapped} swapped, {skipped} skipped (already current "
@@ -107,11 +111,7 @@ def step_3_top_customers_dimensions():
     chart["tableConfig"]["columnOrder"] = (
         new_dims + list(chart["metricQuery"]["metrics"])
     )
-    write("POST", f"/saved/{uuid}/version", {
-        "metricQuery": chart["metricQuery"],
-        "chartConfig": chart["chartConfig"],
-        "tableConfig": chart["tableConfig"],
-    })
+    save_chart(chart)
     print("    ok")
 
 
@@ -140,11 +140,7 @@ def step_4_repeat_rate_store_id():
                          if title_field in col_order else len(col_order))
             col_order.insert(insert_at, store_field)
         chart["tableConfig"]["columnOrder"] = col_order
-        write("POST", f"/saved/{uuid}/version", {
-            "metricQuery": chart["metricQuery"],
-            "chartConfig": chart["chartConfig"],
-            "tableConfig": chart["tableConfig"],
-        })
+        save_chart(chart)
         print(f"    + {name}")
 
 
