@@ -15,6 +15,9 @@ renamed as (
     select
         id                                      as customer_id,
         name                                    as customer_name,
+        -- CONTACTS is a JSON array; the default contact's email is the
+        -- best customer-level email Cin7 exposes (~97% populated).
+        lower(trim(contacts[0]:Email::string))  as email,
         status,
         currency,
         pricetier                               as price_tier,

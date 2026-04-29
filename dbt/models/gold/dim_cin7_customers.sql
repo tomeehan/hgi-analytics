@@ -17,6 +17,7 @@ order_agg as (
 select
     c.customer_id,
     c.customer_name,
+    c.email,
     c.status,
     c.currency,
     c.price_tier,
