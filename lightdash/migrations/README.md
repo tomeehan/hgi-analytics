@@ -8,15 +8,24 @@ refreshed dbt metadata.
 
 `lightdash deploy` only refreshes the dbt project — it does **not**
 update saved-chart configs (column order, dimensions, eCharts
-formatters), recreate dashboards, or delete obsolete ones. The legacy
-`lightdash/build_dashboards.py` and `build_prospect_crm_dashboards.py`
-scripts are kept for **historical reference only** — they were
-one-shots used to seed the initial dashboards and must not be re-run
-(they POST new charts on every invocation, so re-running creates
-duplicates).
+formatters), recreate dashboards, or delete obsolete ones. So every
+change to live Lightdash state is recorded here as a forward-only
+one-shot script — a chronological audit log of how the live
+dashboards got to where they are today.
 
-For everything else — chart edits, dimension changes, dashboard
-deletions, formatter swaps — write a timestamped migration here.
+The two earliest entries are the original seed scripts that created
+every dashboard via POSTed REST calls:
+
+- `20260427_143325_initial_dashboards_seed.py`
+- `20260427_143511_prospect_crm_dashboards_seed.py`
+
+Both are marked `Status: applied 2026-04-27` and **must not be
+re-run** — they POST new charts with no upsert, so re-running creates
+duplicates. Treat them, and any other already-applied migration, as
+read-only history.
+
+Every subsequent edit (chart dimension changes, dashboard deletions,
+formatter swaps, etc.) is its own timestamped file alongside them.
 
 ## Conventions
 

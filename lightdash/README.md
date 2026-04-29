@@ -64,17 +64,24 @@ sync.
 
 ## Dashboards
 
-`build_dashboards.py` and `build_prospect_crm_dashboards.py` are the
-**one-shot seed scripts** that originally created every dashboard via the
-Lightdash REST API. They are kept in the repo as a record of the initial
-build but **must not be re-run** — each call POSTs new charts with no
-upsert, so re-running creates duplicates.
+Every chart and dashboard edit — including the original seed — lives
+in `migrations/` as a timestamped one-shot script. The folder is a
+chronological audit log of every change to live Lightdash state.
 
-### Editing live charts: migrations
+The two earliest entries are the original seed scripts:
 
-For all subsequent chart/dashboard edits, write a timestamped one-shot
-migration in `migrations/`. See `migrations/README.md` for the full
-pattern. Quick start:
+- `migrations/20260427_143325_initial_dashboards_seed.py` — created
+  Group Overview, Returning Customers, Cross-Brand Customers, UK
+  Regional Performance, Product Performance, Product Repeat Rate.
+- `migrations/20260427_143511_prospect_crm_dashboards_seed.py` —
+  created Customer Universe, B2B Account 360, B2B × DTC Cross-View,
+  DTC → B2B Lead Signals.
+
+Both are marked `Status: applied 2026-04-27`. They must never be
+re-run — they POST new charts with no upsert, so re-running creates
+duplicates.
+
+### Adding a new migration
 
 ```sh
 bin/new-lightdash-migration <slug>           # scaffold the file
@@ -85,7 +92,8 @@ python3 lightdash/migrations/<file>.py             # apply
 ```
 
 Migrations read auth from `.env` (`LIGHTDASH_URL`, `LIGHTDASH_TOKEN`,
-`LIGHTDASH_PROJECT_UUID`, `LIGHTDASH_SPACE_UUID`).
+`LIGHTDASH_PROJECT_UUID`, `LIGHTDASH_SPACE_UUID`). See
+`migrations/README.md` for the full pattern.
 
 ## Hardening
 
