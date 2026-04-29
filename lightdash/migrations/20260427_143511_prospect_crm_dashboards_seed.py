@@ -1,15 +1,28 @@
 #!/usr/bin/env python3
 """
-REFERENCE ONLY - DO NOT RE-RUN.
+Initial seed of the Prospect CRM × Shopify cross-source dashboards
+(Customer Universe, B2B Account 360, B2B × DTC Cross-View, DTC → B2B
+Lead Signals).
 
-This is the one-shot script that originally seeded the Prospect CRM
-Lightdash dashboards. It POSTs new charts and dashboards with no upsert,
-so re-running creates duplicates. It is kept in the repo as a historical
-record of how the dashboards were initially constructed.
+PR: #7 (commit 76ba769, 2026-04-27)
+Run after: stg_prospect_crm, dim_customer_unified, fct_b2b_sales built
+           and Lightdash deploy completed
+Status: applied 2026-04-27
 
-For all subsequent chart/dashboard edits, add a timestamped migration in
-lightdash/migrations/ (see lightdash/migrations/README.md). Scaffold
-with `bin/new-lightdash-migration <slug>`.
+REFERENCE ONLY - DO NOT RE-RUN. This is the one-shot script that
+originally created the four Prospect CRM dashboards listed above. It
+POSTs new charts with no upsert, so re-running creates duplicates.
+Kept in the repo as a historical record of how the dashboards were
+initially constructed.
+
+This file has accumulated documentation-style edits in later PRs (#14
+formatting pass) that were never re-applied. Treat as the most recent
+intent of the seed script, not a faithful snapshot of what was POSTed
+in April 2026.
+
+For all subsequent chart/dashboard edits, add a new timestamped
+migration alongside this one (see ../README.md). Scaffold with
+`bin/new-lightdash-migration <slug>`.
 """
 
 import os
@@ -21,7 +34,7 @@ import requests
 
 def _load_env():
     """Populate os.environ from <repo_root>/.env if present (no extra dep)."""
-    env_path = Path(__file__).resolve().parent.parent / ".env"
+    env_path = Path(__file__).resolve().parents[2] / ".env"
     if not env_path.exists():
         return
     for line in env_path.read_text().splitlines():
