@@ -12,6 +12,7 @@ dbt, and serves dashboards via Lightdash.
 | Klaviyo | Source — 3+ accounts, paired 1:1 with Shopify stores | SaaS |
 | Cin7 Core | Source — inventory, sales orders, customers, products (formerly DEAR Systems) | SaaS |
 | Prospect CRM | Source — CRM (contacts, companies, leads, sales orders/invoices, transactions) — Connector Builder declarative YAML (`airbyte/source-prospect-crm/manifest.yaml`) | SaaS (OData v1 API at `crm-odata-v1.prospect365.com`) |
+| Meta (Facebook Marketing) | Source — paid ads insights (`ad_account`, `ad_sets`, `ads`, `campaigns`, `ads_insights*` family). One ad account per brand (iS Clinical, Deese Pro, Revitalash) | SaaS |
 | Airbyte | ELT — extracts from sources, writes raw into Snowflake Bronze | Self-hosted on a Hetzner Cloud VM (`hgi-airbyte`, Falkenstein `fsn1`), installed via `abctl` |
 | Snowflake | Data warehouse | AWS `eu-west-2`, Standard edition |
 | dbt Core | Transformations (Bronze → Silver → Gold → Metrics) | Local + GitHub Actions |
@@ -47,7 +48,7 @@ Klaviyo accounts ┘                (raw, per-source)    (cleaned,         (fact
                                                        unioned)          dimensions)
 ```
 
-- **Bronze** — raw, untouched Airbyte output. One schema per source: `BRONZE_SHOPIFY_<BRAND>`, `BRONZE_KLAVIYO_<BRAND>`, `BRONZE_CIN7`. Only Airbyte writes here.
+- **Bronze** — raw, untouched Airbyte output. One schema per source: `BRONZE_SHOPIFY_<BRAND>`, `BRONZE_KLAVIYO_<BRAND>`, `BRONZE_META_<BRAND>`, `BRONZE_CIN7`, `BRONZE_PROSPECT_CRM`. Only Airbyte writes here.
 - **Silver** — cleaned, typed, unioned across brands. Shopify/Klaviyo tables carry a `store_id` column; Cin7 tables use `channel_group`. Multi-brand Shopify/Klaviyo unions are done manually (CTEs + `union all`), not via `dbt_utils.union_relations`.
 - **Gold** — business-facing facts & dims. Lightdash reads from here:
   - `fct_orders` / `dim_customers` — Shopify orders & customers (isClinical + Deese Pro; grows as stores are added)
@@ -62,7 +63,7 @@ Klaviyo accounts ┘                (raw, per-source)    (cleaned,         (fact
 
 - **Database:** `HGI`
 - **Compute warehouse:** `HGI_WH` (X-SMALL, `AUTO_SUSPEND = 60`, `AUTO_RESUME = TRUE`)
-- **Schemas:** `BRONZE_SHOPIFY_<BRAND>` · `BRONZE_KLAVIYO_<BRAND>` · `BRONZE_CIN7` · `BRONZE_PROSPECT_CRM` · `SILVER` · `GOLD` · `METRICS`
+- **Schemas:** `BRONZE_SHOPIFY_<BRAND>` · `BRONZE_KLAVIYO_<BRAND>` · `BRONZE_META_<BRAND>` · `BRONZE_CIN7` · `BRONZE_PROSPECT_CRM` · `SILVER` · `GOLD` · `METRICS`
 
 Roles & service accounts:
 
@@ -108,6 +109,18 @@ hgi-analytics/
   - `revitalash-co-uk.myshopify.com` → `BRONZE_SHOPIFY_REVITALASH` (active in Silver/Gold as `store_id = 'revitalash'`; 4,734 orders, 76,730 customers)
   - Geske → `BRONZE_SHOPIFY_GESKE` (schema created, no data yet)
   - `BRONZE_KLAVIYO_REVITALASH` and `BRONZE_KLAVIYO_GESKE` schemas also exist (empty).
+- **Meta (Facebook Marketing) connections** — three connections, one per ad account, all active on a 24h schedule:
+  - `Meta - iS Clinical → HGI Snowflake` → `BRONZE_META_ISCLINICAL`
+  - `Meta - Deese Pro → HGI Snowflake` → `BRONZE_META_DEESE_PRO`
+  - `Meta - Revitalash → HGI Snowflake` → `BRONZE_META_REVITALASH`
+  - All three use `namespaceDefinition: custom_format` with a per-brand `namespaceFormat`. Without that, Airbyte falls back to the destination's default schema (`BRONZE_SHOPIFY_ISCLINICAL`) and the three Meta connections collide on identical table names. Meta schemas are LOADER-owned (mirrors the Prospect CRM ownership pattern).
+- **Klaviyo accounts** — five Klaviyo connections; four actively syncing:
+  - `BRONZE_KLAVIYO_ISCLINICAL` (DTC) — active, populated.
+  - `BRONZE_KLAVIYO_DEESE_PRO` (DTC) — active, populated.
+  - `BRONZE_KLAVIYO_REVITALASH` (DTC) — active, populated.
+  - `BRONZE_KLAVIYO_HARPER_GRACE` (B2B / wholesale) — active connection, source emits records but no destination tables get written; under investigation.
+  - `BRONZE_KLAVIYO_GESKE` — schema exists, no sync configured yet.
+  - All sources pinned to `start_date = 2024-07-01`; lean stream selection (no `*_detailed`, no `campaign_values_reports`) — see `airbyte/README.md` for the rationale and the recovery playbook for stuck `running` jobs.
 - **Revitalash Bronze contamination — resolved** — prior to the namespace fix, the Revitalash Airbyte connection had written 4,727 orders and 76,724 customers into `BRONZE_SHOPIFY_ISCLINICAL`. These were deleted after the Revitalash full refresh completed (2026-04-27). The cleanup script is `airbyte/cleanup_isclinical_contamination.sql` (audit only; DELETEs are no longer needed).
 - **`store_id` is the universal brand key** — present on every Silver+ table. Use it for joins and Lightdash dashboard filters (portfolio view = unfiltered; per-brand view = filtered).
 - **Email normalisation** — `LOWER(TRIM(email))` in Silver before joining Shopify customers to Klaviyo profiles.
