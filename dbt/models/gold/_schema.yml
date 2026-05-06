@@ -35,6 +35,24 @@ models:
               label: "Avg Order Value"
               format: "gbp"
               round: 0
+      - name: net_sales
+        description: "total_price minus refunded amount (sum of successful refund transactions)."
+        meta:
+          metrics:
+            total_net_sales:
+              type: sum
+              label: "Net Sales"
+              format: "gbp"
+              round: 0
+      - name: refund_amount
+        description: "Refunded amount on this order (0 if no refunds). Sourced from BRONZE_SHOPIFY_*.ORDER_REFUNDS via stg_shopify__order_refunds."
+        meta:
+          metrics:
+            total_refunds:
+              type: sum
+              label: "Refunds"
+              format: "gbp"
+              round: 0
       - name: is_first_order
         description: "True if this is the customer's first order."
         meta:
@@ -680,3 +698,238 @@ models:
       - name: order_status
       - name: delivery_country
       - name: delivery_postcode
+
+  - name: fct_ad_spend
+    description: "Daily Meta ad spend by store_id (one row per spend_date × store_id). Sourced from BRONZE_META_*.ADS_INSIGHTS aggregated to daily; purchases / purchase_value are extracted from the ACTIONS / ACTION_VALUES JSON arrays where action_type='purchase'."
+    meta:
+      label: "Ad Spend"
+    columns:
+      - name: spend_date
+        description: "Activity date."
+        tests: [not_null]
+      - name: store_id
+        description: "Brand identifier."
+        tests: [not_null]
+      - name: spend
+        description: "Total Meta ad spend."
+        meta:
+          metrics:
+            total_meta_spend:
+              type: sum
+              label: "Meta Ad Spend"
+              format: "gbp"
+              round: 0
+      - name: impressions
+        meta:
+          metrics:
+            total_impressions:
+              type: sum
+              label: "Impressions"
+              round: 0
+      - name: clicks
+        meta:
+          metrics:
+            total_meta_clicks:
+              type: sum
+              label: "Meta Clicks"
+              round: 0
+      - name: purchases
+        description: "Meta-attributed purchases (sum of ACTIONS where action_type='purchase')."
+        meta:
+          metrics:
+            total_meta_purchases:
+              type: sum
+              label: "Meta Purchases"
+              round: 0
+      - name: purchase_value
+        description: "Meta-attributed purchase value (sum of ACTION_VALUES where action_type='purchase')."
+        meta:
+          metrics:
+            total_meta_purchase_value:
+              type: sum
+              label: "Meta Purchase Value"
+              format: "gbp"
+              round: 0
+
+  - name: fct_ga_sessions
+    description: "Daily GA4 sessions by store_id (one row per session_date × store_id). Sourced from BRONZE_GOOGLE_ANALYTICS_*.TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT aggregated across source/medium."
+    meta:
+      label: "GA Sessions"
+    columns:
+      - name: session_date
+        tests: [not_null]
+      - name: store_id
+        tests: [not_null]
+      - name: sessions
+        meta:
+          metrics:
+            total_ga_sessions:
+              type: sum
+              label: "GA Sessions"
+              round: 0
+      - name: engaged_sessions
+        meta:
+          metrics:
+            total_engaged_sessions:
+              type: sum
+              label: "Engaged Sessions"
+              round: 0
+      - name: total_revenue
+        description: "GA-attributed revenue (purchase events)."
+        meta:
+          metrics:
+            ga_total_revenue:
+              type: sum
+              label: "GA Total Revenue"
+              format: "gbp"
+              round: 0
+
+  - name: fct_marketing_kpis_daily
+    description: "Daily marketing KPIs for isClinical: revenue, orders, ad spend, sessions, plus blended ROAS / CAC / conversion-rate. Each metric is declared twice — *_l30d (last 30 days) and *_p30d (prior 30 days, i.e. 30-60 days ago) — so Big Number tiles render headline + previous-period comparison via the chart's selectedField + comparisonField. Period windows are baked into each metric's SQL via `case when date >= current_date - 30`, so charts don't need a date filter."
+    meta:
+      label: "Marketing KPIs Daily"
+    columns:
+      - name: date
+        description: "Activity date."
+        tests: [not_null]
+      - name: store_id
+        description: "Brand identifier."
+        tests: [not_null]
+      - name: gross_sales
+        description: "Sum of total_price for the day."
+        meta:
+          metrics:
+            gross_sales_l30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.gross_sales else 0 end)"
+              label: "Gross Sales (L30D)"
+              format: "gbp"
+              round: 0
+            gross_sales_p30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.gross_sales else 0 end)"
+              label: "Gross Sales (Prev 30D)"
+              format: "gbp"
+              round: 0
+      - name: net_sales
+        description: "Gross sales minus refunds."
+        meta:
+          metrics:
+            net_sales_l30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.net_sales else 0 end)"
+              label: "Net Sales (L30D)"
+              format: "gbp"
+              round: 0
+            net_sales_p30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.net_sales else 0 end)"
+              label: "Net Sales (Prev 30D)"
+              format: "gbp"
+              round: 0
+      - name: orders
+        description: "Distinct order count for the day."
+        meta:
+          metrics:
+            orders_l30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.orders else 0 end)"
+              label: "Total Orders (L30D)"
+              round: 0
+            orders_p30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.orders else 0 end)"
+              label: "Total Orders (Prev 30D)"
+              round: 0
+      - name: new_customer_orders
+        description: "Orders where the customer's first-ever order was on this date (is_first_order=1)."
+        meta:
+          metrics:
+            new_customer_pct_l30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.new_customer_orders else 0 end)::float / nullif(sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.orders else 0 end), 0)"
+              label: "New Customer % (L30D)"
+              format: "percent"
+              round: 1
+            new_customer_pct_p30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.new_customer_orders else 0 end)::float / nullif(sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.orders else 0 end), 0)"
+              label: "New Customer % (Prev 30D)"
+              format: "percent"
+              round: 1
+      - name: ad_spend
+        description: "Meta ad spend for the day. Google Ads pending source-side fix."
+        meta:
+          metrics:
+            ad_spend_l30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.ad_spend else 0 end)"
+              label: "Ad Spend (L30D)"
+              format: "gbp"
+              round: 0
+            ad_spend_p30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.ad_spend else 0 end)"
+              label: "Ad Spend (Prev 30D)"
+              format: "gbp"
+              round: 0
+            blended_roas_l30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.net_sales else 0 end)::float / nullif(sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.ad_spend else 0 end), 0)"
+              label: "Blended ROAS MER (L30D)"
+              round: 2
+            blended_roas_p30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.net_sales else 0 end)::float / nullif(sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.ad_spend else 0 end), 0)"
+              label: "Blended ROAS MER (Prev 30D)"
+              round: 2
+            blended_cac_l30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.ad_spend else 0 end)::float / nullif(sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.new_customer_orders else 0 end), 0)"
+              label: "Blended CAC (L30D)"
+              format: "gbp"
+              round: 0
+            blended_cac_p30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.ad_spend else 0 end)::float / nullif(sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.new_customer_orders else 0 end), 0)"
+              label: "Blended CAC (Prev 30D)"
+              format: "gbp"
+              round: 0
+      - name: sessions
+        description: "GA4 sessions for the day."
+        meta:
+          metrics:
+            sessions_l30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.sessions else 0 end)"
+              label: "Sessions (L30D)"
+              round: 0
+            sessions_p30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.sessions else 0 end)"
+              label: "Sessions (Prev 30D)"
+              round: 0
+            conversion_rate_l30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.orders else 0 end)::float / nullif(sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.sessions else 0 end), 0)"
+              label: "Shopify Conversion Rate (L30D)"
+              format: "percent"
+              round: 2
+            conversion_rate_p30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.orders else 0 end)::float / nullif(sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.sessions else 0 end), 0)"
+              label: "Shopify Conversion Rate (Prev 30D)"
+              format: "percent"
+              round: 2
+            aov_l30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.net_sales else 0 end)::float / nullif(sum(case when ${TABLE}.date >= current_date - 30 then ${TABLE}.orders else 0 end), 0)"
+              label: "Average Order Value (L30D)"
+              format: "gbp"
+              round: 2
+            aov_p30d:
+              type: number
+              sql: "sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.net_sales else 0 end)::float / nullif(sum(case when ${TABLE}.date >= current_date - 60 and ${TABLE}.date < current_date - 30 then ${TABLE}.orders else 0 end), 0)"
+              label: "Average Order Value (Prev 30D)"
+              format: "gbp"
+              round: 2
