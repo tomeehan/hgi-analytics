@@ -8,8 +8,21 @@ sources:
       - name: orders
       - name: customers
       - name: order_line_items
+      - name: order_refunds
       - name: products
       - name: product_variants
+
+  - name: bronze_meta_isclinical
+    database: HGI
+    schema: BRONZE_META_ISCLINICAL
+    tables:
+      - name: ads_insights
+
+  - name: bronze_google_analytics_isclinical
+    database: HGI
+    schema: BRONZE_GOOGLE_ANALYTICS_ISCLINICAL
+    tables:
+      - name: traffic_acquisition_session_source_medium_report
 
   - name: bronze_klaviyo_isclinical
     database: HGI
