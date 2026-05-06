@@ -208,3 +208,52 @@ models:
         tests:
           - not_null
           - unique
+
+  - name: stg_meta__ads_spend
+    description: "Daily Meta ad spend aggregated from BRONZE_META_*.ADS_INSIGHTS. Purchases / purchase_value extracted from the ACTIONS / ACTION_VALUES JSON arrays where action_type='purchase'."
+    columns:
+      - name: spend_date
+        description: "Activity date (date_start from Meta)."
+        tests:
+          - not_null
+      - name: store_id
+        description: "Brand identifier."
+        tests:
+          - not_null
+      - name: spend
+        description: "Total Meta ad spend for the day."
+      - name: impressions
+      - name: clicks
+      - name: purchases
+        description: "Sum of ACTIONS where action_type='purchase'."
+      - name: purchase_value
+        description: "Sum of ACTION_VALUES where action_type='purchase'."
+
+  - name: stg_google_analytics__sessions
+    description: "Daily GA4 sessions aggregated from TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT (across source/medium). The Bronze DATE column is text in YYYYMMDD format and is cast to a date here."
+    columns:
+      - name: session_date
+        tests:
+          - not_null
+      - name: store_id
+        tests:
+          - not_null
+      - name: sessions
+      - name: engaged_sessions
+      - name: total_revenue
+        description: "GA-attributed revenue (purchase events)."
+
+  - name: stg_shopify__order_refunds
+    description: "Per-order Shopify refund amounts. Sourced from BRONZE_SHOPIFY_*.ORDER_REFUNDS by LATERAL FLATTEN over the TRANSACTIONS array, summing amount where kind='refund' and status='success'. One row per order with refunds."
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - unique
+      - name: store_id
+        tests:
+          - not_null
+      - name: refund_amount
+        description: "Sum of successful refund-transaction amounts for this order."
+      - name: last_refunded_at
+        description: "Most recent refund timestamp on this order."
