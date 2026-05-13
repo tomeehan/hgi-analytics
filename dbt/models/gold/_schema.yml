@@ -21,6 +21,14 @@ models:
         description: "Brand identifier."
         tests:
           - not_null
+        meta:
+          dimension:
+            label: "Brand"
+            # Display the human-readable brand name. Filters operate on the
+            # transformed value (e.g. "Revitalash"), not the raw `store_id`.
+            # Keep this CASE in sync with the brand list in CLAUDE.md
+            # "Conventions" > store-name display mapping.
+            sql: "case ${TABLE}.store_id when 'revitalash' then 'Revitalash' when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
       - name: total_price
         description: "Total order value in the order's currency."
         meta:
