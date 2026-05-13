@@ -22,3 +22,7 @@ venv/
 .DS_Store
 .vscode/
 .idea/
+
+# Claude Code (machine-local)
+.claude/settings.local.json
+.claude/worktrees/
