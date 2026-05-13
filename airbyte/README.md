@@ -48,10 +48,19 @@ grant select on future tables in schema HGI.BRONZE_<SOURCE> to role TRANSFORMER;
 ```
 
 If the schema already exists and is owned by `ACCOUNTADMIN`, run the same
-`grant ownership ... copy current grants` line to migrate it. Without
-LOADER ownership, future-grants set up by ACCOUNTADMIN can fail to apply
-to tables LOADER recreates during `full_refresh_overwrite` syncs — the
-new tables end up readable only by LOADER and `dbt_user` loses access.
+`grant ownership ... copy current grants` line to migrate it.
+
+The future-grants above cover incremental streams cleanly, but they do
+**not** cover `full_refresh_overwrite` streams. Airbyte's Snowflake
+destination loads each full-refresh sync into a staging table under
+`HGI.airbyte_internal`, then runs `ALTER TABLE ... SWAP WITH` to
+atomically swap the two tables' names. SWAP keeps each object's grants
+attached to the object (not the name), so the live table inherits the
+staging table's grants only (`OWNERSHIP -> LOADER`, no `SELECT ->
+TRANSFORMER`). Future grants on the schema do not fire on SWAP-renamed
+objects, so dbt loses access on every full-refresh sync. Mitigation: a
+Snowflake scheduled task that re-grants SELECT to TRANSFORMER. See
+"Prospect CRM > Full-refresh grants gotcha" below for a working example.
 
 ## Connections
 
@@ -129,6 +138,43 @@ connection as usual. Ask Tom for the Prospect CRM API key.
 | `BRONZE_PROSPECT_CRM` | `sales_order_headers`, `sales_invoice_headers` | Full refresh |
 
 Suggested schedule: 6 h for incremental streams; 24 h for full-refresh streams.
+
+#### Full-refresh grants gotcha
+
+`sales_order_headers` and `sales_invoice_headers` are full-refresh, so
+every sync runs `ALTER TABLE ... SWAP WITH` against `BRONZE_PROSPECT_CRM`
+and strips TRANSFORMER's SELECT grant (see "Provisioning a Bronze schema"
+for the mechanism). The serverless Snowflake task
+`HGI.PUBLIC.REGRANT_PROSPECT_CRM_BRONZE_SELECT` re-grants SELECT every 30
+minutes, which keeps dbt CI green with a worst-case 30-minute window of
+broken access after a swap. The task DDL is below; recreate it if the
+project is rebuilt or copy the pattern when adding a full-refresh stream
+to another source.
+
+```sql
+use role accountadmin;
+
+create or replace task HGI.PUBLIC.REGRANT_PROSPECT_CRM_BRONZE_SELECT
+  user_task_managed_initial_warehouse_size = 'XSMALL'
+  schedule = '30 MINUTE'
+  comment = 'Re-grants SELECT to TRANSFORMER on Prospect CRM Bronze tables. Airbyte ALTER TABLE SWAP for full-refresh streams (sales_order_headers, sales_invoice_headers) strips the FUTURE GRANT each sync.'
+as
+  grant select on all tables in schema HGI.BRONZE_PROSPECT_CRM
+    to role TRANSFORMER;
+
+alter task HGI.PUBLIC.REGRANT_PROSPECT_CRM_BRONZE_SELECT resume;
+```
+
+To verify the task is running and recent attempts succeeded:
+
+```sql
+select name, state, error_code, scheduled_time, completed_time
+from table(information_schema.task_history(
+  task_name => 'REGRANT_PROSPECT_CRM_BRONZE_SELECT',
+  result_limit => 5
+))
+order by scheduled_time desc;
+```
 
 ### Meta (Facebook/Instagram Ads)
 

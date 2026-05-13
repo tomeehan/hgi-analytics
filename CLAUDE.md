@@ -134,7 +134,7 @@ hgi-analytics/
   - **Klaviyo bridge** — 11,045 contacts have `klaviyo_id` populated, all distinct — usable as a direct join to Klaviyo profile data when needed.
   - **Cross-source SKU joins are deferred** — CRM `product_items.sku` does not align cleanly with Shopify SKUs and `web_product_reference` is null in samples. Build a manual mapping table when product-level analytics is needed.
   - **Account manager names are not exposed** — `accountmanagerid` is an opaque GUID; revisit if Prospect adds a users API.
-  - **CRM Bronze schema is `LOADER`-owned** — unlike other Bronze schemas (which were ACCOUNTADMIN-owned), `BRONZE_PROSPECT_CRM` was migrated to `LOADER` ownership so future-grants fire reliably for the `full_refresh_overwrite` streams. See `airbyte/README.md` "Provisioning a Bronze schema" — the canonical pattern for new sources.
+  - **CRM Bronze schema is `LOADER`-owned + has a regrant task.** `BRONZE_PROSPECT_CRM` was migrated to `LOADER` ownership (the canonical pattern, see `airbyte/README.md` "Provisioning a Bronze schema"). Two streams (`sales_order_headers`, `sales_invoice_headers`) are `full_refresh_overwrite`. Airbyte writes those via `ALTER TABLE ... SWAP WITH`, which keeps grants attached to the object (not the name), so the live table loses TRANSFORMER's SELECT grant on every sync. Schema-level future grants do not refire on SWAP-renamed objects. The serverless task `HGI.PUBLIC.REGRANT_PROSPECT_CRM_BRONZE_SELECT` runs every 30 minutes to re-grant SELECT and keep dbt CI green. See `airbyte/README.md` "Full-refresh grants gotcha" for the DDL and the verification query. Any future source that adds a `full_refresh_overwrite` stream needs the same task pattern.
 
 ## Project management
 
