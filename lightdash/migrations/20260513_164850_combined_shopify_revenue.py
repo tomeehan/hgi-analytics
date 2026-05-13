@@ -6,7 +6,7 @@ Shopify Revenue tile + per-brand breakdown.
 PR: TBD (Ticket 001 - Combined Shopify Revenue)
 Run after: lightdash_deploy.yml succeeds on main (so the Brand label /
 value remap on fct_orders.store_id is picked up by Lightdash).
-Status: pending  # flip to "applied YYYY-MM-DD" once it's run cleanly
+Status: applied 2026-05-13
 
 This is a ONE-SHOT migration. Re-running will create duplicate saved
 charts and reset the dashboard tile layout.
