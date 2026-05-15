@@ -1,0 +1,4 @@
+setup_command: bin/setup
+copy:
+  - .env
+  - dbt/profiles.yml
