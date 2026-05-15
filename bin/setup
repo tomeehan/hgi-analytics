@@ -7,9 +7,11 @@
 # What it does:
 #   1. Detects platform; on Linux, apt-get installs python3 + venv if missing.
 #   2. Verifies prerequisites (git, python3 ≥ 3.9).
-#   3. Creates a Python venv at .venv/ and installs dbt-snowflake + requests.
+#   3. Creates a Python venv at .venv/ and installs dbt-snowflake + snowflake-cli + requests.
 #   4. Runs `dbt deps` to fetch dbt packages.
 #   5. Scaffolds dbt/profiles.yml + .env from templates if missing.
+#   6. On Linux (bothy): symlinks ~/.snowflake/config.toml -> .snowflake/config.toml,
+#      writes ~/.ssh/config aliases for hgi-airbyte / hgi-lightdash.
 #
 # Usage:  ./bin/setup           # full setup
 #         ./bin/setup --check   # only verify prerequisites, don't install
@@ -133,6 +135,12 @@ step "Installing helper Python deps (requests)"
 pip install --quiet requests
 ok "requests installed"
 
+# `snow` CLI for ad-hoc Snowflake SQL (snowflake-cli is a Python tool, so
+# the venv is the natural home for it).
+step "Installing snowflake-cli (snow) into the venv"
+pip install --quiet snowflake-cli
+ok "$(snow --version 2>&1 | head -1)"
+
 # ── dbt deps ────────────────────────────────────────────────────────────────
 step "Fetching dbt packages"
 ( cd dbt && dbt deps --quiet )
@@ -195,6 +203,61 @@ if [ "${#EMPTY_KEYS[@]}" -gt 0 ]; then
 fi
 ok ".env has values for all keys in .env.example"
 
+# ── Linux (bothy): Snowflake CLI config + Hetzner SSH aliases ──────────────
+# On Mac the operator's home already has ~/.snowflake/config.toml and ~/.ssh/config.
+# On bothy neither exists. .bothy.yml ships .snowflake/config.toml into the
+# repo; we symlink it into $HOME. SSH host aliases for hgi-airbyte and
+# hgi-lightdash are written into ~/.ssh/config so chained SSH works once
+# the operator has agent-forwarding enabled from their Mac.
+if [ "$PLATFORM" = "Linux" ]; then
+  step "Linking ~/.snowflake/config.toml -> repo .snowflake/config.toml"
+  if [ -f .snowflake/config.toml ]; then
+    mkdir -p "$HOME/.snowflake"
+    chmod 700 "$HOME/.snowflake"
+    if [ -L "$HOME/.snowflake/config.toml" ] || [ -f "$HOME/.snowflake/config.toml" ]; then
+      rm -f "$HOME/.snowflake/config.toml"
+    fi
+    ln -s "$REPO_ROOT/.snowflake/config.toml" "$HOME/.snowflake/config.toml"
+    chmod 600 "$REPO_ROOT/.snowflake/config.toml"
+    ok "linked $HOME/.snowflake/config.toml"
+  else
+    warn ".snowflake/config.toml missing in repo. Copy from your Mac: ~/.snowflake/config.toml"
+    warn "  (and re-add .snowflake/config.toml to .bothy.yml copy: if you removed it)"
+  fi
+
+  step "Writing ~/.ssh/config aliases for hgi-airbyte / hgi-lightdash"
+  mkdir -p "$HOME/.ssh"
+  chmod 700 "$HOME/.ssh"
+  touch "$HOME/.ssh/config"
+  chmod 600 "$HOME/.ssh/config"
+  ssh_block_start="# >>> hgi-analytics managed: Hetzner hosts >>>"
+  ssh_block_end="# <<< hgi-analytics managed: Hetzner hosts <<<"
+  # Idempotent: strip any previous managed block before re-adding.
+  if grep -qF "$ssh_block_start" "$HOME/.ssh/config"; then
+    awk -v s="$ssh_block_start" -v e="$ssh_block_end" '
+      $0 == s { skip = 1; next }
+      $0 == e { skip = 0; next }
+      !skip   { print }
+    ' "$HOME/.ssh/config" > "$HOME/.ssh/config.tmp"
+    mv "$HOME/.ssh/config.tmp" "$HOME/.ssh/config"
+    chmod 600 "$HOME/.ssh/config"
+  fi
+  cat >> "$HOME/.ssh/config" <<SSHEOF
+$ssh_block_start
+Host hgi-airbyte
+  HostName 49.12.68.42
+  User root
+  StrictHostKeyChecking accept-new
+
+Host hgi-lightdash
+  HostName 49.12.65.122
+  User root
+  StrictHostKeyChecking accept-new
+$ssh_block_end
+SSHEOF
+  ok "wrote hgi-airbyte + hgi-lightdash to ~/.ssh/config"
+fi
+
 # ── final hint ─────────────────────────────────────────────────────────────
 step "Setup complete"
 cat <<EOF
@@ -203,6 +266,21 @@ cat <<EOF
     2. Activate the venv:        ${BOLD}source .venv/bin/activate${RESET}
     3. Verify the connection:    ${BOLD}cd dbt && dbt debug${RESET}
     4. Build the project:        ${BOLD}cd dbt && dbt build${RESET}
+
+  Ad-hoc Snowflake SQL:
+    ${BOLD}snow sql -q 'select current_role()'${RESET}              # default: hgi (TRANSFORMER)
+    ${BOLD}snow sql -c hgi-admin -q '...'${RESET}                    # ACCOUNTADMIN
+
+  SSH to Hetzner VMs (from bothy):
+    Aliases are written: ${BOLD}ssh hgi-airbyte${RESET} / ${BOLD}ssh hgi-lightdash${RESET}.
+    This requires SSH agent forwarding from your Mac. On the Mac:
+      1. Ensure your key is loaded:  ${BOLD}ssh-add ~/.ssh/id_rsa${RESET}
+      2. Forward the agent when connecting to bothy. Add to ${BOLD}~/.ssh/config${RESET}:
+           ${DIM}Host hgi-analytics${RESET}
+           ${DIM}  ForwardAgent yes${RESET}
+         or pass ${BOLD}-A${RESET} explicitly to ssh.
+    For Airbyte API access, tunnel localhost:8000 over SSH:
+      ${BOLD}ssh -L 8000:localhost:8000 hgi-airbyte${RESET}
 
   See CLAUDE.md for the full architecture and conventions.
 EOF

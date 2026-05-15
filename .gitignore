@@ -18,6 +18,9 @@ venv/
 *.pem
 *.key
 
+# Snowflake CLI config (operator-local; shipped to bothy via .bothy.yml copy:)
+.snowflake/
+
 # OS / editors
 .DS_Store
 .vscode/
@@ -26,3 +29,5 @@ venv/
 # Claude Code (machine-local)
 .claude/settings.local.json
 .claude/worktrees/
+
+.bothy.yml
