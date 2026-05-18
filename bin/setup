@@ -193,10 +193,12 @@ fi
 ok ".env present"
 
 # Validate: every key listed in .env.example must have a non-empty value in .env.
+# `|| true` is load-bearing: under `set -euo pipefail`, a missing key (grep returns 1)
+# would otherwise kill the script silently mid-loop, before any error message prints.
 EXAMPLE_KEYS=$(grep -E '^[A-Z_][A-Z0-9_]*=' .env.example | cut -d= -f1)
 EMPTY_KEYS=()
 for key in $EXAMPLE_KEYS; do
-  value=$(grep -E "^${key}=" .env | head -1 | cut -d= -f2-)
+  value=$(grep -E "^${key}=" .env | head -1 | cut -d= -f2- || true)
   if [ -z "$value" ]; then
     EMPTY_KEYS+=("$key")
   fi
