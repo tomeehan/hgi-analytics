@@ -71,6 +71,19 @@ models:
               round: 0
       - name: order_month
         description: "Month the order was placed (first day of month)."
+        meta:
+          dimension:
+            label: "Month (date)"
+            # Stays DATE so relative filters like `inThePast` keep working
+            # ("This vs Last Month" charts depend on this). For
+            # human-readable single-month filters in dashboards, use the
+            # `order_month_label` additional dimension below.
+          additional_dimensions:
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Month the order was placed, formatted as 'April 2026' for readable dashboard filters."
+              sql: "to_char(${TABLE}.order_month, 'MMMM YYYY')"
       - name: email
         description: "Normalised customer email."
       - name: customer_id
