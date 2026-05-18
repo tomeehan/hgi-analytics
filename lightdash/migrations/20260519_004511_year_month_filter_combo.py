@@ -14,10 +14,10 @@ arbitrary months). Replacing it with:
 gives ~5 items in the Year dropdown and 12 in the Month dropdown, both
 sorted chronologically.
 
-PR: <to fill in> — feat(lightdash): Year + Month filter combo on KPI Report
+PR: #36 — feat(lightdash): Year + Month filter combo on KPI Report
 Run after: lightdash_deploy.yml succeeds on main (so order_year +
            order_month_name are registered in the Lightdash explore).
-Status: pending
+Status: applied 2026-05-19
 
 This is a ONE-SHOT migration. Idempotent: if the Year/Month filters
 already exist, leaves them; if the old `order_month_label` filter is
