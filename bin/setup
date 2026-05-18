@@ -232,6 +232,21 @@ if [ "$PLATFORM" = "Linux" ]; then
     warn "  (and re-add .snowflake/config.toml to .bothy.yml copy: if you removed it)"
   fi
 
+  step "Linking ~/.snowflake/keys/rsa_key.p8 -> repo .snowflake/keys/rsa_key.p8"
+  if [ -f .snowflake/keys/rsa_key.p8 ]; then
+    mkdir -p "$HOME/.snowflake/keys"
+    chmod 700 "$HOME/.snowflake/keys"
+    if [ -L "$HOME/.snowflake/keys/rsa_key.p8" ] || [ -f "$HOME/.snowflake/keys/rsa_key.p8" ]; then
+      rm -f "$HOME/.snowflake/keys/rsa_key.p8"
+    fi
+    ln -s "$REPO_ROOT/.snowflake/keys/rsa_key.p8" "$HOME/.snowflake/keys/rsa_key.p8"
+    chmod 600 "$REPO_ROOT/.snowflake/keys/rsa_key.p8"
+    ok "linked $HOME/.snowflake/keys/rsa_key.p8"
+  else
+    warn ".snowflake/keys/rsa_key.p8 missing in repo — snow + dbt will fail until you generate one."
+    warn "  See https://docs.snowflake.com/user-guide/key-pair-auth for the openssl recipe."
+  fi
+
   step "Writing ~/.ssh/config aliases for hgi-airbyte / hgi-lightdash"
   mkdir -p "$HOME/.ssh"
   chmod 700 "$HOME/.ssh"
