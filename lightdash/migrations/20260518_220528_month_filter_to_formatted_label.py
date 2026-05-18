@@ -4,10 +4,10 @@ Retarget the KPI Report dashboard's Month filter to the new `order_month_label`
 dimension so the filter chip/dropdown reads "April 2026" instead of the raw
 ISO timestamp "2026-04-01T00:00:00.000Z".
 
-PR: <to fill in> — chore(lightdash): readable Month filter on KPI Report
+PR: #31 — feat(lightdash): readable Month filter on KPI Report dashboard
 Run after: lightdash_deploy.yml succeeds on main (so `order_month_label`
            is registered in the Lightdash explore for fct_orders).
-Status: pending  # flip to "applied YYYY-MM-DD" once it's run cleanly
+Status: applied 2026-05-19
 
 This is a ONE-SHOT migration. Re-running is harmless (idempotent — it only
 PATCHes filters that still reference the old `fct_orders_order_month`
