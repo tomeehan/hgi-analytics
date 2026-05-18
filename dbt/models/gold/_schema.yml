@@ -75,21 +75,28 @@ models:
           dimension:
             label: "Month (date)"
             # Stays DATE so relative filters like `inThePast` keep working
-            # ("This vs Last Month" charts depend on this). For
-            # human-readable single-month filters in dashboards, use the
-            # `order_month_label` additional dimension below.
+            # ("This vs Last Month" charts depend on this). For human-facing
+            # dashboard filters use the two additional dimensions below.
           additional_dimensions:
-            order_month_label:
+            # Two-filter combo (Year + Month name) gives short, clean
+            # dropdowns. Each prefix-with-MM keeps month names chronologically
+            # sortable in Lightdash's alphabetical string dropdown.
+            # Order Year + Order Month together pin a calendar month.
+            order_year:
+              type: string
+              label: "Year"
+              description: "Year of order placement (YYYY)."
+              sql: "to_char(${TABLE}.order_month, 'YYYY')"
+            order_month_name:
               type: string
               label: "Month"
               description: >
-                Month the order was placed, formatted as '2026-04 (April)' for
-                readable dashboard filters. The YYYY-MM prefix is load-bearing:
-                Lightdash sorts string filter dropdowns alphabetically, so
-                'April 2026' alone would order Aprils before Augusts before
-                Decembers. The numeric prefix forces chronological ordering;
-                the parenthesised month name keeps it readable.
-              sql: "to_char(${TABLE}.order_month, 'YYYY-MM') || ' (' || to_char(${TABLE}.order_month, 'MMMM') || ')'"
+                Month name of order placement. The 'NN - ' prefix is
+                load-bearing: Lightdash sorts string filter dropdowns
+                alphabetically, so without it the values would render
+                April, August, December, ... rather than January, February,
+                March, ...
+              sql: "to_char(${TABLE}.order_month, 'MM') || ' - ' || to_char(${TABLE}.order_month, 'MMMM')"
       - name: email
         description: "Normalised customer email."
       - name: customer_id
