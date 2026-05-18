@@ -24,6 +24,14 @@ jobs:
 
       - run: pip install -r dbt/requirements.txt
 
+      - name: Write Snowflake private key
+        env:
+          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+        run: |
+          install -d -m 700 ~/.snowflake/keys
+          printf '%s' "$SNOWFLAKE_PRIVATE_KEY" > ~/.snowflake/keys/rsa_key.p8
+          chmod 600 ~/.snowflake/keys/rsa_key.p8
+
       - name: Generate profiles.yml
         working-directory: dbt/
         run: |
@@ -35,7 +43,7 @@ jobs:
                 type: snowflake
                 account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
                 user: "{{ env_var('SNOWFLAKE_USER') }}"
-                password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+                private_key_path: "{{ env_var('HOME') }}/.snowflake/keys/rsa_key.p8"
                 role: TRANSFORMER
                 database: HGI
                 warehouse: HGI_WH
@@ -52,7 +60,6 @@ jobs:
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
 
       - name: Upload manifest for CI
         uses: actions/upload-artifact@v4
