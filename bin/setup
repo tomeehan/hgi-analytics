@@ -263,6 +263,34 @@ Host hgi-lightdash
 $ssh_block_end
 SSHEOF
   ok "wrote hgi-airbyte + hgi-lightdash to ~/.ssh/config"
+
+  step "Auto-activating the .venv on bothy shell start"
+  # Append a marker-guarded block to both ~/.zshrc and ~/.bashrc so new shells
+  # (including `bothy connect` ones and tmux panes) land with the venv active.
+  # Marker block makes re-running this idempotent.
+  venv_block_start="# >>> hgi-analytics managed: venv auto-activate >>>"
+  venv_block_end="# <<< hgi-analytics managed: venv auto-activate <<<"
+  for rc in "$HOME/.zshrc" "$HOME/.bashrc"; do
+    [ -e "$rc" ] || touch "$rc"
+    if grep -qF "$venv_block_start" "$rc"; then
+      awk -v s="$venv_block_start" -v e="$venv_block_end" '
+        $0 == s { skip = 1; next }
+        $0 == e { skip = 0; next }
+        !skip   { print }
+      ' "$rc" > "$rc.tmp"
+      mv "$rc.tmp" "$rc"
+    fi
+    cat >> "$rc" <<RCEOF
+$venv_block_start
+# Activate the hgi-analytics venv on shell start. Skips if already active or
+# the venv hasn't been built yet (lets bin/setup run on a fresh box).
+if [ -f "$REPO_ROOT/.venv/bin/activate" ] && [ -z "\${VIRTUAL_ENV:-}" ]; then
+  . "$REPO_ROOT/.venv/bin/activate"
+fi
+$venv_block_end
+RCEOF
+  done
+  ok "venv auto-activate added to ~/.zshrc and ~/.bashrc"
 fi
 
 # ── final hint ─────────────────────────────────────────────────────────────
@@ -270,7 +298,8 @@ step "Setup complete"
 cat <<EOF
   Next steps:
     1. Edit ${BOLD}dbt/profiles.yml${RESET} with your Snowflake password (ask Tom).
-    2. Activate the venv:        ${BOLD}source .venv/bin/activate${RESET}
+    2. Open a new shell (so the venv auto-activates) or
+       ${BOLD}source .venv/bin/activate${RESET} in this one.
     3. Verify the connection:    ${BOLD}cd dbt && dbt debug${RESET}
     4. Build the project:        ${BOLD}cd dbt && dbt build${RESET}
 
