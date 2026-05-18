@@ -18,11 +18,11 @@ value re-format to match the new sortable label format.
     April 2026 / August 2024 ..." is the wrong order for users picking a
     month. Update the saved filter value to match the new format.
 
-PR: <to fill in> — fix(lightdash): KPI Report brand operator + sortable
-                   Month filter format
+PR: #34 — fix(lightdash): KPI Report brand operator + sortable Month
+          filter format
 Run after: lightdash_deploy.yml succeeds on main (so `order_month_label`
            reflects the new `'YYYY-MM (Month)'` SQL).
-Status: pending
+Status: applied 2026-05-19
 
 This is a ONE-SHOT migration. Idempotent: only modifies filters that
 still hold the old values.
