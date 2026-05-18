@@ -46,12 +46,17 @@ case "$PLATFORM" in
 esac
 
 # ── Linux: install python3 + venv via apt if missing (bothy runs as root) ───
+# Ubuntu splits python3 into multiple packages: the `venv` module is in stdlib,
+# but `ensurepip` (which `python3 -m venv` requires to bootstrap pip) ships in
+# python3-venv. So we check for `ensurepip`, not `venv`. Same goes for pip.
 if [ "$PLATFORM" = "Linux" ] && [ "$CHECK_ONLY" -eq 0 ]; then
-  if ! command -v python3 >/dev/null 2>&1 || ! python3 -c 'import venv' 2>/dev/null; then
-    step "Installing python3 + python3-venv via apt"
+  if ! command -v python3 >/dev/null 2>&1 \
+     || ! python3 -c 'import ensurepip' 2>/dev/null \
+     || ! python3 -c 'import pip' 2>/dev/null; then
+    step "Installing python3 + python3-venv + python3-pip via apt"
     apt-get update -qq
     apt-get install -y -qq python3 python3-venv python3-pip
-    ok "python3 + venv installed"
+    ok "python3 + venv + pip installed"
   fi
 fi
 
