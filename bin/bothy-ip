@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# bin/bothy-ip — refresh allowed_ssh_cidr in .bothy.yml AND the live
+# Hetzner firewall to your current public IP.
+#
+# Why: bothy reads allowed_ssh_cidr from .bothy.yml only at provision
+# time and applies it as a Hetzner firewall rule on the box. If your
+# public IP shifts (VPN flip, network change), SSH starts timing out
+# and `bothy connect` can't reach the server. This script handles both
+# the file and the live firewall, so `bothy connect` "just works" again.
+#
+# Usage:  ./bin/bothy-ip
+#
+# Run it before `bothy connect`, or any time SSH to the bothy box starts
+# timing out. Idempotent (no-op if your IP already matches).
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT"
+
+if [ ! -f .bothy.yml ]; then
+  echo ".bothy.yml not found — run \`bothy init\` first." >&2
+  exit 1
+fi
+
+if ! command -v hcloud >/dev/null 2>&1; then
+  echo "hcloud CLI not installed. Install it: brew install hcloud" >&2
+  exit 1
+fi
+
+CURRENT_IP=$(curl -fsS4 https://ifconfig.me)
+if [ -z "$CURRENT_IP" ]; then
+  echo "Could not detect public IP." >&2
+  exit 1
+fi
+NEW_CIDR="${CURRENT_IP}/32"
+
+# ── .bothy.yml ─────────────────────────────────────────────────────────────
+OLD_CIDR=$(awk '/^allowed_ssh_cidr:/ {print $2}' .bothy.yml || true)
+if [ "$OLD_CIDR" = "$NEW_CIDR" ]; then
+  echo "allowed_ssh_cidr already $NEW_CIDR — no .bothy.yml change."
+else
+  # sed -i.bak works on both BSD (mac) and GNU (linux).
+  sed -i.bak "s|^allowed_ssh_cidr:.*|allowed_ssh_cidr: $NEW_CIDR|" .bothy.yml
+  rm -f .bothy.yml.bak
+  echo "updated .bothy.yml: ${OLD_CIDR:-<none>} -> $NEW_CIDR"
+fi
+
+# ── live Hetzner firewall (if a bothy server exists) ───────────────────────
+PROJECT_NAME=$(awk '/^name:/ {print $2}' .bothy.yml || true)
+if [ -z "$PROJECT_NAME" ]; then
+  echo "no 'name:' in .bothy.yml — skipping live firewall update."
+  exit 0
+fi
+
+FIREWALL_ID=$(hcloud --context bothy server list -o json 2>/dev/null \
+  | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+for s in data:
+  if s['name'] == '$PROJECT_NAME':
+    fws = s['public_net'].get('firewalls', [])
+    if fws:
+      print(fws[0]['id'])
+    break
+")
+
+if [ -z "$FIREWALL_ID" ]; then
+  echo "no live bothy server for '$PROJECT_NAME' — .bothy.yml update is enough for next \`bothy connect\`."
+  exit 0
+fi
+
+RULES=$(mktemp)
+cat > "$RULES" <<JSON
+[{"direction":"in","protocol":"tcp","port":"22","source_ips":["$NEW_CIDR"]}]
+JSON
+hcloud --context bothy firewall replace-rules "$FIREWALL_ID" --rules-file "$RULES" >/dev/null
+rm -f "$RULES"
+echo "updated live firewall (id $FIREWALL_ID) to $NEW_CIDR"
