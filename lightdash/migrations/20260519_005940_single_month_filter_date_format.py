@@ -7,12 +7,12 @@ values as "April 2026" via numfmt while keeping the underlying type DATE
 — so the filter dropdown sorts chronologically out of the box and shows
 one clean dropdown of human-readable labels.
 
-PR: <to fill in> — feat(lightdash): single Month filter, chronological,
-                   rendered as "April 2026"
+PR: #38 — feat(lightdash): single Month filter, chronological,
+          rendered as "April 2026"
 Run after: lightdash_deploy.yml succeeds on main (so `order_month`
            inherits the new `format` and the now-unused `order_year` /
            `order_month_name` additional dimensions are gone).
-Status: pending
+Status: applied 2026-05-19
 
 This is a ONE-SHOT migration. Idempotent: only patches the KPI Report
 dashboard's filters, and only if the Year/Month combo is still present.
