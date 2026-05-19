@@ -15,4 +15,11 @@ unioned as (
     select * from isclinical
 )
 
-select * from unioned
+select
+    session_date,
+    date_trunc('month', session_date)::date as order_month,
+    store_id,
+    sessions,
+    engaged_sessions,
+    total_revenue
+from unioned
