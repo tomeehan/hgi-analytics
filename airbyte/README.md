@@ -11,6 +11,19 @@ on `hgi-airbyte` (daily, 7-day retention) — restore via
 The documentation below is the fallback if both the VM and all 7 backups are
 lost (unlikely).
 
+**Deployment-level config (helm values) IS in Git**: `airbyte/values.yaml`.
+To apply or update it on the VM:
+
+```sh
+ssh root@hgi-airbyte
+abctl local install --values /root/project/airbyte/values.yaml
+```
+
+Note: `abctl local install` is idempotent and performs a helm upgrade on the
+existing release. **It will restart Airbyte pods** and briefly interrupt any
+running sync. Drain the schedule (or wait until in-flight syncs settle)
+before applying if that matters.
+
 **Host:** `colmwca.pq47939.snowflakecomputing.com` (Snowflake account URL used by the destination below).
 
 ## Destination
