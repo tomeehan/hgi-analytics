@@ -860,14 +860,33 @@ models:
         description: "Klaviyo flow ID, null for campaign-attributed events."
 
   - name: fct_ga_sessions
-    description: "Daily GA4 sessions by store_id (one row per session_date × store_id). Sourced from BRONZE_GOOGLE_ANALYTICS_*.TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT aggregated across source/medium."
+    description: "Daily GA4 sessions by store_id (one row per session_date × store_id). Sourced from BRONZE_GOOGLE_ANALYTICS_*.TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT aggregated across source/medium. Currently iS Clinical only; Revitalash / Deese PRO / HGI GA4 connections not yet landed."
     meta:
       label: "GA Sessions"
     columns:
       - name: session_date
         tests: [not_null]
-      - name: store_id
+      - name: order_month
+        description: "First day of the month of session_date (date_trunc month). Mirrors fct_orders.order_month so the dashboard Month filter cross-applies."
         tests: [not_null]
+        meta:
+          dimension:
+            label: "Month (date)"
+          additional_dimensions:
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Compact YYYY-MM label for the dashboard's Month filter; mirrors fct_orders.order_month_label so the KPI Report's Month filter cross-applies via field-name lookup."
+              sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
+      - name: store_id
+        description: "Brand identifier."
+        tests: [not_null]
+        meta:
+          dimension:
+            label: "Brand"
+            # Same human-readable rename as fct_orders.store_id (CLAUDE.md →
+            # store-name display mapping). Keep in sync across Gold models.
+            sql: "case ${TABLE}.store_id when 'revitalash' then 'Revitalash' when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
       - name: sessions
         meta:
           metrics:
