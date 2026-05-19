@@ -35,6 +35,7 @@ sources:
     schema: BRONZE_GOOGLE_ANALYTICS_ISCLINICAL
     tables:
       - name: traffic_acquisition_session_source_medium_report
+      - name: events_report
 
   - name: bronze_klaviyo_isclinical
     database: HGI
