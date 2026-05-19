@@ -911,6 +911,106 @@ models:
               format: "gbp"
               round: 0
 
+  - name: fct_brand_monthly_summary
+    description: "Per-brand, per-month rollup powering the KPI Report's 'April at a glance' table (PDF p.2). Outer-joined across Shopify (orders + revenue), GA4 (sessions + revenue + transactions). One row per (store_id, order_month). Brands without GA4 connections render with zero / null GA metrics."
+    meta:
+      label: "Brand Monthly Summary"
+    columns:
+      - name: store_id
+        description: "Brand identifier."
+        tests:
+          - not_null
+        meta:
+          dimension:
+            label: "Brand"
+            sql: "case ${TABLE}.store_id when 'revitalash' then 'Revitalash' when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+      - name: order_month
+        description: "First day of the month."
+        tests:
+          - not_null
+        meta:
+          dimension:
+            label: "Month (date)"
+          additional_dimensions:
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Compact YYYY-MM label; mirrors fct_orders.order_month_label so the KPI Report's Month filter cross-applies via field-name lookup."
+              sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
+      - name: shopify_revenue
+        description: "Sum of Shopify total_price for the month and brand."
+        meta:
+          dimension:
+            label: "Revenue (Shopify)"
+            format: "gbp"
+            round: 0
+          metrics:
+            total_shopify_revenue:
+              type: sum
+              label: "Revenue (Shopify)"
+              format: "gbp"
+              round: 0
+      - name: shopify_orders
+        description: "Count of Shopify orders."
+        meta:
+          dimension:
+            label: "Shopify Orders"
+            round: 0
+          metrics:
+            total_shopify_orders:
+              type: sum
+              label: "Shopify Orders"
+              round: 0
+      - name: ga_sessions
+        description: "Sum of GA4 sessions."
+        meta:
+          dimension:
+            label: "Sessions"
+            round: 0
+          metrics:
+            total_ga_sessions:
+              type: sum
+              label: "Sessions"
+              round: 0
+      - name: ga_revenue
+        description: "GA4-attributed revenue."
+        meta:
+          dimension:
+            label: "GA Revenue"
+            format: "gbp"
+            round: 0
+          metrics:
+            total_ga_revenue:
+              type: sum
+              label: "GA Revenue"
+              format: "gbp"
+              round: 0
+      - name: ga_transactions
+        description: "GA4 purchase event count (transactions)."
+        meta:
+          dimension:
+            label: "Trans (GA)"
+            round: 0
+          metrics:
+            total_ga_transactions:
+              type: sum
+              label: "Trans (GA)"
+              round: 0
+      - name: shopify_cvr_pct
+        description: "Shopify orders divided by GA sessions, as a percentage."
+        meta:
+          dimension:
+            label: "Shopify CVR"
+            format: "percent"
+            round: 2
+      - name: shopify_rps_gbp
+        description: "Shopify revenue divided by GA sessions (revenue per session, GBP)."
+        meta:
+          dimension:
+            label: "Shopify RPS"
+            format: "gbp"
+            round: 2
+
   - name: fct_marketing_kpis_daily
     description: "Daily marketing KPIs for isClinical: revenue, orders, ad spend, sessions, plus blended ROAS / CAC / conversion-rate. Each metric is declared twice — *_l30d (last 30 days) and *_p30d (prior 30 days, i.e. 30-60 days ago) — so Big Number tiles render headline + previous-period comparison via the chart's selectedField + comparisonField. Period windows are baked into each metric's SQL via `case when date >= current_date - 30`, so charts don't need a date filter."
     meta:
