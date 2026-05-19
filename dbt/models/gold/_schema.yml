@@ -73,30 +73,16 @@ models:
         description: "Month the order was placed (first day of month)."
         meta:
           dimension:
-            label: "Month (date)"
-            # Stays DATE so relative filters like `inThePast` keep working
-            # ("This vs Last Month" charts depend on this). For human-facing
-            # dashboard filters use the two additional dimensions below.
-          additional_dimensions:
-            # Two-filter combo (Year + Month name) gives short, clean
-            # dropdowns. Each prefix-with-MM keeps month names chronologically
-            # sortable in Lightdash's alphabetical string dropdown.
-            # Order Year + Order Month together pin a calendar month.
-            order_year:
-              type: string
-              label: "Year"
-              description: "Year of order placement (YYYY)."
-              sql: "to_char(${TABLE}.order_month, 'YYYY')"
-            order_month_name:
-              type: string
-              label: "Month"
-              description: >
-                Month name of order placement. The 'NN - ' prefix is
-                load-bearing: Lightdash sorts string filter dropdowns
-                alphabetically, so without it the values would render
-                April, August, December, ... rather than January, February,
-                March, ...
-              sql: "to_char(${TABLE}.order_month, 'MM') || ' - ' || to_char(${TABLE}.order_month, 'MMMM')"
+            label: "Month"
+            # `format: 'mmmm yyyy'` is a numfmt (Excel-style) pattern. Lightdash
+            # treats non-Format-enum strings as CUSTOM and runs them through
+            # numfmt; for a Date-typed column this renders values like
+            # "April 2026" while keeping the underlying type DATE — so the
+            # filter dropdown sorts chronologically rather than
+            # alphabetically. The base column also stays usable for
+            # date-arithmetic operators (inThePast / inBetween / etc.) on
+            # charts that need them, e.g. "This vs Last Month".
+            format: "mmmm yyyy"
       - name: email
         description: "Normalised customer email."
       - name: customer_id
