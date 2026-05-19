@@ -792,6 +792,60 @@ models:
               format: "gbp"
               round: 0
 
+  - name: fct_klaviyo_revenue
+    description: "Klaviyo Placed Order revenue attributed to a campaign or a flow within Klaviyo's 5-day attribution window. Grain: one row per Placed Order event. Both campaign-attributed and flow-attributed rows are kept; sum(revenue) reproduces the PDF's hero 'Combined Klaviyo Revenue' figure."
+    meta:
+      label: "Klaviyo Revenue"
+    columns:
+      - name: event_id
+        description: "Klaviyo event ID (one per Placed Order)."
+        tests:
+          - not_null
+          - unique
+      - name: store_id
+        description: "Brand identifier."
+        tests:
+          - not_null
+        meta:
+          dimension:
+            label: "Brand"
+            # Keep in sync with fct_orders.store_id and fct_ad_spend.store_id
+            # (CLAUDE.md → store-name display mapping).
+            sql: "case ${TABLE}.store_id when 'revitalash' then 'Revitalash' when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'harper_grace' then 'Harper Grace' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+      - name: order_month
+        description: "First day of the month the Placed Order event occurred (date_trunc month of occurred_at). Mirrors fct_orders.order_month so the dashboard's Month filter cross-applies."
+        tests:
+          - not_null
+        meta:
+          dimension:
+            label: "Month (date)"
+          additional_dimensions:
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Compact YYYY-MM label for human-facing dashboard month filters; mirrors fct_orders.order_month_label so the KPI Report's Month filter cross-applies via field-name lookup."
+              sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
+      - name: occurred_at
+        description: "Timestamp of the Placed Order event."
+      - name: revenue
+        description: "Order value attributed to Klaviyo (5-day window)."
+        meta:
+          metrics:
+            total_klaviyo_revenue:
+              type: sum
+              label: "Klaviyo Revenue"
+              format: "gbp"
+              round: 0
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: attribution_kind
+        description: "campaign or flow."
+      - name: campaign_id
+        description: "Klaviyo campaign ID, null for flow-attributed events."
+      - name: flow_id
+        description: "Klaviyo flow ID, null for campaign-attributed events."
+
   - name: fct_ga_sessions
     description: "Daily GA4 sessions by store_id (one row per session_date × store_id). Sourced from BRONZE_GOOGLE_ANALYTICS_*.TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT aggregated across source/medium."
     meta:
