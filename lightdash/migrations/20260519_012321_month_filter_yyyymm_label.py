@@ -7,10 +7,10 @@ proper string dropdown sorted chronologically (`2025-12`, `2026-01`,
 with `format: 'mmmm yyyy'` failed — Lightdash gave a date-picker UI and
 ignored the format on the filter chip.
 
-PR: <to fill in> — feat(lightdash): single Month filter as YYYY-MM string
+PR: #40 — feat(lightdash): single Month filter as YYYY-MM string
 Run after: lightdash_deploy.yml succeeds on main (so `order_month_label`
            is registered in the Lightdash explore).
-Status: pending
+Status: applied 2026-05-19
 
 Idempotent: only patches if the filter still targets `fct_orders_order_month`.
 
