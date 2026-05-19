@@ -40,6 +40,18 @@ global:
   #     `value:` and `valueFrom:`. The helm upgrade is rejected.
   workloads:
     resources:
+      # The chart defaults this to true, which makes Airbyte apply the
+      # per-connector resource defaults from the connector registry
+      # (e.g. source-bigquery's metadata sets memory=2Gi) and IGNORE
+      # the global JOB_MAIN_CONTAINER_MEMORY_LIMIT below. Empirically
+      # verified: with this flag at its default, the spawned pod's
+      # source container ran at memory=2Gi even after the configmap
+      # had JOB_MAIN_CONTAINER_MEMORY_LIMIT=8Gi. Setting it to false
+      # makes the global limit apply uniformly across every connector
+      # pod the workload-launcher spawns. With 15+ GB free on the VM
+      # this is safe even when concurrent syncs run; pod requests stay
+      # at 2Gi so the scheduler won't over-commit.
+      useConnectorResourceDefaults: false
       mainContainer:
         memory:
           limit: 8Gi
