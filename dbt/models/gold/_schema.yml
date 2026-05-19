@@ -73,16 +73,29 @@ models:
         description: "Month the order was placed (first day of month)."
         meta:
           dimension:
-            label: "Month"
-            # `format: 'mmmm yyyy'` is a numfmt (Excel-style) pattern. Lightdash
-            # treats non-Format-enum strings as CUSTOM and runs them through
-            # numfmt; for a Date-typed column this renders values like
-            # "April 2026" while keeping the underlying type DATE — so the
-            # filter dropdown sorts chronologically rather than
-            # alphabetically. The base column also stays usable for
-            # date-arithmetic operators (inThePast / inBetween / etc.) on
-            # charts that need them, e.g. "This vs Last Month".
-            format: "mmmm yyyy"
+            label: "Month (date)"
+            # Stays a DATE for charts using relative-date operators (inThePast,
+            # inBetween — e.g. "This vs Last Month"). Don't surface this one in
+            # human-facing dashboard filters because Lightdash forces a date
+            # picker UI rather than a dropdown for DATE columns.
+          additional_dimensions:
+            # Human-facing single-Month dashboard filter.
+            # Encoded as a string "YYYY-MM" because Lightdash sorts string
+            # filter dropdowns alphabetically (verified in
+            # fieldValuesQueryBuilder.js: hardcoded ORDER BY <field> ASC).
+            # "YYYY-MM" is the only encoding that's simultaneously
+            #   (a) a string (so we get a dropdown, not a date-picker),
+            #   (b) lex-sorted == chronological,
+            #   (c) compact (7 chars), and
+            #   (d) unambiguous about the month.
+            # The full "April 2026" form would force alphabetical sort
+            # ("April 2024 / April 2025 / August 2024 / ..."); the
+            # "YYYY-MM (April)" hybrid was rejected as too noisy.
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Compact YYYY-MM label for human-facing dashboard month filters."
+              sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
       - name: email
         description: "Normalised customer email."
       - name: customer_id
