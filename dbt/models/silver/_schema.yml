@@ -36,7 +36,7 @@ models:
         description: "Normalised customer email (nullable for guest/partial records)."
 
   - name: stg_klaviyo__events
-    description: "Klaviyo events unioned across isClinical, Deese Pro, and Harper Grace."
+    description: "Klaviyo events unioned across iSClinical, Deese Pro, Revitalash. Harper Grace is declared as a Bronze source but its EVENTS table has no rows yet (per airbyte/README.md; under investigation), so it's intentionally excluded from this union until the sync lands."
     columns:
       - name: event_id
         description: "Klaviyo event ID."
@@ -47,6 +47,20 @@ models:
         tests:
           - not_null
       - name: occurred_at
+        tests:
+          - not_null
+
+  - name: stg_klaviyo__placed_orders
+    description: "Klaviyo Placed Order events with attribution kind (campaign / flow / unattributed) derived from $campaign_id and $flow_id event_properties."
+    columns:
+      - name: event_id
+        tests:
+          - not_null
+          - unique
+      - name: store_id
+        tests:
+          - not_null
+      - name: order_month
         tests:
           - not_null
 

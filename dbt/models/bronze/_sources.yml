@@ -43,6 +43,7 @@ sources:
       - name: events
       - name: campaigns
       - name: campaign_values_reports
+      - name: metrics
       - name: profiles
 
   - name: bronze_klaviyo_deese_pro
@@ -52,6 +53,7 @@ sources:
       - name: events
       - name: campaigns
       - name: campaign_values_reports
+      - name: metrics
       - name: profiles
 
   - name: bronze_klaviyo_harper_grace
@@ -61,6 +63,17 @@ sources:
       - name: events
       - name: campaigns
       - name: campaign_values_reports
+      - name: metrics
+      - name: profiles
+
+  - name: bronze_klaviyo_revitalash
+    database: HGI
+    schema: BRONZE_KLAVIYO_REVITALASH
+    tables:
+      - name: events
+      - name: campaigns
+      - name: campaign_values_reports
+      - name: metrics
       - name: profiles
 
   - name: bronze_shopify_deese_pro
