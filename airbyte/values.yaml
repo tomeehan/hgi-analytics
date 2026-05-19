@@ -5,7 +5,7 @@
 #
 # (abctl detects the existing install and helm-upgrades in place. The
 # upgrade will restart Airbyte pods, briefly interrupting any running
-# sync — drain the schedule first if that matters.)
+# sync. Drain the schedule first if that matters.)
 #
 # WHY THIS FILE EXISTS
 # --------------------
@@ -17,16 +17,20 @@
 # shape; `airbyte/README.md` documents how to apply it.
 
 global:
-  # Bump per-job container memory from the default 2Gi → 8Gi. The
-  # BigQuery source for "Google Ads iSClinical → HGI Snowflake" OOMs
-  # at the 2Gi default after reading ~800 MB across its 214 streams
+  # Per-job container memory cap. Airbyte's workload-launcher reads
+  # JOB_MAIN_CONTAINER_MEMORY_LIMIT from the airbyte-env configmap and
+  # applies it as the K8s memory limit on every connector pod it spawns.
+  # The BigQuery source for "Google Ads iSClinical → HGI Snowflake"
+  # OOMs at the chart default after reading ~800 MB across 214 streams
   # (java.lang.OutOfMemoryError: Java heap space). The Hetzner VM has
-  # 30 GB total RAM and ~15 GB free, so 8Gi per job is comfortably
-  # within budget. Request stays at 2Gi so the pod scheduler doesn't
-  # over-commit when concurrent syncs run.
-  jobs:
-    resources:
-      limits:
-        memory: 8Gi
-      requests:
-        memory: 2Gi
+  # 30 GB total RAM and ~15 GB free, so 8Gi per job is comfortably within
+  # budget. Request stays at 2Gi so the scheduler doesn't over-commit
+  # when concurrent syncs run.
+  #
+  # Setting env vars directly via global.env_vars is the documented knob
+  # for populating the airbyte-env configmap (it's already in use for
+  # AIRBYTE_INSTALLATION_ID). `global.jobs.resources.*` was tried first
+  # but in chart v2.1.0 it does not flow into JOB_MAIN_CONTAINER_MEMORY_*.
+  env_vars:
+    JOB_MAIN_CONTAINER_MEMORY_LIMIT: 8Gi
+    JOB_MAIN_CONTAINER_MEMORY_REQUEST: 2Gi
