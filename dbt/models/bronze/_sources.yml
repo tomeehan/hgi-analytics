@@ -18,6 +18,18 @@ sources:
     tables:
       - name: ads_insights
 
+  - name: bronze_meta_deese_pro
+    database: HGI
+    schema: BRONZE_META_DEESE_PRO
+    tables:
+      - name: ads_insights
+
+  - name: bronze_meta_revitalash
+    database: HGI
+    schema: BRONZE_META_REVITALASH
+    tables:
+      - name: ads_insights
+
   - name: bronze_google_analytics_isclinical
     database: HGI
     schema: BRONZE_GOOGLE_ANALYTICS_ISCLINICAL

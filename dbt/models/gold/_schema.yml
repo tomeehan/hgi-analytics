@@ -733,16 +733,24 @@ models:
       - name: delivery_postcode
 
   - name: fct_ad_spend
-    description: "Daily Meta ad spend by store_id (one row per spend_date × store_id). Sourced from BRONZE_META_*.ADS_INSIGHTS aggregated to daily; purchases / purchase_value are extracted from the ACTIONS / ACTION_VALUES JSON arrays where action_type='purchase'."
+    description: "Daily Meta ad spend by store_id (one row per spend_date × store_id), unioned across iS Clinical, Deese PRO, and Revitalash. Sourced from BRONZE_META_*.ADS_INSIGHTS aggregated to daily; purchases / purchase_value are extracted from the ACTIONS / ACTION_VALUES JSON arrays where action_type='purchase'."
     meta:
       label: "Ad Spend"
     columns:
       - name: spend_date
         description: "Activity date."
         tests: [not_null]
+      - name: order_month
+        description: "First day of the month spend was recorded (date_trunc month of spend_date). Mirrors fct_orders.order_month so the dashboard Month filter cross-applies."
       - name: store_id
         description: "Brand identifier."
         tests: [not_null]
+        meta:
+          dimension:
+            label: "Brand"
+            # Same human-readable rename as fct_orders.store_id (per ticket 001
+            # and CLAUDE.md → store-name display mapping). Keep in sync.
+            sql: "case ${TABLE}.store_id when 'revitalash' then 'Revitalash' when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
       - name: spend
         description: "Total Meta ad spend."
         meta:
