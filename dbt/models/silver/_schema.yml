@@ -50,6 +50,21 @@ models:
         tests:
           - not_null
 
+  - name: stg_klaviyo__metrics
+    description: "Klaviyo metrics catalogue unioned across loaded accounts (iSClinical, Deese PRO). Used as a join source for resolving Placed Order events; not a standalone explore."
+    columns:
+      - name: metric_id
+        description: "Klaviyo metric ID."
+        tests:
+          - not_null
+      - name: metric_name
+        description: "Human-readable metric name (e.g. 'Placed Order')."
+        tests:
+          - not_null
+      - name: store_id
+        tests:
+          - not_null
+
   - name: stg_klaviyo__placed_orders
     description: "Klaviyo Placed Order events with attribution kind (campaign / flow / unattributed) derived from $campaign_id and $flow_id event_properties."
     columns:
