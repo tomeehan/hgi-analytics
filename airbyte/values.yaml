@@ -17,20 +17,30 @@
 # shape; `airbyte/README.md` documents how to apply it.
 
 global:
-  # Per-job container memory cap. Airbyte's workload-launcher reads
-  # JOB_MAIN_CONTAINER_MEMORY_LIMIT from the airbyte-env configmap and
-  # applies it as the K8s memory limit on every connector pod it spawns.
-  # The BigQuery source for "Google Ads iSClinical → HGI Snowflake"
-  # OOMs at the chart default after reading ~800 MB across 214 streams
-  # (java.lang.OutOfMemoryError: Java heap space). The Hetzner VM has
-  # 30 GB total RAM and ~15 GB free, so 8Gi per job is comfortably within
-  # budget. Request stays at 2Gi so the scheduler doesn't over-commit
-  # when concurrent syncs run.
+  # Per-job container memory cap. The BigQuery source for "Google Ads
+  # iSClinical → HGI Snowflake" OOMs at the chart default after reading
+  # ~800 MB across 214 streams (java.lang.OutOfMemoryError: Java heap
+  # space). The Hetzner VM has 30 GB total RAM and ~15 GB free, so 8Gi
+  # per job is comfortably within budget. Request stays at 2Gi so the
+  # scheduler doesn't over-commit when concurrent syncs run.
   #
-  # Setting env vars directly via global.env_vars is the documented knob
-  # for populating the airbyte-env configmap (it's already in use for
-  # AIRBYTE_INSTALLATION_ID). `global.jobs.resources.*` was tried first
-  # but in chart v2.1.0 it does not flow into JOB_MAIN_CONTAINER_MEMORY_*.
-  env_vars:
-    JOB_MAIN_CONTAINER_MEMORY_LIMIT: 8Gi
-    JOB_MAIN_CONTAINER_MEMORY_REQUEST: 2Gi
+  # In Airbyte chart v2.1.0 the `mainContainer.memory.{limit,request}`
+  # values flow into the JOB_MAIN_CONTAINER_MEMORY_{LIMIT,REQUEST}
+  # entries of the airbyte-env configmap (templates/config/_workloads.tpl
+  # lines 357-389, 750-751). The workload-launcher reads those from the
+  # configmap and applies them as the K8s resource constraints on every
+  # connector pod it spawns.
+  #
+  # Other paths tried and rejected:
+  #   - `global.jobs.resources.*` — exists in chart defaults but is not
+  #     templated into the configmap; setting it has no effect.
+  #   - `global.env_vars.JOB_MAIN_CONTAINER_MEMORY_LIMIT` — collides
+  #     with the chart-defined env var that already uses `valueFrom:
+  #     configMapKeyRef`, producing an invalid env entry with both
+  #     `value:` and `valueFrom:`. The helm upgrade is rejected.
+  workloads:
+    resources:
+      mainContainer:
+        memory:
+          limit: 8Gi
+          request: 2Gi
