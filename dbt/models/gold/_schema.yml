@@ -742,6 +742,19 @@ models:
         tests: [not_null]
       - name: order_month
         description: "First day of the month spend was recorded (date_trunc month of spend_date). Mirrors fct_orders.order_month so the dashboard Month filter cross-applies."
+        meta:
+          dimension:
+            label: "Month (date)"
+          additional_dimensions:
+            # Mirrors fct_orders.order_month_label so the KPI Report's Month
+            # filter (on fct_orders_order_month_label) cross-applies to
+            # Meta-spend tiles via Lightdash's "same field name" lookup. See
+            # CLAUDE.md → "Group dashboard filter convention".
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Compact YYYY-MM label for human-facing dashboard month filters."
+              sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
       - name: store_id
         description: "Brand identifier."
         tests: [not_null]
