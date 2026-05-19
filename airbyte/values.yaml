@@ -1,0 +1,32 @@
+# Airbyte helm chart values for the hgi-airbyte Hetzner deployment.
+#
+# Apply on the VM with:
+#   abctl local install --values airbyte/values.yaml
+#
+# (abctl detects the existing install and helm-upgrades in place. The
+# upgrade will restart Airbyte pods, briefly interrupting any running
+# sync — drain the schedule first if that matters.)
+#
+# WHY THIS FILE EXISTS
+# --------------------
+# Per CLAUDE.md, Airbyte connection configs live on the VM disk
+# (Airbyte's internal Postgres) and are intentionally not in git.
+# Deployment-level config like resource limits is a different story:
+# losing this on a VM rebuild means re-debugging the OOM that motivated
+# it. So this file is the canonical source of truth for the cluster
+# shape; `airbyte/README.md` documents how to apply it.
+
+global:
+  # Bump per-job container memory from the default 2Gi → 8Gi. The
+  # BigQuery source for "Google Ads iSClinical → HGI Snowflake" OOMs
+  # at the 2Gi default after reading ~800 MB across its 214 streams
+  # (java.lang.OutOfMemoryError: Java heap space). The Hetzner VM has
+  # 30 GB total RAM and ~15 GB free, so 8Gi per job is comfortably
+  # within budget. Request stays at 2Gi so the pod scheduler doesn't
+  # over-commit when concurrent syncs run.
+  jobs:
+    resources:
+      limits:
+        memory: 8Gi
+      requests:
+        memory: 2Gi
