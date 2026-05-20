@@ -1,0 +1,44 @@
+# Source: April 2026 KPI Report, page 13 (IS CLINICAL, Traffic, conversion, PR, customer mix, AOV)
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: false
+  type: table
+contentType: chart
+description: >-
+  Top GA4 traffic-acquisition source/medium combinations for iS Clinical,
+  ranked by sessions, mirroring panel 2A on KPI Report page 13. The PDF panel
+  also shows a per-source transactions column; GA4 has no source/medium-
+  dimensioned purchase-event report, so that column is omitted here.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_ga_source_medium_source_medium
+  exploreName: fct_ga_source_medium
+  filters: {}
+  limit: 8
+  metricOverrides: {}
+  metrics:
+    - fct_ga_source_medium_total_ga_source_medium_sessions
+    - fct_ga_source_medium_total_ga_source_medium_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_ga_source_medium_total_ga_source_medium_sessions
+  tableCalculations: []
+name: iS Clinical Top Traffic Sources (GA4)
+slug: isclinical-top-traffic-sources
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_ga_source_medium_source_medium
+    - fct_ga_source_medium_total_ga_source_medium_sessions
+    - fct_ga_source_medium_total_ga_source_medium_revenue
+tableName: fct_ga_source_medium
+verification: null
+version: 1

@@ -334,6 +334,26 @@ models:
       - name: users
         description: "GA4 purchase event count (used as transactions for the cross-brand KPI table)."
 
+  - name: stg_google_analytics__source_medium
+    description: "GA4 sessions and GA-attributed revenue at session_date x store_id x source/medium grain, aggregated from TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT. Unlike stg_google_analytics__sessions (which collapses source/medium away), this model keeps the source/medium dimension so dashboards can rank traffic by source. No transactions column: the source/medium Bronze report has no purchase-event count and no GA4 events report carries the source/medium dimension. The Bronze DATE column is text in YYYYMMDD format and is cast to a date here. Currently iS Clinical only."
+    columns:
+      - name: session_date
+        tests:
+          - not_null
+      - name: order_month
+        tests:
+          - not_null
+      - name: store_id
+        tests:
+          - not_null
+      - name: source_medium
+        description: "GA4 session source / medium pair (e.g. 'google / organic')."
+        tests:
+          - not_null
+      - name: sessions
+      - name: revenue
+        description: "GA-attributed revenue (purchase events) for the source/medium."
+
   - name: stg_shopify__order_refunds
     description: "Per-order Shopify refund amounts. Sourced from BRONZE_SHOPIFY_*.ORDER_REFUNDS by LATERAL FLATTEN over the TRANSACTIONS array, summing amount where kind='refund' and status='success'. One row per order with refunds."
     columns:

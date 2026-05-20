@@ -37,6 +37,9 @@ filters:
         isclinical-ga-aov:
           fieldId: fct_ga_sessions_order_month_label
           tableName: fct_ga_sessions
+        isclinical-top-traffic-sources:
+          fieldId: fct_ga_source_medium_order_month_label
+          tableName: fct_ga_source_medium
       values:
         - 2026-04
   metrics: []
@@ -245,5 +248,17 @@ tiles:
     w: 8
     x: 28
     "y": 21
+  - h: 7
+    properties:
+      chartName: iS Clinical Top Traffic Sources (GA4)
+      chartSlug: isclinical-top-traffic-sources
+      hideTitle: false
+      title: Top Traffic Sources by Sessions (GA4)
+    tabUuid: null
+    tileSlug: isclinical-top-traffic-sources
+    type: saved_chart
+    w: 18
+    x: 0
+    "y": 25
 verification: null
 version: 1
