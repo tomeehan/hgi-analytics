@@ -1,0 +1,83 @@
+# Source: April 2026 KPI Report, page 14 (4. Customer Mix & 5. AOV Split)
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: true
+    showRowCalculation: false
+    showTableNames: false
+  type: table
+contentType: chart
+description: >-
+  iS Clinical Shopify orders for the month split into new customers (their first
+  ever order, is_first_order = 1) and returning customers, mirroring the CUSTOMER
+  MIX & AOV SPLIT table on KPI Report page 14. Five value columns per segment:
+  order count, share of orders, net revenue, share of revenue and AOV. The
+  Overall row is the table's column-total row. Net revenue is net_sales
+  (total_price minus refunds); AOV is net revenue divided by orders. Responds to
+  the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_orders_customer_type
+  exploreName: fct_orders
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_orders_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 500
+  metricOverrides: {}
+  metrics:
+    - fct_orders_order_count
+    - fct_orders_total_net_sales
+  sorts:
+    - descending: false
+      fieldId: fct_orders_customer_type
+  tableCalculations:
+    - displayName: "% Orders"
+      format:
+        round: 1
+        type: percent
+      name: pct_orders
+      sql: >-
+        ${fct_orders.order_count} / NULLIF(SUM(${fct_orders.order_count}) OVER
+        (), 0)
+    - displayName: "% Revenue"
+      format:
+        round: 1
+        type: percent
+      name: pct_revenue
+      sql: >-
+        ${fct_orders.total_net_sales} / NULLIF(SUM(${fct_orders.total_net_sales})
+        OVER (), 0)
+    - displayName: AOV
+      format:
+        currency: GBP
+        round: 2
+        type: currency
+      name: aov
+      sql: >-
+        ${fct_orders.total_net_sales} / NULLIF(${fct_orders.order_count}, 0)
+name: iS Clinical Customer Mix & AOV Split
+slug: customer-mix-aov-split
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_orders_customer_type
+    - fct_orders_order_count
+    - pct_orders
+    - fct_orders_total_net_sales
+    - pct_revenue
+    - aov
+tableName: fct_orders
+verification: null
+version: 1

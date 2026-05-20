@@ -306,5 +306,33 @@ tiles:
     w: 36
     x: 0
     "y": 33
+  - h: 1
+    properties:
+      content: >-
+        ## Customer mix & AOV split (Shopify)
+
+        Page 14 of the April 2026 KPI Report. iS Clinical Shopify orders for the
+        month split into new customers (first ever order) and returning
+        customers, with order count, share of orders, net revenue, share of
+        revenue and AOV per segment. The Overall row is the table total. Shopify
+        is the source of truth.
+      title: Customer mix & AOV split (Shopify)
+    tabUuid: null
+    type: markdown
+    w: 36
+    x: 0
+    "y": 39
+  - h: 5
+    properties:
+      chartName: iS Clinical Customer Mix & AOV Split
+      chartSlug: customer-mix-aov-split
+      hideTitle: false
+      title: Customer Mix & AOV Split (Shopify)
+    tabUuid: null
+    tileSlug: customer-mix-aov-split
+    type: saved_chart
+    w: 36
+    x: 0
+    "y": 40
 verification: null
 version: 1
