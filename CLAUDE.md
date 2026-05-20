@@ -87,10 +87,14 @@ hgi-analytics/
 │   │   ├── silver/       stg_* models
 │   │   └── gold/         fct_*, dim_*
 │   └── tests/            (macros/ and a metrics/ layer will be added when needed)
-├── lightdash/            deployment notes (live config lives on the Hetzner server at /opt/lightdash/)
+├── lightdash/            Lightdash content-as-code + deployment notes
+│   ├── charts/           chart YAML (dashboards-as-code; `lightdash download`/`upload`)
+│   ├── dashboards/       dashboard YAML, one file per dashboard (slug-named)
+│   └── migrations/       frozen legacy API scripts (audit history; do not extend)
 └── .github/workflows/
     ├── dbt_ci.yml        runs on PRs — `state:modified+` slim CI
-    └── dbt_run.yml       scheduled daily production build + Slack on failure
+    ├── dbt_run.yml       scheduled daily production build + Slack on failure
+    └── lightdash_deploy.yml  on push to main: `lightdash deploy` + `lightdash upload` (content)
 ```
 
 ## Conventions
@@ -133,6 +137,71 @@ hgi-analytics/
   - **Cross-source SKU joins are deferred** — CRM `product_items.sku` does not align cleanly with Shopify SKUs and `web_product_reference` is null in samples. Build a manual mapping table when product-level analytics is needed.
   - **Account manager names are not exposed** — `accountmanagerid` is an opaque GUID; revisit if Prospect adds a users API.
   - **CRM Bronze schema is `LOADER`-owned + has a regrant task.** `BRONZE_PROSPECT_CRM` was migrated to `LOADER` ownership (the canonical pattern, see `airbyte/README.md` "Provisioning a Bronze schema"). Two streams (`sales_order_headers`, `sales_invoice_headers`) are `full_refresh_overwrite`. Airbyte writes those via `ALTER TABLE ... SWAP WITH`, which keeps grants attached to the object (not the name), so the live table loses TRANSFORMER's SELECT grant on every sync. Schema-level future grants do not refire on SWAP-renamed objects. The serverless task `HGI.PUBLIC.REGRANT_PROSPECT_CRM_BRONZE_SELECT` runs every 30 minutes to re-grant SELECT and keep dbt CI green. See `airbyte/README.md` "Full-refresh grants gotcha" for the DDL and the verification query. Any future source that adds a `full_refresh_overwrite` stream needs the same task pattern.
+
+## Lightdash dashboards-as-code
+
+Charts and dashboards are managed as YAML, edited locally and synced with the
+Lightdash CLI (`lightdash download` / `lightdash upload`; the CLI version is
+pinned in `.github/workflows/lightdash_deploy.yml`). This replaces the old
+`lightdash/migrations/` approach of POSTing to the REST API.
+
+- **Source of truth** is `lightdash/charts/<slug>.yml` and
+  `lightdash/dashboards/<slug>.yml`: one file per object, named by slug. A
+  `git diff` on those files is the audit trail.
+- **`lightdash deploy` vs `lightdash upload`.** `deploy` only refreshes the
+  semantic layer (dbt metrics and dimensions); it does not change chart or
+  dashboard config. `upload` is what pushes chart and dashboard YAML.
+- **SQL Runner charts are not covered** by content-as-code. If a dashboard
+  has one, that tile stays UI-only.
+- **`lightdash/migrations/` is frozen** legacy history. Never add to it,
+  never re-run it, and ignore the retired `bin/new-lightdash-migration`
+  scaffold.
+- **One-time setup.** Authenticate the CLI with `lightdash login` (or the
+  `LIGHTDASH_URL` / `LIGHTDASH_API_KEY` / `LIGHTDASH_PROJECT` env vars; the
+  repo `.env` already holds Lightdash credentials), then
+  `lightdash config set-project`. Run `lightdash install-skills` once to add
+  Lightdash's editing skill for Claude Code.
+
+### Developing a change (visible in Lightdash before merge)
+
+A preview project lets you see the change rendered in Lightdash without
+touching production dashboards. Run these from the repo root.
+
+1. Branch off `main`.
+2. `lightdash download` to refresh the local YAML from production, so you
+   start editing from live state.
+3. Edit the YAML for the chart(s) or dashboard(s) you are changing.
+4. `lightdash lint` to validate the YAML against Lightdash's JSON schema (no
+   network). Optionally `lightdash run-chart lightdash/charts/<slug>.yml` to
+   confirm a chart's query still runs against the warehouse.
+5. Create a preview project and push the YAML into it:
+
+   ```sh
+   lightdash start-preview --name "$(git branch --show-current)" \
+     --project-dir dbt --profiles-dir dbt
+   # take the preview project UUID from the printed preview URL, then:
+   lightdash upload --force --validate --project <preview-uuid>
+   ```
+
+6. Open the preview URL in the browser: that is your change, live, on a
+   throwaway project, with production untouched. Iterate by editing the YAML
+   and re-running the `lightdash upload` command above.
+7. Tear the preview down when finished:
+   `lightdash stop-preview --name "$(git branch --show-current)"`.
+
+### Shipping it (PR workflow)
+
+8. Commit the changed `lightdash/**/*.yml` files: that diff is the review.
+9. Open a PR. Never push to `main` (see the PR-only deploy convention).
+10. On merge, `lightdash_deploy.yml` runs `lightdash deploy` (semantic layer)
+    then `lightdash upload --force` (content), pushing the committed YAML to
+    the production project. No manual post-deploy step is needed any more.
+11. Verify the result via the Lightdash API once the workflow run is green.
+
+Production content now comes from committed YAML, so the spaces holding
+code-managed dashboards should be view-only for non-admins. That stops UI
+edits from silently diverging from the repo; any drift surfaces in `git diff`
+after the next `lightdash download`.
 
 ## Project management
 
@@ -190,6 +259,5 @@ architecture doc wins — update CLAUDE.md to match and flag the drift.
 - **Airbyte config is not in Git** — it lives on the Hetzner VM's disk (inside Airbyte's internal Postgres, managed by the `abctl` k3d cluster). Document every connection (streams, sync mode, schedule, destination namespace) in `airbyte/README.md` so the setup can be rebuilt if the VM is lost. **Hetzner auto-backups are enabled** on `hgi-airbyte` (daily, 7-day retention) — that's the primary recovery mechanism; do not disable them.
 - **Airbyte hosting: Hetzner, not Fly** — Airbyte deprecated docker-compose OSS installs in favour of `abctl` (k3d/Kubernetes). `abctl` is designed for a plain Linux VM, not for Fly.io's Firecracker Machines — running it on Fly would require Docker-in-Docker + k3d-in-DinD, which is off-road. A single Hetzner Cloud VM with `abctl local install` is Airbyte's officially recommended OSS deploy path.
 - **Prefer `dbt build` over `dbt run` + `dbt test`** — `build` runs both in dependency order and stops downstream models if a test fails.
-- **Every Lightdash chart/dashboard edit lives in `lightdash/migrations/` as a timestamped one-shot script.** The folder is a chronological audit log: every change to live Lightdash state (creating/editing/deleting charts and dashboards) is a separate file named `YYYYMMDD_HHMMSS_<slug>.py`. The two earliest entries (`20260427_143325_initial_dashboards_seed.py` and `20260427_143511_prospect_crm_dashboards_seed.py`) are the original seed scripts that created every dashboard — they are functional Python but **must never be re-run** (no upsert; re-running POSTs duplicate charts). They live in `migrations/` for the same reason every other migration does: chronological audit. For new edits, never modify the seed scripts and never modify already-applied migrations — write a new migration that targets the specific charts/dashboards being changed. See `lightdash/migrations/README.md` for the full pattern.
-- **Use `bin/new-lightdash-migration <slug>` to scaffold migrations.** It copies `lightdash/migrations/_template.py` to a timestamped filename (`YYYYMMDD_HHMMSS_<slug>.py`). Each migration's docstring must state the originating PR, what it changes, when to run it, and a `Status:` line that gets flipped from `pending` to `applied YYYY-MM-DD` once it's run cleanly. Migrations import shared helpers (`api`, `BASE_URL`, `PROJECT_UUID`, `SPACE_UUID`) from `lightdash/migrations/_lib.py` and read auth from `.env`. They should support `--dry-run` so the user can preview the API calls before writing.
-- **Lightdash PRs must list post-deploy ops in the PR description.** `lightdash deploy` (run by `lightdash_deploy.yml` on push to `main`) only refreshes the dbt project metadata. It does **not** update saved-chart configs (column order, dimensions, eCharts formatters), recreate dashboards, or delete obsolete dashboards. Any PR that touches a chart's shape, a metric/dimension that's surfaced in a chart, or the dbt SQL backing a chart must include a "Post-deploy ops" section in the PR description — typically: "wait for `lightdash_deploy.yml`, then run `python3 lightdash/migrations/<the-new-migration>.py`". The migration file is committed as part of the PR.
+- **Lightdash charts and dashboards are managed as code.** Edit the YAML in `lightdash/charts/` and `lightdash/dashboards/`, preview the change in a Lightdash preview project, then open a PR. See the "Lightdash dashboards-as-code" section for the full develop/preview/PR workflow. Do not call the Lightdash REST API directly for chart or dashboard CRUD.
+- **`lightdash/migrations/` is frozen.** Those are the legacy one-shot API scripts that pre-date content-as-code. Keep them only as audit history: never add a new migration, never re-run an existing one, and treat the retired `bin/new-lightdash-migration` scaffold as dead. New content work is a YAML diff, not a script.

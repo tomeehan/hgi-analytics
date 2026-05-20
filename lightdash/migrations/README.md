@@ -1,5 +1,12 @@
 # Lightdash migrations
 
+> **FROZEN — legacy.** Charts and dashboards are now managed as code
+> (`lightdash download` / `lightdash upload`). See the "Lightdash
+> dashboards-as-code" section in the repo-root `CLAUDE.md`. Do not add
+> new migrations here and do not re-run existing ones. The files below
+> remain only as historical audit record. The notes that follow describe
+> the retired workflow.
+
 One-shot scripts that mutate live Lightdash state (saved charts,
 dashboards) after a PR has been merged and `lightdash_deploy.yml` has
 refreshed dbt metadata.
