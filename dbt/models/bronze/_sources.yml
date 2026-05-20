@@ -31,6 +31,7 @@ sources:
       - name: traffic_acquisition_session_source_medium_report
       - name: traffic_acquisition_session_default_channel_grouping_report
       - name: events_report
+      - name: website_overview
 
   - name: bronze_klaviyo_isclinical
     database: HGI

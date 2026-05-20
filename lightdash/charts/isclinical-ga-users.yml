@@ -1,0 +1,45 @@
+# Source: April 2026 KPI Report, page 13 (IS CLINICAL, Traffic, conversion, PR, customer mix, AOV)
+chartConfig:
+  config:
+    flipColors: false
+    label: Users (GA4)
+    selectedField: fct_ga_sessions_total_ga_users
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  Total GA4 users (distinct users, GA4 totalUsers) for iS Clinical in the
+  month, from the GA4 website-overview report. Responds to the dashboard Month
+  filter. Reads slightly above the PDF figure because GA4 reports keep
+  re-processing for several days after month close.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_ga_sessions
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_ga_sessions_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_ga_sessions_total_ga_users
+  sorts: []
+  tableCalculations: []
+name: iS Clinical Users (GA4)
+slug: isclinical-ga-users
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_ga_sessions_total_ga_users
+tableName: fct_ga_sessions
+verification: null
+version: 1

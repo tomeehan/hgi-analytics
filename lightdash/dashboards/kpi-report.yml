@@ -22,6 +22,21 @@ filters:
         channel-breakdown-table:
           fieldId: fct_ga_channel_sessions_order_month_label
           tableName: fct_ga_channel_sessions
+        isclinical-ga-sessions:
+          fieldId: fct_ga_sessions_order_month_label
+          tableName: fct_ga_sessions
+        isclinical-ga-users:
+          fieldId: fct_ga_sessions_order_month_label
+          tableName: fct_ga_sessions
+        isclinical-ga-cvr:
+          fieldId: fct_ga_sessions_order_month_label
+          tableName: fct_ga_sessions
+        isclinical-ga-rps:
+          fieldId: fct_ga_sessions_order_month_label
+          tableName: fct_ga_sessions
+        isclinical-ga-aov:
+          fieldId: fct_ga_sessions_order_month_label
+          tableName: fct_ga_sessions
       values:
         - 2026-04
   metrics: []
@@ -154,5 +169,81 @@ tiles:
     w: 36
     x: 0
     "y": 13
+  - h: 1
+    properties:
+      content: >-
+        ## Traffic & conversion (GA4)
+
+
+        Page 13 of the April 2026 KPI Report. GA4-sourced end to end: sessions
+        and users from the GA4 website-overview report, transactions from GA4
+        purchase events, revenue GA-attributed. CVR = transactions / sessions,
+        RPS = revenue / sessions, AOV = revenue / transactions.
+      title: Traffic & conversion (GA4)
+    tabUuid: null
+    type: markdown
+    w: 36
+    x: 0
+    "y": 20
+  - h: 4
+    properties:
+      chartName: iS Clinical Sessions (GA4)
+      chartSlug: isclinical-ga-sessions
+      hideTitle: false
+      title: Sessions
+    tabUuid: null
+    tileSlug: isclinical-ga-sessions
+    type: saved_chart
+    w: 7
+    x: 0
+    "y": 21
+  - h: 4
+    properties:
+      chartName: iS Clinical Users (GA4)
+      chartSlug: isclinical-ga-users
+      hideTitle: false
+      title: Users
+    tabUuid: null
+    tileSlug: isclinical-ga-users
+    type: saved_chart
+    w: 7
+    x: 7
+    "y": 21
+  - h: 4
+    properties:
+      chartName: iS Clinical CVR (GA4)
+      chartSlug: isclinical-ga-cvr
+      hideTitle: false
+      title: CVR (GA)
+    tabUuid: null
+    tileSlug: isclinical-ga-cvr
+    type: saved_chart
+    w: 7
+    x: 14
+    "y": 21
+  - h: 4
+    properties:
+      chartName: iS Clinical RPS (GA4)
+      chartSlug: isclinical-ga-rps
+      hideTitle: false
+      title: RPS
+    tabUuid: null
+    tileSlug: isclinical-ga-rps
+    type: saved_chart
+    w: 7
+    x: 21
+    "y": 21
+  - h: 4
+    properties:
+      chartName: iS Clinical AOV (GA-derived)
+      chartSlug: isclinical-ga-aov
+      hideTitle: false
+      title: AOV (GA-derived)
+    tabUuid: null
+    tileSlug: isclinical-ga-aov
+    type: saved_chart
+    w: 8
+    x: 28
+    "y": 21
 verification: null
 version: 1
