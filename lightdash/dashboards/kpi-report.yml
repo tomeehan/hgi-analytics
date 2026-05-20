@@ -40,6 +40,9 @@ filters:
         isclinical-top-traffic-sources:
           fieldId: fct_ga_source_medium_order_month_label
           tableName: fct_ga_source_medium
+        isclinical-top-converting-sources-by-rps:
+          fieldId: fct_ga_source_medium_order_month_label
+          tableName: fct_ga_source_medium
       values:
         - 2026-04
   metrics: []
@@ -259,6 +262,18 @@ tiles:
     type: saved_chart
     w: 18
     x: 0
+    "y": 25
+  - h: 7
+    properties:
+      chartName: iS Clinical Top Converting Sources by RPS (GA4)
+      chartSlug: isclinical-top-converting-sources-by-rps
+      hideTitle: false
+      title: Top Converting Sources by RPS (GA4)
+    tabUuid: null
+    tileSlug: isclinical-top-converting-sources-by-rps
+    type: saved_chart
+    w: 18
+    x: 18
     "y": 25
 verification: null
 version: 1

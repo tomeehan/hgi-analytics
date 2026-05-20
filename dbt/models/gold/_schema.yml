@@ -1043,6 +1043,14 @@ models:
     description: "GA4 traffic fact at session_date x store_id x source/medium grain. Pass-through over stg_google_analytics__source_medium (mirrors how fct_ga_sessions wraps stg_google_analytics__sessions). Powers the KPI Report's 'Top traffic sources by sessions' table (PDF p.13) and is reused by the converting-sources and PR-referrer tiles. No transactions column: the source/medium Bronze report has no purchase-event count and no GA4 events report carries the source/medium dimension. Currently iS Clinical only."
     meta:
       label: "GA Source / Medium"
+      metrics:
+        ga_source_medium_rps:
+          type: number
+          label: "RPS"
+          description: "Revenue per session: GA-attributed revenue divided by GA4 sessions for the source/medium. Non-additive ratio metric, computed post-aggregation so it stays correct at any grain. Backs the 'Top converting sources by RPS' table (PDF p.13)."
+          sql: "${total_ga_source_medium_revenue} / nullif(${total_ga_source_medium_sessions}, 0)"
+          format: "gbp"
+          round: 2
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
