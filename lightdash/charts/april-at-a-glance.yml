@@ -1,0 +1,53 @@
+chartConfig:
+  config:
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: true
+  type: table
+contentType: chart
+description: >-
+  Cross-brand summary table for the month selected by the dashboard Month
+  filter. One row per brand, columns mirror the page-2 'April 2026 at a glance'
+  table of the KPI Report PDF: Revenue (Shopify), Shopify Orders, Sessions,
+  Trans (GA), Shopify CVR, Shopify RPS. Reads fct_brand_monthly_summary, which
+  outer-joins Shopify + GA4 so every loaded brand renders even without GA data.
+  GA columns populate for iS Clinical only today (other brands' GA4 Airbyte
+  connections are not yet landed).
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_brand_monthly_summary_store_id
+    - fct_brand_monthly_summary_shopify_revenue
+    - fct_brand_monthly_summary_shopify_orders
+    - fct_brand_monthly_summary_ga_sessions
+    - fct_brand_monthly_summary_ga_transactions
+    - fct_brand_monthly_summary_shopify_cvr_pct
+    - fct_brand_monthly_summary_shopify_rps_gbp
+  exploreName: fct_brand_monthly_summary
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics: []
+  sorts:
+    - descending: true
+      fieldId: fct_brand_monthly_summary_shopify_revenue
+  tableCalculations: []
+name: April at a Glance
+slug: april-at-a-glance
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_brand_monthly_summary_store_id
+    - fct_brand_monthly_summary_shopify_revenue
+    - fct_brand_monthly_summary_shopify_orders
+    - fct_brand_monthly_summary_ga_sessions
+    - fct_brand_monthly_summary_ga_transactions
+    - fct_brand_monthly_summary_shopify_cvr_pct
+    - fct_brand_monthly_summary_shopify_rps_gbp
+tableName: fct_brand_monthly_summary
+verification: null
+version: 1

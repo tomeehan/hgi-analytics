@@ -1,0 +1,87 @@
+contentType: dashboard
+description: >-
+  New vs returning customers this month vs last month, across all channels and
+  stores
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: Returning Customers
+slug: returning-customers
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 6
+    properties:
+      chartName: New vs Repeat Orders by Month
+      chartSlug: new-vs-repeat-orders-by-month
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: new-vs-repeat-orders-by-month
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Active Customers by Month
+      chartSlug: active-customers-by-month
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: active-customers-by-month
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Customer Segments
+      chartSlug: customer-segments
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: customer-segments
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 6
+  - h: 6
+    properties:
+      chartName: Revenue by Customer Segment
+      chartSlug: revenue-by-customer-segment
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: revenue-by-customer-segment
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 6
+  - h: 6
+    properties:
+      chartName: New vs Repeat Orders by Channel
+      chartSlug: new-vs-repeat-orders-by-channel
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: new-vs-repeat-orders-by-channel
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 12
+  - h: 6
+    properties:
+      chartName: Returning Customers — Shopify by Store
+      chartSlug: returning-customers-shopify-by-store
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: returning-customers-shopify-by-store
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 12
+verification: null
+version: 1

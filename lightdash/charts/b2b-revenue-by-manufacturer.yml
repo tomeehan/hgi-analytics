@@ -1,0 +1,35 @@
+chartConfig:
+  config:
+    groupFieldIds:
+      - fct_b2b_sales_manufacturer
+    isDonut: false
+    metricId: fct_b2b_sales_b2b_revenue
+  type: pie
+contentType: chart
+description: Which manufacturers drive B2B revenue (top 10)
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_b2b_sales_manufacturer
+  exploreName: fct_b2b_sales
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - fct_b2b_sales_b2b_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_b2b_sales_b2b_revenue
+  tableCalculations: []
+name: B2B Revenue by Manufacturer
+slug: b2b-revenue-by-manufacturer
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_b2b_sales_manufacturer
+    - fct_b2b_sales_b2b_revenue
+tableName: fct_b2b_sales
+verification: null
+version: 1

@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_cin7_sales_channel_group
+            yRef:
+              field: fct_cin7_sales_aov
+          type: bar
+    layout:
+      flipAxes: true
+      xField: fct_cin7_sales_channel_group
+      yField:
+        - fct_cin7_sales_aov
+  type: cartesian
+contentType: chart
+description: AOV across B2B, DTC, WooCommerce, Amazon
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_cin7_sales_channel_group
+  exploreName: fct_cin7_sales
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - fct_cin7_sales_aov
+  sorts:
+    - descending: true
+      fieldId: fct_cin7_sales_aov
+  tableCalculations: []
+name: Average Order Value by Channel (Cin7)
+slug: average-order-value-by-channel-cin7
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_cin7_sales_channel_group
+    - fct_cin7_sales_aov
+tableName: fct_cin7_sales
+verification: null
+version: 1

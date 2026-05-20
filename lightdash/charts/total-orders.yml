@@ -1,0 +1,47 @@
+chartConfig:
+  config:
+    comparisonField: fct_marketing_kpis_daily_orders_p30d
+    comparisonFormat: percentage
+    comparisonLabel: vs previous 30 days
+    flipColors: false
+    label: Total Orders
+    selectedField: fct_marketing_kpis_daily_orders_l30d
+    showComparison: true
+  type: big_number
+contentType: chart
+description: >-
+  isClinical, last 30 days vs previous 30 days. Headline = orders_l30d;
+  comparison = orders_p30d.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_marketing_kpis_daily
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_marketing_kpis_daily_store_id
+          values:
+            - isclinical
+      id: isclinical-only
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_marketing_kpis_daily_orders_l30d
+    - fct_marketing_kpis_daily_orders_p30d
+  sorts: []
+  tableCalculations: []
+name: Total Orders
+slug: total-orders
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_marketing_kpis_daily_orders_l30d
+    - fct_marketing_kpis_daily_orders_p30d
+tableName: fct_marketing_kpis_daily
+verification: null
+version: 1

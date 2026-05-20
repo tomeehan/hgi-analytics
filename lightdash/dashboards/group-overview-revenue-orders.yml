@@ -1,0 +1,97 @@
+contentType: dashboard
+description: Unified view of revenue and orders across all Cin7 channels and Shopify stores
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: Group Overview — Revenue & Orders
+slug: group-overview-revenue-orders
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 6
+    properties:
+      chartName: Total Revenue by Month (Cin7)
+      chartSlug: total-revenue-by-month-cin7
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: total-revenue-by-month-cin7
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Revenue by Channel (Cin7)
+      chartSlug: revenue-by-channel-cin7
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: revenue-by-channel-cin7
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Direct Shopify Orders by Month
+      chartSlug: orders-by-month-shopify
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: orders-by-month-shopify
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 6
+  - h: 6
+    properties:
+      chartName: Revenue by Store — Shopify
+      chartSlug: revenue-by-store-shopify
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: revenue-by-store-shopify
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 6
+  - h: 6
+    properties:
+      chartName: Return Order Rate (Cin7) — All HGI
+      chartSlug: new-vs-returning-orders-cin7
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: new-vs-returning-orders-cin7
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 12
+  - h: 6
+    properties:
+      chartName: Average Order Value by Channel (Cin7)
+      chartSlug: average-order-value-by-channel-cin7
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: average-order-value-by-channel-cin7
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 12
+  - h: 6
+    properties:
+      chartName: Return Order Rate (Cin7) — by Channel
+      chartSlug: return-order-rate-cin7-by-channel
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: return-order-rate-cin7-by-channel
+    type: saved_chart
+    w: 24
+    x: 0
+    "y": 18
+verification: null
+version: 1

@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: dim_cin7_customers_channels_used
+            yRef:
+              field: dim_cin7_customers_customer_count
+          type: bar
+    layout:
+      flipAxes: true
+      xField: dim_cin7_customers_channels_used
+      yField:
+        - dim_cin7_customers_customer_count
+  type: cartesian
+contentType: chart
+description: How many Cin7 customers have ordered across multiple channels
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_cin7_customers_channels_used
+  exploreName: dim_cin7_customers
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - dim_cin7_customers_customer_count
+  sorts:
+    - descending: false
+      fieldId: dim_cin7_customers_channels_used
+  tableCalculations: []
+name: Customers by Number of Channels Used
+slug: customers-by-number-of-channels-used
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_cin7_customers_channels_used
+    - dim_cin7_customers_customer_count
+tableName: dim_cin7_customers
+verification: null
+version: 1

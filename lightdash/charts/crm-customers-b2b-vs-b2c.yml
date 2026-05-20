@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: dim_customer_unified_seen_in_crm
+            yRef:
+              field: dim_customer_unified_customer_count
+          type: bar
+    layout:
+      flipAxes: true
+      xField: dim_customer_unified_seen_in_crm
+      yField:
+        - dim_customer_unified_customer_count
+  type: cartesian
+contentType: chart
+description: Distribution of CRM customers across B2B and B2C ledgers
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_seen_in_crm
+  exploreName: dim_customer_unified
+  filters: {}
+  limit: 5
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_customer_count
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_customer_count
+  tableCalculations: []
+name: CRM Customers — B2B vs B2C
+slug: crm-customers-b2b-vs-b2c
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_seen_in_crm
+    - dim_customer_unified_customer_count
+tableName: dim_customer_unified
+verification: null
+version: 1

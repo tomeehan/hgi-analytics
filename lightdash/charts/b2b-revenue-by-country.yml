@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_b2b_sales_country
+            yRef:
+              field: fct_b2b_sales_b2b_revenue
+          type: bar
+    layout:
+      flipAxes: true
+      xField: fct_b2b_sales_country
+      yField:
+        - fct_b2b_sales_b2b_revenue
+  type: cartesian
+contentType: chart
+description: Geographical split of B2B revenue
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_b2b_sales_country
+  exploreName: fct_b2b_sales
+  filters: {}
+  limit: 15
+  metricOverrides: {}
+  metrics:
+    - fct_b2b_sales_b2b_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_b2b_sales_b2b_revenue
+  tableCalculations: []
+name: B2B Revenue by Country
+slug: b2b-revenue-by-country
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_b2b_sales_country
+    - fct_b2b_sales_b2b_revenue
+tableName: fct_b2b_sales
+verification: null
+version: 1

@@ -1,0 +1,60 @@
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: true
+  type: table
+contentType: chart
+description: >-
+  Highest-spending DTC-only buyers with business-looking emails — direct
+  outreach list
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_display_name
+    - dim_customer_unified_email
+    - dim_customer_unified_email_domain
+    - dim_customer_unified_country
+    - dim_customer_unified_seen_in_shopify_isclinical
+    - dim_customer_unified_seen_in_shopify_deese_pro
+  exploreName: dim_customer_unified
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: dim_customer_unified_is_dtc_b2b_lead
+          values:
+            - true
+      id: dtc-b2b-leads
+  limit: 50
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_total_dtc_spend
+    - dim_customer_unified_total_dtc_orders
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_total_dtc_spend
+  tableCalculations: []
+name: Top Individual Leads
+slug: top-individual-leads
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_display_name
+    - dim_customer_unified_email
+    - dim_customer_unified_email_domain
+    - dim_customer_unified_country
+    - dim_customer_unified_seen_in_shopify_isclinical
+    - dim_customer_unified_seen_in_shopify_deese_pro
+    - dim_customer_unified_total_dtc_spend
+    - dim_customer_unified_total_dtc_orders
+tableName: dim_customer_unified
+verification: null
+version: 1

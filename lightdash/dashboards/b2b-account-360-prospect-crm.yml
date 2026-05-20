@@ -1,0 +1,88 @@
+contentType: dashboard
+description: >-
+  Line-level B2B revenue and margin from Prospect CRM. Filtered to ledgers with
+  is_b2c = false — the ~3,000 wholesale accounts where Prospect carries the cost
+  data Cin7 doesn't expose at channel grain.
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: B2B Account 360 — Prospect CRM
+slug: b2b-account-360-prospect-crm
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 6
+    properties:
+      chartName: B2B Revenue by Month
+      chartSlug: b2b-revenue-by-month
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: b2b-revenue-by-month
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 0
+  - h: 6
+    properties:
+      chartName: B2B Revenue by Manufacturer
+      chartSlug: b2b-revenue-by-manufacturer
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: b2b-revenue-by-manufacturer
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 0
+  - h: 6
+    properties:
+      chartName: B2B Margin % by Product
+      chartSlug: b2b-margin-by-category
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: b2b-margin-by-category
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 6
+  - h: 6
+    properties:
+      chartName: Top B2B Accounts
+      chartSlug: top-b2b-accounts
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: top-b2b-accounts
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 6
+  - h: 6
+    properties:
+      chartName: B2B Revenue by Country
+      chartSlug: b2b-revenue-by-country
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: b2b-revenue-by-country
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 12
+  - h: 6
+    properties:
+      chartName: B2B Order Status Mix
+      chartSlug: b2b-order-status-mix
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: b2b-order-status-mix
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 12
+verification: null
+version: 1

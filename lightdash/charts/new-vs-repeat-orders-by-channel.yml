@@ -1,0 +1,53 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_cin7_sales_channel_group
+            yRef:
+              field: fct_cin7_sales_order_count
+          type: bar
+        - encode:
+            xRef:
+              field: fct_cin7_sales_channel_group
+            yRef:
+              field: fct_cin7_sales_new_customer_orders
+          type: bar
+    layout:
+      flipAxes: true
+      xField: fct_cin7_sales_channel_group
+      yField:
+        - fct_cin7_sales_order_count
+        - fct_cin7_sales_new_customer_orders
+  type: cartesian
+contentType: chart
+description: Channel breakdown of new vs returning customers
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_cin7_sales_channel_group
+  exploreName: fct_cin7_sales
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - fct_cin7_sales_order_count
+    - fct_cin7_sales_new_customer_orders
+  sorts:
+    - descending: true
+      fieldId: fct_cin7_sales_order_count
+  tableCalculations: []
+name: New vs Repeat Orders by Channel
+slug: new-vs-repeat-orders-by-channel
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_cin7_sales_channel_group
+    - fct_cin7_sales_order_count
+    - fct_cin7_sales_new_customer_orders
+tableName: fct_cin7_sales
+verification: null
+version: 1

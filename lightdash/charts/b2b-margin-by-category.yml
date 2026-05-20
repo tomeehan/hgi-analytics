@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_b2b_sales_product_description
+            yRef:
+              field: fct_b2b_sales_avg_margin_pct
+          type: bar
+    layout:
+      flipAxes: true
+      xField: fct_b2b_sales_product_description
+      yField:
+        - fct_b2b_sales_avg_margin_pct
+  type: cartesian
+contentType: chart
+description: Average margin % per product (top 15)
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_b2b_sales_product_description
+  exploreName: fct_b2b_sales
+  filters: {}
+  limit: 15
+  metricOverrides: {}
+  metrics:
+    - fct_b2b_sales_avg_margin_pct
+  sorts:
+    - descending: true
+      fieldId: fct_b2b_sales_avg_margin_pct
+  tableCalculations: []
+name: B2B Margin % by Product
+slug: b2b-margin-by-category
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_b2b_sales_product_description
+    - fct_b2b_sales_avg_margin_pct
+tableName: fct_b2b_sales
+verification: null
+version: 1

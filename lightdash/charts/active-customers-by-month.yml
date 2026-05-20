@@ -1,0 +1,48 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_cin7_sales_order_month
+            yRef:
+              field: fct_cin7_sales_active_customers
+          type: bar
+      xAxis:
+        - axisLabel:
+            formatter: "{MMMM} {yyyy}"
+            hideOverlap: true
+    layout:
+      flipAxes: false
+      xField: fct_cin7_sales_order_month
+      yField:
+        - fct_cin7_sales_active_customers
+  type: cartesian
+contentType: chart
+description: Number of unique customers ordering each month
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_cin7_sales_order_month
+  exploreName: fct_cin7_sales
+  filters: {}
+  limit: 24
+  metricOverrides: {}
+  metrics:
+    - fct_cin7_sales_active_customers
+  sorts:
+    - descending: false
+      fieldId: fct_cin7_sales_order_month
+  tableCalculations: []
+name: Active Customers by Month
+slug: active-customers-by-month
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_cin7_sales_order_month
+    - fct_cin7_sales_active_customers
+tableName: fct_cin7_sales
+verification: null
+version: 1

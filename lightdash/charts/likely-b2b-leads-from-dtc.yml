@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    comparisonFormat: null
+    defaultFormat: null
+    flipColors: false
+    label: Likely B2B Leads from DTC
+  type: big_number
+contentType: chart
+description: Total customers with business-looking email, real DTC spend, not in CRM
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_is_dtc_b2b_lead
+  exploreName: dim_customer_unified
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: dim_customer_unified_is_dtc_b2b_lead
+          values:
+            - true
+      id: dtc-b2b-leads
+  limit: 2
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_customer_count
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_customer_count
+  tableCalculations: []
+name: Likely B2B Leads from DTC
+slug: likely-b2b-leads-from-dtc
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_is_dtc_b2b_lead
+    - dim_customer_unified_customer_count
+tableName: dim_customer_unified
+verification: null
+version: 1

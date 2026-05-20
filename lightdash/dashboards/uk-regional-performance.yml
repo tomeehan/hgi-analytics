@@ -1,0 +1,61 @@
+contentType: dashboard
+description: Revenue, orders, and AOV broken down by UK region across Cin7 and Shopify
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: UK Regional Performance
+slug: uk-regional-performance
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 6
+    properties:
+      chartName: Revenue by UK Region
+      chartSlug: revenue-by-uk-region-cin7
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: revenue-by-uk-region-cin7
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 0
+  - h: 6
+    properties:
+      chartName: AOV by UK Region
+      chartSlug: aov-by-uk-region-cin7
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: aov-by-uk-region-cin7
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Revenue by UK Region — Shopify
+      chartSlug: revenue-by-uk-region-shopify
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: revenue-by-uk-region-shopify
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 6
+  - h: 6
+    properties:
+      chartName: Orders by UK Region — Shopify
+      chartSlug: orders-by-uk-region-shopify
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: orders-by-uk-region-shopify
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 6
+verification: null
+version: 1

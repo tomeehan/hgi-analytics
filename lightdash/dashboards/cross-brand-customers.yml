@@ -1,0 +1,63 @@
+contentType: dashboard
+description: >-
+  Customers shopping across multiple brands and channels — LTV and order
+  frequency
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: Cross-Brand Customers
+slug: cross-brand-customers
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 6
+    properties:
+      chartName: Customers by Number of Channels Used
+      chartSlug: customers-by-number-of-channels-used
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: customers-by-number-of-channels-used
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Multi-Channel Customer LTV
+      chartSlug: multi-channel-customer-ltv
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: multi-channel-customer-ltv
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Top Customers by Lifetime Value
+      chartSlug: top-customers-by-lifetime-value
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: top-customers-by-lifetime-value
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 6
+  - h: 6
+    properties:
+      chartName: Orders by Month — Shopify DTC
+      chartSlug: orders-by-month-shopify-dtc
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: orders-by-month-shopify-dtc
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 6
+verification: null
+version: 1

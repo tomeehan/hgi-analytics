@@ -1,0 +1,35 @@
+chartConfig:
+  config:
+    groupFieldIds:
+      - fct_orders_store_id
+    isDonut: false
+    metricId: fct_orders_total_revenue
+  type: pie
+contentType: chart
+description: Revenue split by Shopify store
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_orders_store_id
+  exploreName: fct_orders
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - fct_orders_total_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_orders_total_revenue
+  tableCalculations: []
+name: Revenue by Store — Shopify
+slug: revenue-by-store-shopify
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_orders_store_id
+    - fct_orders_total_revenue
+tableName: fct_orders
+verification: null
+version: 1

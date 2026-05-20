@@ -1,0 +1,46 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_product_repeat_rate_product_title
+            yRef:
+              field: fct_product_repeat_rate_avg_repeat_rate
+          type: bar
+    layout:
+      flipAxes: true
+      xField: fct_product_repeat_rate_product_title
+      yField:
+        - fct_product_repeat_rate_avg_repeat_rate
+  type: cartesian
+contentType: chart
+description: Products with the highest % of buyers who repurchased
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_product_repeat_rate_product_title
+    - fct_product_repeat_rate_store_id
+  exploreName: fct_product_repeat_rate
+  filters: {}
+  limit: 20
+  metricOverrides: {}
+  metrics:
+    - fct_product_repeat_rate_avg_repeat_rate
+  sorts:
+    - descending: true
+      fieldId: fct_product_repeat_rate_avg_repeat_rate
+  tableCalculations: []
+name: Top Products by Repeat Rate
+slug: top-products-by-repeat-rate
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_product_repeat_rate_product_title
+    - fct_product_repeat_rate_store_id
+    - fct_product_repeat_rate_avg_repeat_rate
+tableName: fct_product_repeat_rate
+verification: null
+version: 1

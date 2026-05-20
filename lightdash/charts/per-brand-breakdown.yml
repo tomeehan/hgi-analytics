@@ -1,0 +1,41 @@
+chartConfig:
+  config:
+    columns: {}
+    conditionalFormattings: []
+    hideRowNumbers: true
+    metricsAsRows: false
+    showColumnCalculation: false
+    showResultsTotal: false
+    showRowCalculation: false
+    showTableNames: false
+  type: table
+contentType: chart
+description: >-
+  Shopify gross revenue (sum of total_price) grouped by brand. Inherits the
+  dashboard's Brand + Month filters.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_orders_store_id
+  exploreName: fct_orders
+  filters: {}
+  limit: 500
+  metricOverrides: {}
+  metrics:
+    - fct_orders_total_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_orders_total_revenue
+  tableCalculations: []
+name: Per-brand breakdown
+slug: per-brand-breakdown
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_orders_store_id
+    - fct_orders_total_revenue
+tableName: fct_orders
+verification: null
+version: 1

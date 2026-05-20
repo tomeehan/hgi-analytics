@@ -1,0 +1,57 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_cin7_sales_order_month
+            yRef:
+              field: fct_cin7_sales_order_count
+          type: line
+        - encode:
+            xRef:
+              field: fct_cin7_sales_order_month
+            yRef:
+              field: fct_cin7_sales_new_customer_orders
+          type: line
+      xAxis:
+        - axisLabel:
+            formatter: "{MMMM} {yyyy}"
+            hideOverlap: true
+    layout:
+      flipAxes: false
+      xField: fct_cin7_sales_order_month
+      yField:
+        - fct_cin7_sales_order_count
+        - fct_cin7_sales_new_customer_orders
+  type: cartesian
+contentType: chart
+description: Monthly trend of new vs returning customer orders
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_cin7_sales_order_month
+  exploreName: fct_cin7_sales
+  filters: {}
+  limit: 24
+  metricOverrides: {}
+  metrics:
+    - fct_cin7_sales_order_count
+    - fct_cin7_sales_new_customer_orders
+  sorts:
+    - descending: false
+      fieldId: fct_cin7_sales_order_month
+  tableCalculations: []
+name: New vs Repeat Orders by Month
+slug: new-vs-repeat-orders-by-month
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_cin7_sales_order_month
+    - fct_cin7_sales_order_count
+    - fct_cin7_sales_new_customer_orders
+tableName: fct_cin7_sales
+verification: null
+version: 1

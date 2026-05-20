@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    groupFieldIds:
+      - dim_customer_unified_country
+    isDonut: false
+    metricId: dim_customer_unified_customer_count
+  type: pie
+contentType: chart
+description: Geographic distribution of likely B2B leads (top 10)
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_country
+  exploreName: dim_customer_unified
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: dim_customer_unified_is_dtc_b2b_lead
+          values:
+            - true
+      id: dtc-b2b-leads
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_customer_count
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_customer_count
+  tableCalculations: []
+name: Leads by Country
+slug: leads-by-country
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_country
+    - dim_customer_unified_customer_count
+tableName: dim_customer_unified
+verification: null
+version: 1

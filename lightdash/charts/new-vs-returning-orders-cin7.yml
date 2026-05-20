@@ -1,0 +1,61 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_cin7_sales_order_month
+            yRef:
+              field: return_order_rate
+          type: line
+      xAxis:
+        - axisLabel:
+            formatter: "{MMMM} {yyyy}"
+            hideOverlap: true
+    layout:
+      flipAxes: false
+      xField: fct_cin7_sales_order_month
+      yField:
+        - return_order_rate
+  type: cartesian
+contentType: chart
+description: >-
+  Percentage of Cin7 orders that are repeat (non-first) orders, across all
+  channels
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_cin7_sales_order_month
+  exploreName: fct_cin7_sales
+  filters: {}
+  limit: 120
+  metricOverrides: {}
+  metrics:
+    - fct_cin7_sales_order_count
+    - fct_cin7_sales_new_customer_orders
+  sorts:
+    - descending: false
+      fieldId: fct_cin7_sales_order_month
+  tableCalculations:
+    - displayName: Return Order Rate
+      format:
+        round: 1
+        type: percent
+      name: return_order_rate
+      sql: >-
+        1 - (${fct_cin7_sales.new_customer_orders} /
+        NULLIF(${fct_cin7_sales.order_count}, 0))
+name: Return Order Rate (Cin7) — All HGI
+slug: new-vs-returning-orders-cin7
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_cin7_sales_order_month
+    - fct_cin7_sales_order_count
+    - fct_cin7_sales_new_customer_orders
+    - return_order_rate
+tableName: fct_cin7_sales
+verification: null
+version: 1

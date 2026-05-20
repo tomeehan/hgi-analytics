@@ -1,0 +1,51 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: dim_customer_unified_seen_in_crm
+            yRef:
+              field: dim_customer_unified_customer_count
+          type: bar
+    layout:
+      flipAxes: true
+      xField: dim_customer_unified_seen_in_crm
+      yField:
+        - dim_customer_unified_customer_count
+  type: cartesian
+contentType: chart
+description: CRM contacts that map directly to a Klaviyo profile (~11k expected)
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_seen_in_crm
+  exploreName: dim_customer_unified
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: isNotNull
+          target:
+            fieldId: dim_customer_unified_klaviyo_id
+      id: klaviyo-not-null
+  limit: 5
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_customer_count
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_customer_count
+  tableCalculations: []
+name: Klaviyo Bridge — Contacts with Klaviyo Profile
+slug: klaviyo-bridge-contacts-with-klaviyo-profile
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_seen_in_crm
+    - dim_customer_unified_customer_count
+tableName: dim_customer_unified
+verification: null
+version: 1

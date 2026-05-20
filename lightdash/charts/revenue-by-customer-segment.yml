@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: dim_cin7_customers_customer_segment
+            yRef:
+              field: dim_cin7_customers_total_customer_ltv
+          type: bar
+    layout:
+      flipAxes: true
+      xField: dim_cin7_customers_customer_segment
+      yField:
+        - dim_cin7_customers_total_customer_ltv
+  type: cartesian
+contentType: chart
+description: Total LTV contribution per segment
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_cin7_customers_customer_segment
+  exploreName: dim_cin7_customers
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - dim_cin7_customers_total_customer_ltv
+  sorts:
+    - descending: true
+      fieldId: dim_cin7_customers_total_customer_ltv
+  tableCalculations: []
+name: Revenue by Customer Segment
+slug: revenue-by-customer-segment
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_cin7_customers_customer_segment
+    - dim_cin7_customers_total_customer_ltv
+tableName: dim_cin7_customers
+verification: null
+version: 1

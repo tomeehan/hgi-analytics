@@ -1,0 +1,34 @@
+chartConfig:
+  config:
+    flipColors: false
+    label: Combined Meta Spend
+    selectedField: fct_ad_spend_total_meta_spend
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  Total Meta (Facebook Marketing) ad spend for the month and brands selected by
+  the dashboard filters. Uses fct_ad_spend.total_meta_spend (sum of daily spend
+  across iS Clinical, Deese PRO, Revitalash).
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_ad_spend
+  filters: {}
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_ad_spend_total_meta_spend
+  sorts: []
+  tableCalculations: []
+name: Combined Meta Spend
+slug: combined-meta-spend
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_ad_spend_total_meta_spend
+tableName: fct_ad_spend
+verification: null
+version: 1

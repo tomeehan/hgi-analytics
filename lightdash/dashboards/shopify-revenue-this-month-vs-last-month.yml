@@ -1,0 +1,41 @@
+contentType: dashboard
+description: >-
+  Direct Shopify (DTC) revenue across the three active stores: isClinical, Deese
+  Pro, Revitalash. All stores transact in GBP. Note: isClinical has very few
+  direct Shopify orders (~11 historically); the bulk of isClinical revenue flows
+  through Cin7 — see the Cin7 Group Overview dashboard for the full picture.
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: Shopify Revenue — This Month vs Last Month
+slug: shopify-revenue-this-month-vs-last-month
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 6
+    properties:
+      chartName: Total Shopify Revenue — This vs Last Month
+      chartSlug: total-shopify-revenue-this-vs-last-month
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: total-shopify-revenue-this-vs-last-month
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Shopify Revenue by Store — This vs Last Month
+      chartSlug: shopify-revenue-by-store-this-vs-last-month
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: shopify-revenue-by-store-this-vs-last-month
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 0
+verification: null
+version: 1
