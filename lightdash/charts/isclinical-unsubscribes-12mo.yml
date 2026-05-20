@@ -30,12 +30,22 @@ metricQuery:
           values:
             - iS Clinical
         - id: f2
-          operator: inBetween
+          operator: equals
           target:
-            fieldId: fct_klaviyo_subscriber_growth_order_month
+            fieldId: fct_klaviyo_subscriber_growth_order_month_label
           values:
-            - "2025-05-01"
-            - "2026-04-01"
+            - "2025-05"
+            - "2025-06"
+            - "2025-07"
+            - "2025-08"
+            - "2025-09"
+            - "2025-10"
+            - "2025-11"
+            - "2025-12"
+            - "2026-01"
+            - "2026-02"
+            - "2026-03"
+            - "2026-04"
       id: isclinical-trailing-12mo
   limit: 1
   metricOverrides: {}
