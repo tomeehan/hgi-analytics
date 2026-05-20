@@ -589,5 +589,17 @@ tiles:
     w: 36
     x: 0
     "y": 69
+  - h: 8
+    properties:
+      chartName: iS Clinical Subscriber Growth (12 mo table)
+      chartSlug: subscriber-growth-monthly-table
+      hideTitle: false
+      title: Subscriber Growth by Month (12 mo)
+    tabUuid: null
+    tileSlug: subscriber-growth-monthly-table
+    type: saved_chart
+    w: 36
+    x: 0
+    "y": 76
 verification: null
 version: 1
