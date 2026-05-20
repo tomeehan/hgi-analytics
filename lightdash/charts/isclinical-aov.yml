@@ -1,0 +1,44 @@
+# Source: April 2026 KPI Report, page 12 (IS CLINICAL, 1. REVENUE & CHANNEL ATTRIBUTION)
+chartConfig:
+  config:
+    flipColors: false
+    label: iS Clinical AOV (Shopify)
+    selectedField: fct_orders_aov
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  Average order value for the iS Clinical Shopify store: total Shopify revenue
+  divided by Shopify order count (the average of order total_price). Responds to
+  the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_orders
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_orders_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_orders_aov
+  sorts: []
+  tableCalculations: []
+name: iS Clinical AOV (Shopify)
+slug: isclinical-aov
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_orders_aov
+tableName: fct_orders
+verification: null
+version: 1
