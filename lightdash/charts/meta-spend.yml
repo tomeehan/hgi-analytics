@@ -1,0 +1,44 @@
+# Source: April 2026 KPI Report, page 15 (Paid Media Performance)
+chartConfig:
+  config:
+    flipColors: false
+    label: iS Clinical Meta Spend
+    selectedField: fct_ad_spend_total_meta_spend
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  Total Meta (Facebook Marketing) ad spend for the iS Clinical ad account (sum
+  of daily spend across every iS Clinical Meta ad set, in GBP). Uses
+  fct_ad_spend.total_meta_spend. Responds to the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_ad_spend
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_ad_spend_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_ad_spend_total_meta_spend
+  sorts: []
+  tableCalculations: []
+name: iS Clinical Meta Spend
+slug: meta-spend
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_ad_spend_total_meta_spend
+tableName: fct_ad_spend
+verification: null
+version: 1
