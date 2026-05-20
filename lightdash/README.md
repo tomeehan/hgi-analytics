@@ -62,38 +62,21 @@ Metrics are defined in dbt YAML (`dbt/models/gold/_schema.yml`) under
 `meta.metrics` — never duplicated in Lightdash. Lightdash discovers them on
 sync.
 
-## Dashboards
+## Dashboards-as-code
 
-Every chart and dashboard edit — including the original seed — lives
-in `migrations/` as a timestamped one-shot script. The folder is a
-chronological audit log of every change to live Lightdash state.
+Charts and dashboards are managed as code. The source of truth is the
+YAML in `lightdash/charts/<slug>.yml` and
+`lightdash/dashboards/<slug>.yml`, one file per object. They are edited
+locally and synced with the Lightdash CLI (`lightdash download` /
+`lightdash upload`), and `lightdash_deploy.yml` pushes the committed
+YAML to production on merge to `main`.
 
-The two earliest entries are the original seed scripts:
+`lightdash/migrations/` is frozen legacy history: the old one-shot API
+scripts that pre-date content-as-code. Never add to it or re-run it,
+and treat the retired `bin/new-lightdash-migration` scaffold as dead.
 
-- `migrations/20260427_143325_initial_dashboards_seed.py` — created
-  Group Overview, Returning Customers, Cross-Brand Customers, UK
-  Regional Performance, Product Performance, Product Repeat Rate.
-- `migrations/20260427_143511_prospect_crm_dashboards_seed.py` —
-  created Customer Universe, B2B Account 360, B2B × DTC Cross-View,
-  DTC → B2B Lead Signals.
-
-Both are marked `Status: applied 2026-04-27`. They must never be
-re-run — they POST new charts with no upsert, so re-running creates
-duplicates.
-
-### Adding a new migration
-
-```sh
-bin/new-lightdash-migration <slug>           # scaffold the file
-# fill in the docstring (PR ref, what it does) and main()
-python3 lightdash/migrations/<file>.py --dry-run   # preview
-python3 lightdash/migrations/<file>.py             # apply
-# flip Status: applied YYYY-MM-DD in the docstring, then commit
-```
-
-Migrations read auth from `.env` (`LIGHTDASH_URL`, `LIGHTDASH_TOKEN`,
-`LIGHTDASH_PROJECT_UUID`, `LIGHTDASH_SPACE_UUID`). See
-`migrations/README.md` for the full pattern.
+See the **"Lightdash dashboards-as-code"** section of the repo-root
+`CLAUDE.md` for the full develop, preview, and PR workflow.
 
 ## Hardening
 
