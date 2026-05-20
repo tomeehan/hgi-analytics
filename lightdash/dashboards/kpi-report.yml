@@ -70,6 +70,9 @@ filters:
         isclinical-top-performing-campaigns:
           fieldId: fct_klaviyo_campaign_revenue_order_month_label
           tableName: fct_klaviyo_campaign_revenue
+        isclinical-top-flows:
+          fieldId: fct_klaviyo_flow_revenue_order_month_label
+          tableName: fct_klaviyo_flow_revenue
       values:
         - 2026-04
   metrics: []
@@ -508,6 +511,18 @@ tiles:
     type: saved_chart
     w: 18
     x: 0
+    "y": 57
+  - h: 6
+    properties:
+      chartName: iS Clinical Top Performing Flows
+      chartSlug: isclinical-top-flows
+      hideTitle: false
+      title: Top Performing Flows
+    tabUuid: null
+    tileSlug: isclinical-top-flows
+    type: saved_chart
+    w: 18
+    x: 18
     "y": 57
 verification: null
 version: 1

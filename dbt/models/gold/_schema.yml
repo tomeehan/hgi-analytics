@@ -988,6 +988,74 @@ models:
             - store_id
             - order_month
 
+  - name: fct_klaviyo_flow_revenue
+    description: >-
+      Klaviyo flow-attributed revenue rolled up to one row per flow per month
+      (grain: flow_id x store_id x order_month). Reuses fct_klaviyo_revenue (the
+      5-day-window Placed Order attribution): takes the flow-attributed slice and
+      sums revenue per flow. flow_name is the Klaviyo automation name from
+      stg_klaviyo__flows; unlike the campaign case, the `$flow` event key joins
+      cleanly to the FLOWS stream id. This is the flow-level detail behind the
+      CRM KPI strip's FLOW REV headline and feeds the "Top Performing Flows"
+      table (ticket 016). It inherits the same residual gap against Klaviyo's
+      native attribution engine.
+    meta:
+      label: "Klaviyo Flow Revenue"
+    columns:
+      - name: flow_id
+        description: "Klaviyo flow ID (the `$flow` event key)."
+        tests:
+          - not_null
+      - name: flow_name
+        description: "Flow (automation) name, from stg_klaviyo__flows."
+        tests:
+          - not_null
+        meta:
+          dimension:
+            label: "Flow"
+      - name: store_id
+        description: "Brand identifier."
+        tests:
+          - not_null
+        meta:
+          dimension:
+            label: "Brand"
+            # Keep in sync with fct_orders.store_id and fct_klaviyo_revenue.store_id
+            # (CLAUDE.md -> store-name display mapping).
+            sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'harper_grace' then 'Harper Grace' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+      - name: order_month
+        description: "First day of the month the attributed Placed Order events occurred. Mirrors fct_orders.order_month so the dashboard's Month filter cross-applies."
+        tests:
+          - not_null
+        meta:
+          dimension:
+            label: "Month (date)"
+          additional_dimensions:
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Compact YYYY-MM label for human-facing dashboard month filters; mirrors fct_orders.order_month_label so the KPI Report's Month filter cross-applies via field-name lookup."
+              sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
+      - name: revenue
+        description: "Placed Order value attributed to this flow in the month (5-day window)."
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+        meta:
+          metrics:
+            total_flow_revenue:
+              type: sum
+              label: "Revenue"
+              format: "gbp"
+              round: 0
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - flow_id
+            - store_id
+            - order_month
+
   - name: fct_ga_sessions
     description: "Daily GA4 traffic-and-conversion fact by store_id (one row per session_date × store_id). Sessions and GA-attributed revenue from BRONZE_GOOGLE_ANALYTICS_*.TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT; users from WEBSITE_OVERVIEW; transactions from the EVENTS_REPORT purchase event count. Exposes derived CVR / RPS / AOV metrics. Currently iS Clinical only; Deese PRO / HGI GA4 connections not yet landed."
     meta:

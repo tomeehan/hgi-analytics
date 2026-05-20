@@ -52,6 +52,7 @@ sources:
       - name: events
       - name: campaigns
       - name: campaign_values_reports
+      - name: flows
       - name: metrics
       - name: profiles
 
@@ -62,6 +63,7 @@ sources:
       - name: events
       - name: campaigns
       - name: campaign_values_reports
+      - name: flows
       - name: metrics
       - name: profiles
 
