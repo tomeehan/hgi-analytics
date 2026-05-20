@@ -63,7 +63,22 @@ models:
               round: 0
       - name: is_first_order
         description: "True if this is the customer's first order."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+              quote: false
         meta:
+          additional_dimensions:
+            # New vs returning split for the Customer Mix & AOV Split table
+            # tile on the iS Clinical KPI Report (PDF p.14). A "new customer"
+            # order is the customer's first ever order (is_first_order = 1);
+            # everything else is "Returning customers".
+            customer_type:
+              type: string
+              label: "Customer Type"
+              description: "New vs returning customer, derived from is_first_order."
+              sql: "case when ${TABLE}.is_first_order = 1 then 'New customers' else 'Returning customers' end"
           metrics:
             new_customer_orders:
               type: sum
