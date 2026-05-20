@@ -5,7 +5,8 @@
 # Idempotent. Safe to re-run.
 #
 # What it does:
-#   1. Detects platform; on Linux, apt-get installs python3 + venv if missing.
+#   1. Detects platform; on Linux, apt-get installs python3 + venv if missing,
+#      plus Node 20 + the Lightdash CLI for the dashboards-as-code workflow.
 #   2. Verifies prerequisites (git, python3 ≥ 3.9).
 #   3. Creates a Python venv at .venv/ and installs dbt-snowflake + snowflake-cli + requests.
 #   4. Runs `dbt deps` to fetch dbt packages.
@@ -22,6 +23,9 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
 PLATFORM="$(uname -s)"
+
+# Lightdash CLI version — keep in sync with .github/workflows/lightdash_deploy.yml.
+LIGHTDASH_CLI_VERSION="0.2755.0"
 
 # ── output helpers ──────────────────────────────────────────────────────────
 if [ -t 1 ]; then
@@ -57,6 +61,29 @@ if [ "$PLATFORM" = "Linux" ] && [ "$CHECK_ONLY" -eq 0 ]; then
     apt-get update -qq
     apt-get install -y -qq python3 python3-venv python3-pip
     ok "python3 + venv + pip installed"
+  fi
+fi
+
+# ── Linux: Node 20 + Lightdash CLI (for the dashboards-as-code workflow) ────
+# Ubuntu 24.04's apt `nodejs` is v18 (EOL), too old for @lightdash/cli, which
+# needs Node 20+. Install Node 20 from NodeSource, then npm-install the CLI
+# pinned to the version CI uses (.github/workflows/lightdash_deploy.yml).
+if [ "$PLATFORM" = "Linux" ] && [ "$CHECK_ONLY" -eq 0 ]; then
+  node_major=0
+  if command -v node >/dev/null 2>&1; then
+    node_major=$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)
+  fi
+  if [ "$node_major" -lt 20 ]; then
+    step "Installing Node.js 20 via NodeSource"
+    apt-get install -y -qq curl ca-certificates
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    apt-get install -y -qq nodejs
+    ok "node $(node --version)"
+  fi
+  if [ "$(lightdash --version 2>/dev/null || true)" != "$LIGHTDASH_CLI_VERSION" ]; then
+    step "Installing Lightdash CLI @$LIGHTDASH_CLI_VERSION"
+    npm install -g "@lightdash/cli@$LIGHTDASH_CLI_VERSION"
+    ok "lightdash $(lightdash --version)"
   fi
 fi
 
@@ -106,6 +133,7 @@ optional gh        "GitHub CLI"
 optional snow      "Snowflake CLI for ad-hoc queries"
 optional hcloud    "Hetzner Cloud CLI"
 optional neonctl   "Neon Postgres CLI"
+optional lightdash "Lightdash CLI for dashboards-as-code"
 
 if [ "$MISSING" -eq 1 ]; then
   fail "Missing required tools — install the above and re-run."
