@@ -577,5 +577,17 @@ tiles:
     w: 12
     x: 24
     "y": 65
+  - h: 7
+    properties:
+      chartName: iS Clinical Subscriber Growth (12 mo, monthly)
+      chartSlug: subscriber-growth-monthly-bar-chart
+      hideTitle: false
+      title: Net Subscribers Added per Month (12 mo)
+    tabUuid: null
+    tileSlug: subscriber-growth-monthly-bar-chart
+    type: saved_chart
+    w: 36
+    x: 0
+    "y": 69
 verification: null
 version: 1
