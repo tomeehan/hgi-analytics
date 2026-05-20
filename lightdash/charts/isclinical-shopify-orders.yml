@@ -1,0 +1,44 @@
+# Source: April 2026 KPI Report, page 12 (Revenue & Channel Attribution)
+chartConfig:
+  config:
+    flipColors: false
+    label: iS Clinical Shopify Orders
+    selectedField: fct_orders_order_count
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  Count of distinct Shopify orders placed on the iS Clinical store. Uses
+  fct_orders.order_count (count_distinct on order_id). Responds to the dashboard
+  Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_orders
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_orders_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_orders_order_count
+  sorts: []
+  tableCalculations: []
+name: iS Clinical Shopify Orders
+slug: isclinical-shopify-orders
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_orders_order_count
+tableName: fct_orders
+verification: null
+version: 1
