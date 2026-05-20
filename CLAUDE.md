@@ -59,6 +59,7 @@ Klaviyo accounts ┘                (raw, per-source)    (cleaned,         (fact
   - `fct_product_repeat_rate` — per-product repeat purchase rate
   - `fct_google_ads_search_terms` — Google Ads search-term performance (iS Clinical), aggregated to `(order_month, brand_intent)`; the top-100-by-cost search terms split branded vs non-branded
   - `fct_klaviyo_revenue` — Klaviyo Placed Order revenue, 5-day-window attributed to a campaign or flow off raw `EVENTS`; `fct_klaviyo_campaign_revenue` / `fct_klaviyo_flow_revenue` roll it up per campaign / per flow per month
+  - `fct_klaviyo_subscriber_growth` — Klaviyo email-list subscriber growth at monthly grain (`store_id` x `order_month`): counts of `Subscribed to Email Marketing` / `Unsubscribed from Email Marketing` events off raw `EVENTS`, with a signed `net_subscriber_change`. Plain monthly fact, no trailing window baked in; the KPI Report's 12-month subscriber-growth tiles apply any trailing window as a chart-level filter
 - **Metrics** — pre-aggregated tables for dashboard speed.
 
 ## Snowflake layout

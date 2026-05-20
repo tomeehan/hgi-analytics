@@ -1623,3 +1623,77 @@ models:
               type: sum
               label: "Conversions"
               round: 0
+
+  - name: fct_klaviyo_subscriber_growth
+    description: >-
+      Klaviyo email-list subscriber growth at monthly grain (one row per
+      store_id per month). Counts the raw "Subscribed to Email Marketing" and
+      "Unsubscribed from Email Marketing" events from BRONZE_KLAVIYO_*.EVENTS
+      (via stg_klaviyo__events joined to stg_klaviyo__metrics on
+      store_id + metric_id) and rolls them up by calendar month. order_month is
+      derived as the month-truncated occurred_at since Klaviyo carries no native
+      month concept. This is a plain monthly fact with no trailing window baked
+      in: the KPI Report's 12-month subscriber-growth tiles (totals, monthly bar
+      chart, monthly table) all read from this model and apply any trailing
+      window as a chart-level filter.
+    meta:
+      label: "Klaviyo Subscriber Growth"
+    columns:
+      - name: subscriber_growth_id
+        description: "Surrogate key, generate_surrogate_key(store_id, order_month)."
+        tests:
+          - not_null
+          - unique
+      - name: store_id
+        description: "Brand identifier."
+        tests:
+          - not_null
+        meta:
+          dimension:
+            label: "Brand"
+            # Keep in sync with fct_orders.store_id and fct_klaviyo_revenue.store_id
+            # (CLAUDE.md → store-name display mapping).
+            sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'harper_grace' then 'Harper Grace' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+      - name: order_month
+        description: "First day of the month the subscribe/unsubscribe events occurred (date_trunc month of occurred_at). Mirrors fct_orders.order_month so the dashboard's Month filter can cross-apply where wanted."
+        tests:
+          - not_null
+        meta:
+          dimension:
+            label: "Month (date)"
+          additional_dimensions:
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Compact YYYY-MM label for human-facing dashboard month filters; mirrors fct_orders.order_month_label so the KPI Report's Month filter cross-applies via field-name lookup."
+              sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
+      - name: subscribers_added
+        description: "Count of 'Subscribed to Email Marketing' events in the month."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+        meta:
+          metrics:
+            total_subscribers_added:
+              type: sum
+              label: "Subscribers Added"
+              round: 0
+      - name: unsubscribes
+        description: "Count of 'Unsubscribed from Email Marketing' events in the month."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+        meta:
+          metrics:
+            total_unsubscribes:
+              type: sum
+              label: "Unsubscribes"
+              round: 0
+      - name: net_subscriber_change
+        description: "subscribers_added minus unsubscribes for the month. Signed (can be negative), so no range test."
+        meta:
+          metrics:
+            total_net_subscriber_change:
+              type: sum
+              label: "Net Subscriber Change"
+              round: 0
