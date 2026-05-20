@@ -4,6 +4,8 @@ This file is the **single source of truth** for producing tickets that rebuild t
 
 The PDF reference lives at `reference/april_2026_kpi_report.pdf`. Treat its numbers as authoritative: each ticket builds one tile and verifies its value against the PDF.
 
+> **Note (2026-05-20):** Revitalash has been removed from the business. The historical Bronze counts, PDF figures, and filter dropdown lists below still list Revitalash for audit purposes, but new tickets must exclude it. The active brand list is now **iS Clinical**, **Deese PRO**, **Geske**, **Harpar Grace Intl** (when its Shopify store is connected).
+
 ---
 
 ## (a) Project preamble (copy verbatim into every ticket)
@@ -185,14 +187,13 @@ Both live and out of scope for this batch (the PDF report doesn't reference them
 
 ## (d) Filter design (installed by ticket 001, reused by everything downstream)
 
-The dashboard layout mirrors the PDF: each metric tile is always on screen, the Brand filter does not switch the view, it only filters the data. Selecting "Revitalash" makes the iS Clinical tile show £0, it does not hide it.
+The dashboard layout mirrors the PDF: each metric tile is always on screen, the Brand filter does not switch the view, it only filters the data. Selecting "Deese PRO" makes the iS Clinical tile show £0, it does not hide it.
 
 ### Brand filter (dashboard level)
 - Label shown to users: **"Brand"**.
-- Drop down values: **All**, **Revitalash**, **iS Clinical**, **Deese PRO**, **Geske** (add "Harpar Grace Intl" when its Shopify store is connected).
+- Drop down values: **All**, **iS Clinical**, **Deese PRO**, **Geske** (add "Harpar Grace Intl" when its Shopify store is connected).
 - Underlying field: `store_id` on every Silver and Gold model that has it.
 - Slug to display name mapping:
-  - `revitalash` displays as "Revitalash"
   - `isclinical` displays as "iS Clinical"
   - `deese_pro` displays as "Deese PRO"
   - `geske` displays as "Geske"

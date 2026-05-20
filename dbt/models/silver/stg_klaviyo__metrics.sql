@@ -4,13 +4,6 @@
 -- integrations) so we keep store_id on each row and resolve
 -- attribution-relevant events by joining on (store_id, metric_id) and
 -- filtering on the human-readable metric_name.
---
--- Revitalash is intentionally excluded: BRONZE_KLAVIYO_REVITALASH has
--- EVENTS materialised but the METRICS stream hasn't landed a table yet
--- (Airbyte connector partial state). Without metrics, Revitalash events
--- can't be resolved to "Placed Order", so Revitalash will contribute
--- zero to fct_klaviyo_revenue until that sync completes. Re-add to the
--- brand list below when BRONZE_KLAVIYO_REVITALASH.METRICS exists.
 
 {% set brands = ['isclinical', 'deese_pro'] %}
 

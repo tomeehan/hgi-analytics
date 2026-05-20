@@ -25,10 +25,10 @@ models:
           dimension:
             label: "Brand"
             # Display the human-readable brand name. Filters operate on the
-            # transformed value (e.g. "Revitalash"), not the raw `store_id`.
+            # transformed value (e.g. "iS Clinical"), not the raw `store_id`.
             # Keep this CASE in sync with the brand list in CLAUDE.md
             # "Conventions" > store-name display mapping.
-            sql: "case ${TABLE}.store_id when 'revitalash' then 'Revitalash' when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+            sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
       - name: total_price
         description: "Total order value in the order's currency."
         meta:
@@ -733,7 +733,7 @@ models:
       - name: delivery_postcode
 
   - name: fct_ad_spend
-    description: "Daily Meta ad spend by store_id (one row per spend_date × store_id), unioned across iS Clinical, Deese PRO, and Revitalash. Sourced from BRONZE_META_*.ADS_INSIGHTS aggregated to daily; purchases / purchase_value are extracted from the ACTIONS / ACTION_VALUES JSON arrays where action_type='purchase'."
+    description: "Daily Meta ad spend by store_id (one row per spend_date × store_id), unioned across iS Clinical and Deese PRO. Sourced from BRONZE_META_*.ADS_INSIGHTS aggregated to daily; purchases / purchase_value are extracted from the ACTIONS / ACTION_VALUES JSON arrays where action_type='purchase'."
     meta:
       label: "Ad Spend"
     columns:
@@ -763,7 +763,7 @@ models:
             label: "Brand"
             # Same human-readable rename as fct_orders.store_id (per ticket 001
             # and CLAUDE.md → store-name display mapping). Keep in sync.
-            sql: "case ${TABLE}.store_id when 'revitalash' then 'Revitalash' when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+            sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
       - name: spend
         description: "Total Meta ad spend."
         meta:
@@ -824,7 +824,7 @@ models:
             label: "Brand"
             # Keep in sync with fct_orders.store_id and fct_ad_spend.store_id
             # (CLAUDE.md → store-name display mapping).
-            sql: "case ${TABLE}.store_id when 'revitalash' then 'Revitalash' when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'harper_grace' then 'Harper Grace' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+            sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'harper_grace' then 'Harper Grace' when 'geske' then 'Geske' else ${TABLE}.store_id end"
       - name: order_month
         description: "First day of the month the Placed Order event occurred (date_trunc month of occurred_at). Mirrors fct_orders.order_month so the dashboard's Month filter cross-applies."
         tests:
@@ -860,7 +860,7 @@ models:
         description: "Klaviyo flow ID, null for campaign-attributed events."
 
   - name: fct_ga_sessions
-    description: "Daily GA4 sessions by store_id (one row per session_date × store_id). Sourced from BRONZE_GOOGLE_ANALYTICS_*.TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT aggregated across source/medium. Currently iS Clinical only; Revitalash / Deese PRO / HGI GA4 connections not yet landed."
+    description: "Daily GA4 sessions by store_id (one row per session_date × store_id). Sourced from BRONZE_GOOGLE_ANALYTICS_*.TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT aggregated across source/medium. Currently iS Clinical only; Deese PRO / HGI GA4 connections not yet landed."
     meta:
       label: "GA Sessions"
     columns:
@@ -886,7 +886,7 @@ models:
             label: "Brand"
             # Same human-readable rename as fct_orders.store_id (CLAUDE.md →
             # store-name display mapping). Keep in sync across Gold models.
-            sql: "case ${TABLE}.store_id when 'revitalash' then 'Revitalash' when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+            sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
       - name: sessions
         meta:
           metrics:
@@ -923,7 +923,7 @@ models:
         meta:
           dimension:
             label: "Brand"
-            sql: "case ${TABLE}.store_id when 'revitalash' then 'Revitalash' when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+            sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
       - name: order_month
         description: "First day of the month."
         tests:

@@ -98,7 +98,6 @@ Sync mode: incremental where supported; full refresh for small reference tables.
 |---------|---------------------|-------|
 | isClinical | `BRONZE_KLAVIYO_ISCLINICAL` | DTC store |
 | Deese Pro | `BRONZE_KLAVIYO_DEESE_PRO` | DTC store |
-| Revitalash | `BRONZE_KLAVIYO_REVITALASH` | DTC store |
 | Geske | `BRONZE_KLAVIYO_GESKE` | DTC store (schema only, no syncs yet) |
 | Harper Grace | `BRONZE_KLAVIYO_HARPER_GRACE` | B2B / wholesale store |
 
@@ -197,11 +196,10 @@ One connection per ad account, one schema per brand. Built-in **Facebook Marketi
 |-------|-----------------|---------------------|----------|
 | iS Clinical | `Meta - iS Clinical → HGI Snowflake` | `BRONZE_META_ISCLINICAL` | 24 h |
 | Deese Pro | `Meta - Deese Pro → HGI Snowflake` | `BRONZE_META_DEESE_PRO` | 24 h |
-| Revitalash | `Meta - Revitalash → HGI Snowflake` | `BRONZE_META_REVITALASH` | 24 h |
 
-Streams (all three connections share the same selection): `ad_account`, `ad_sets`, `ads`, `ad_creatives`, `ad_creatives_from_ads`, `campaigns`, `custom_conversions`, `custom_audiences`, `images`, `videos`, plus the full `ads_insights*` family (overall, age_and_gender, country, region, dma, platform_and_device, action_type, action_carousel_card, action_conversion_device, action_product_id, action_reaction, action_video_sound, action_video_type, delivery_device, delivery_platform, delivery_platform_and_device_platform, demographics_age, demographics_country, demographics_dma_region, demographics_gender). Sync mode is `incremental_deduped_history` for `ad_sets`/`ads`/`campaigns` (cursor: `updated_time`) and the `ads_insights*` family; `full_refresh_overwrite_deduped` for `ad_account`.
+Streams (both connections share the same selection): `ad_account`, `ad_sets`, `ads`, `ad_creatives`, `ad_creatives_from_ads`, `campaigns`, `custom_conversions`, `custom_audiences`, `images`, `videos`, plus the full `ads_insights*` family (overall, age_and_gender, country, region, dma, platform_and_device, action_type, action_carousel_card, action_conversion_device, action_product_id, action_reaction, action_video_sound, action_video_type, delivery_device, delivery_platform, delivery_platform_and_device_platform, demographics_age, demographics_country, demographics_dma_region, demographics_gender). Sync mode is `incremental_deduped_history` for `ad_sets`/`ads`/`campaigns` (cursor: `updated_time`) and the `ads_insights*` family; `full_refresh_overwrite_deduped` for `ad_account`.
 
-**Namespace setup:** `namespaceDefinition: custom_format`, `namespaceFormat: BRONZE_META_<BRAND>` per connection. Without this, all three connections fall back to the destination's default schema (`BRONZE_SHOPIFY_ISCLINICAL`) and collide on identical table names — the same trap that previously contaminated isClinical with Revitalash data. Always set the per-brand namespace before the first sync.
+**Namespace setup:** `namespaceDefinition: custom_format`, `namespaceFormat: BRONZE_META_<BRAND>` per connection. Without this, all connections fall back to the destination's default schema (`BRONZE_SHOPIFY_ISCLINICAL`) and collide on identical table names. Always set the per-brand namespace before the first sync.
 
 ## Sync schedule
 
