@@ -65,6 +65,22 @@ models:
         tests:
           - not_null
 
+  - name: stg_klaviyo__flows
+    description: "Klaviyo flows catalogue unioned across loaded accounts (iSClinical, Deese PRO). One row per flow (automation). The flow_id matches the `$flow` key on email engagement events, so this is the flow-id -> flow-name lookup for fct_klaviyo_flow_revenue. Flow names are not guaranteed unique (live / draft copies share a name), so flow_id is the primary key."
+    columns:
+      - name: flow_id
+        description: "Klaviyo flow ID (matches the `$flow` event key)."
+        tests:
+          - not_null
+          - unique
+      - name: flow_name
+        description: "Human-readable flow name (e.g. 'Welcome Series (NEW)')."
+      - name: flow_status
+        description: "Klaviyo flow status (live / draft / manual)."
+      - name: store_id
+        tests:
+          - not_null
+
   - name: stg_klaviyo__placed_orders
     description: "Klaviyo 'Placed Order' events, deduplicated to one row per (store_id, OrderID). Each Klaviyo account fires a Placed Order metric for the same order from more than one integration (native Shopify + server-side API), so the raw events double-count revenue; the earliest event per OrderID is kept. Placed Order events carry no campaign / flow keys, so attribution is computed downstream in fct_klaviyo_revenue."
     columns:

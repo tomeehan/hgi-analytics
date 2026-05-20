@@ -1,0 +1,55 @@
+# Source: April 2026 KPI Report, page 16 (IS CLINICAL, 7. CRM Performance)
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: false
+  type: table
+contentType: chart
+description: >-
+  Top five iS Clinical Klaviyo automated flows by placed-order revenue,
+  mirroring the TOP PERFORMING FLOWS panel on KPI Report page 16. Revenue is
+  Placed Order value attributed to a flow within Klaviyo's 5-day engagement
+  window, reconstructed from raw Klaviyo events (fct_klaviyo_flow_revenue, which
+  reuses fct_klaviyo_revenue). The PDF splits Abandoned Checkout / Abandoned
+  Cart into base and variant rows; this reconstruction reports one row per
+  flow, so per-flow figures differ from the PDF for that documented Klaviyo
+  attribution methodology gap. Responds to the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_klaviyo_flow_revenue_flow_name
+  exploreName: fct_klaviyo_flow_revenue
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_klaviyo_flow_revenue_store_id
+          values:
+            - iS Clinical
+      id: isclinical-flows
+  limit: 5
+  metricOverrides: {}
+  metrics:
+    - fct_klaviyo_flow_revenue_total_flow_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_klaviyo_flow_revenue_total_flow_revenue
+  tableCalculations: []
+name: iS Clinical Top Performing Flows
+slug: isclinical-top-flows
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_klaviyo_flow_revenue_flow_name
+    - fct_klaviyo_flow_revenue_total_flow_revenue
+tableName: fct_klaviyo_flow_revenue
+verification: null
+version: 1
