@@ -1,24 +1,24 @@
-# Ticket generator: April 2026 KPI Report to Lightdash
+# Ticket generator: April 2026 KPI Report (iS Clinical) to Lightdash
 
-This file is the **single source of truth** for producing tickets that rebuild the **April 2026 KPI Report** PDF as a live Lightdash dashboard. A future Claude session reads this one file, walks the inventory in section (e), and writes one `tickets/NNN_<slug>.md` per row using the template in section (b).
+This file is the **single source of truth** for producing tickets that rebuild the **iS Clinical brand section of the April 2026 KPI Report** PDF as a live Lightdash dashboard. A future Claude session reads this one file, walks the inventory in section (e), and writes one `tickets/NNN_<slug>.md` per row using the template in section (b).
 
 The PDF reference lives at `reference/april_2026_kpi_report.pdf`. Treat its numbers as authoritative: each ticket builds one tile and verifies its value against the PDF.
 
-> **Note (2026-05-20):** Revitalash has been removed from the business. The historical Bronze counts, PDF figures, and filter dropdown lists below still list Revitalash for audit purposes, but new tickets must exclude it. The active brand list is now **iS Clinical**, **Deese PRO**, **Geske**, **Harpar Grace Intl** (when its Shopify store is connected).
+> **Note (2026-05-20):** The dashboard is scoped to iS Clinical only. The guiding mental model is "the iS Clinical version of the April 2026 KPI Report PDF": a single-brand dashboard that reproduces the report's iS Clinical brand section plus the iSC-scoped headline KPIs. There is no multi-brand framing and no dashboard Brand filter, only a Month filter.
 
 ---
 
 ## (a) Project preamble (copy verbatim into every ticket)
 
-> **Project (one paragraph):** This repo is `hgi-analytics`. We ingest Shopify, Klaviyo, Meta, GA4, Google Ads, Cin7 and Prospect CRM into Snowflake via Airbyte, transform with dbt (Bronze, Silver, Gold), and serve dashboards from Lightdash. Full project README is `CLAUDE.md` in the repo root. Read it first if you have not seen this project before.
+> **Project (one paragraph):** This repo is `hgi-analytics`. We ingest Shopify, Klaviyo, Meta, GA4, Google Ads, Cin7 and Prospect CRM into Snowflake via Airbyte, transform with dbt (Bronze, Silver, Gold), and serve dashboards from Lightdash. Full project README is `CLAUDE.md` in the repo root. Read it first if you have not seen this project before. Lightdash charts and dashboards are managed as code (YAML in `lightdash/charts/` and `lightdash/dashboards/`); read the "Lightdash dashboards-as-code" section of `CLAUDE.md` before touching any tile.
 >
-> **Wider goal of these tickets:** Recreate the **April 2026 KPI Report** PDF (`reference/april_2026_kpi_report.pdf`) as a live, brand and month filterable dashboard in Lightdash. The PDF is treated as numerically authoritative. Each ticket builds one tile on the **Group Overview** dashboard and verifies the April 2026 number against the PDF.
+> **Wider goal of these tickets:** Build the **iS Clinical KPI Report** dashboard in Lightdash, the iS Clinical version of the April 2026 KPI Report PDF (`reference/april_2026_kpi_report.pdf`). The PDF is treated as numerically authoritative. Each ticket builds one tile on the **iS Clinical KPI Report** dashboard and verifies the April 2026 iS Clinical number against the PDF. This is a single-brand dashboard: there is no Brand filter, only a Month filter.
 >
 > **The generator that produced this ticket:** `tickets/_ticket_generator.md`. Read sections (c) data availability map and (d) filter design before starting if you have not touched these tickets before.
 >
 > **Context window discipline:** Spawn subagents (Explore for codebase searches, Plan for design questions, general purpose for multi step research) so this session's context stays focused on the implementation. Do not foreground read every file linked from this ticket. Delegate.
 >
-> **This ticket is fully autonomous.** You are responsible for taking the work from Triage all the way to merged, deployed, migration run, and verified via the Lightdash API. Do not stop for human approval at any intermediate step. The end state is: PR merged to main, deploy action green, migration script applied, dashboard tile value verified against the PDF by API call, Basecamp card moved to Done with a verification comment.
+> **This ticket is fully autonomous.** You are responsible for taking the work from Triage all the way to merged, deployed and verified. Do not stop for human approval at any intermediate step. The end state is: PR merged to main, `lightdash_deploy.yml` green on main (it auto-runs `lightdash deploy` then `lightdash upload --force`), the dashboard tile verified against the PDF number, and the Basecamp card moved to Done with a verification comment.
 
 ## (b) Ticket template (use verbatim, fill the bracketed placeholders)
 
@@ -31,44 +31,44 @@ The PDF reference lives at `reference/april_2026_kpi_report.pdf`. Treat its numb
 
 1. **Claim the card on Basecamp.** Using the `basecamp` skill, find this ticket on the Data Engineering card table (account `5735756`, bucket `46863097`, card table `9778948512`), and move it from **Triage** to **In progress**.
 2. **Branch.** `git fetch origin && git checkout main && git pull --rebase && git checkout -b ticket-NNN-<slug>`. (Always rebase before branching, per the project's PR workflow.)
-3. **Implement.**
-   - dbt changes (if any): edit the models listed below, then run `cd dbt && dbt build --select <model>+` and confirm tests pass.
-   - Lightdash migration: scaffold with `bin/new-lightdash-migration <slug>`, edit per the "Lightdash work" section, dry run with `python3 lightdash/migrations/<file> --dry-run`, and only proceed once the planned API calls look right.
-4. **Commit + PR.**
+3. **Implement dbt changes (if any).** Edit the models listed in the "dbt work" section, then run `cd dbt && dbt build --select <model>+` and confirm tests pass. If there are no dbt changes, skip this step.
+4. **Edit the Lightdash YAML.**
+   - Run `lightdash download` from the repo root to refresh the local `lightdash/charts/` and `lightdash/dashboards/` YAML from production, so you start editing from live state.
+   - Before creating a new chart YAML, check `lightdash/charts/` for an existing chart that already fits this tile and adapt it instead of writing a new one.
+   - Edit or create `lightdash/charts/<slug>.yml` (one file per tile) and update `lightdash/dashboards/kpi-report.yml` to add the tile.
+   - Every chart and dashboard YAML file you create or edit **must** carry, as the very first line, a comment in the exact form `# Source: April 2026 KPI Report, page <N> (<section title>)`.
+   - `lightdash lint` to validate the YAML against Lightdash's JSON schema. Optionally `lightdash run-chart lightdash/charts/<slug>.yml` to confirm the query runs against the warehouse.
+5. **Preview the change.**
+   - Create a preview project and push the YAML into it:
+     ```sh
+     lightdash start-preview --name "$(git branch --show-current)" \
+       --project-dir dbt --profiles-dir dbt
+     lightdash upload --force --validate --project <preview-uuid>
+     ```
+   - Open the printed preview URL, confirm the new tile renders on the iS Clinical KPI Report dashboard, and confirm the April 2026 value matches the PDF (see the "Preview verification" section).
+6. **Commit + PR.**
    - `git add -p && git commit` (commit conventions in `CLAUDE.md`: no em dashes, no co-author trailer, no "Generated with Claude Code" footer).
    - `git push -u origin ticket-NNN-<slug>`.
-   - `gh pr create` with a body that includes the **Post deploy ops** line verbatim (see template at the bottom of this ticket).
-5. **Self merge on green CI.**
-   - Wait around 10 seconds, then `gh pr checks <pr-number> --watch` until CI is green.
+   - `gh pr create`. The PR body notes that `lightdash_deploy.yml` runs automatically on merge (it deploys the semantic layer and uploads the chart/dashboard YAML); there is no manual post-deploy step.
+7. **Self merge on green CI.**
+   - `gh pr checks <pr-number> --watch` until CI is green.
    - `gh pr merge --rebase --delete-branch`. Never push to main directly. Never use `--no-verify` or skip hooks.
-6. **Watch the deploy.**
-   - The `lightdash_deploy.yml` workflow fires automatically on push to main. Poll with `gh run list --workflow=lightdash_deploy.yml --limit 1 --json status,conclusion,databaseId --jq '.[0]'`, or `gh run watch <run-id>`. Wait until `status=completed, conclusion=success`.
-7. **Run the migration.**
-   - `python3 lightdash/migrations/<file>` (no `--dry-run` this time). The migration mutates Lightdash state via the API and should print one line per API call.
-8. **Verify via the Lightdash API (not the browser).**
-   - Import the helpers from `lightdash/migrations/_lib.py` (or curl with auth from `.env`) and:
-     - `GET /api/v1/dashboards/a8941b36-5393-43fb-9714-cd7edb582803` to confirm the new tile UUIDs are present in `tiles[]`.
-     - For each new chart, `POST /api/v1/saved/<chart-uuid>/results` with the Brand=All / Month=April-2026 filter combo, and assert the returned value equals the expected April number from this ticket.
-     - Repeat the API query with Month=March-2026 to capture the March value (needed for the Basecamp comment, and proves the month filter works end to end).
-9. **Close the loop on Basecamp.**
-   - Add a comment to the card with:
-     - the merged PR URL,
-     - the verified April and March values (from step 8),
-     - the dashboard tile UUIDs you just created,
-     - any caveats or known gaps (especially if the live number does not match the PDF, link the prerequisite ticket).
-   - Move the card from **In progress** to **Done**.
-10. **Pick up the next ticket.** Look at Basecamp Triage. If there is another card from this batch (named `NNN: ...`), pick the lowest numbered one and start again from step 1. If Triage is empty for this batch, stop.
+8. **Watch the deploy.**
+   - On merge, `lightdash_deploy.yml` runs automatically (it runs `lightdash deploy` then `lightdash upload --force`, pushing the committed YAML to the production project). Poll with `gh run list --workflow=lightdash_deploy.yml --limit 1 --json status,conclusion,databaseId --jq '.[0]'`, or `gh run watch <run-id>`. Wait until `status=completed, conclusion=success`.
+9. **Verify the production tile.** Open the iS Clinical KPI Report dashboard in Lightdash, with the Month filter on April 2026, and confirm the tile value matches the PDF number for this metric.
+10. **Tear down the preview.** `lightdash stop-preview --name "<branch-name>"`.
+11. **Close the loop on Basecamp.** Add a comment to the card with the merged PR URL, the verified April value, and any caveats or known gaps (especially if the live number does not match the PDF, link the prerequisite ticket). Move the card from **In progress** to **Done**.
+12. **Pick up the next ticket.** Look at Basecamp Triage. If there is another card from this batch (named `NNN: ...`), pick the lowest numbered one and start again from step 1. If Triage is empty for this batch, stop.
 
 ## PDF reference
 - File: `reference/april_2026_kpi_report.pdf`
 - Page <N>, section "<Section title>".
-- April 2026 value: **<exact number from PDF>**.
-- March 2026 value (for filter change validation): <number, or "not in PDF, capture at verification time via the API call in step 8 and write into the Basecamp comment">.
+- April 2026 value (iS Clinical): **<exact number from PDF>**.
 
 ## Metric definition
 - Plain English description of what the metric counts.
-- Source of truth chain per the PDF appendix on page 31 (Shopify, GA4, Meta, Google Ads, Klaviyo).
-- Filter behaviour: how the tile responds to the dashboard's **Brand** and **Month** filters.
+- Source of truth chain per the PDF appendix (Shopify, GA4, Meta, Google Ads, Klaviyo).
+- Filter behaviour: how the tile responds to the dashboard's **Month** filter.
 
 ## Data dependencies
 - Bronze sources needed (with current status from generator section (c): ok loaded, blocked on Airbyte, or partial).
@@ -81,207 +81,136 @@ The PDF reference lives at `reference/april_2026_kpi_report.pdf`. Treat its numb
 - If none required, write "no dbt changes needed".
 
 ## Lightdash work
-- Tile type (big number, bar chart, table, pie, markdown) and where on the Group Overview dashboard it sits (which row, under which heading, mirroring the PDF page order).
-- The migration filename to create via `bin/new-lightdash-migration <slug>` (produces `lightdash/migrations/YYYYMMDD_HHMMSS_<slug>.py`).
-- How the tile picks up the dashboard's Brand and Month filters: the underlying explore **must** expose `store_id` and `order_month` (or an equivalent month truncated date dimension). Confirm this before writing the migration.
+- Tile type (big number, bar chart, table, pie, markdown) and where on the iS Clinical KPI Report dashboard it sits (which row, under which heading, mirroring the PDF page order).
+- The `lightdash/charts/<slug>.yml` file to create or adapt (one per tile), plus the update to `lightdash/dashboards/kpi-report.yml` to place the tile.
+- Mandatory: every chart and dashboard YAML file created or edited must have, as its first line, the comment `# Source: April 2026 KPI Report, page <N> (<section title>)`.
+- Before creating a new chart YAML, check `lightdash/charts/` for an existing chart that already fits and adapt it instead.
+- How the tile picks up the dashboard's Month filter: the underlying explore **must** expose `order_month` (or an equivalent month-truncated date dimension), matching the field used by `lightdash/dashboards/kpi-report.yml`. Confirm this before editing the YAML.
 
-## API verification snippet
-Embed a Python snippet that runs in step 8 of the workflow above. Pattern:
-```python
-import sys
-sys.path.insert(0, "lightdash/migrations")
-from _lib import api
-
-DASH = "a8941b36-5393-43fb-9714-cd7edb582803"
-EXPECTED_APRIL = <number>
-
-dash = api("GET", f"/dashboards/{DASH}")
-tile_uuids = [t["uuid"] for t in dash["tiles"]]
-print("tiles on dashboard:", tile_uuids)
-
-# Replace <chart-uuid> after the migration prints it
-results = api("POST", "/saved/<chart-uuid>/results", body={
-    "filters": {"dimensions": [
-        {"target": {"fieldId": "fct_orders_order_month"}, "operator": "equals", "values": ["2026-04-01"]},
-    ]},
-})
-got = results["rows"][0]["fct_orders_total_price_sum"]["value"]["raw"]  # adjust field id
-assert got == EXPECTED_APRIL, f"April mismatch: got {got}, expected {EXPECTED_APRIL}"
-print(f"April OK: {got}")
-```
-Adjust the field IDs and the response path to match your migration. If the tile uses a chart that does not exist yet, use the `POST /api/v1/projects/<projectUuid>/explores/<exploreId>/runQuery` endpoint to run an ad hoc query against the explore instead.
+## Preview verification
+Verify the tile in the preview project (step 5 of the workflow) against the PDF number:
+- After `lightdash upload --force --validate --project <preview-uuid>`, open the preview URL.
+- With the Month filter set to April 2026, read the tile value.
+- Assert it equals the April 2026 iS Clinical value stated in the "PDF reference" section above.
+- If it does not match, do not merge: reproduce the number with the Snowflake fallback SQL below to find out whether the gap is a dbt/model issue or a known data-availability gap from section (c), and note the cause in the ticket.
 
 ## Snowflake fallback SQL
-If the API path fails or the answer disagrees with the PDF, reproduce the number directly from Snowflake (via `snow sql -c hgi`):
+The ground-truth check. Reproduce the number directly from Snowflake (via `snow sql -c hgi`):
 ```sql
 <copy pasteable SQL>
 ```
-
-## Post deploy ops (paste into the PR description)
-> Post deploy ops: wait for `lightdash_deploy.yml` to finish (the bot watches this in step 6), then run `python3 lightdash/migrations/YYYYMMDD_HHMMSS_<slug>.py` (step 7).
-(Per `CLAUDE.md` "Lightdash PRs must list post-deploy ops".)
 
 ## Update CLAUDE.md if needed
 If this ticket introduces a new source, schema, role, convention, or resolves something previously marked undecided in `CLAUDE.md`, update `CLAUDE.md` in the same PR (per the "Keeping this file current" section).
 ````
 
-## (c) Data availability map (as of 2026-05-13, verified against Snowflake)
+## (c) Data availability map (as of 2026-05-20, verified against Snowflake)
 
-The PDF assumes every source is fully populated. The repo is not yet. Bake this into every ticket's "Data dependencies" section.
+The PDF assumes every source is fully populated. The repo is not yet. Bake this into every ticket's "Data dependencies" section. This batch is iS Clinical only, so only iS Clinical sources are listed.
 
-### Shopify (per store Bronze counts, all time)
+> **Known data gap: the iS Clinical Shopify Airbyte sync is degraded.** The iS Clinical Shopify source authenticates with a **rotating OAuth token** (not a static custom-app token). The token fails mid-sync, and when it does Airbyte silently drops scattered records rather than erroring loudly. The result is that Bronze runs roughly **2.6% short** for a full month. For April 2026, Bronze holds **1,047 orders** against the **1,075** stated in the PDF. Every Shopify-derived ticket (revenue, orders, AOV, customer mix) must note this gap explicitly in its "Data dependencies" section and link the prerequisite "fix iS Clinical Shopify sync" data-engineering ticket. The PDF figure is authoritative; the live tile will read slightly low until the sync is fixed.
 
-| Store | Bronze schema | Total Bronze orders | Earliest order | April 2026 orders | April 2026 gross | PDF April orders | PDF April £ | Status |
-|---|---|---:|---|---:|---:|---:|---:|---|
-| Revitalash | `BRONZE_SHOPIFY_REVITALASH` | 5,578 | 2026-02-26 | 2,637 | £263,317 | 2,669 | £266,908 | Partial: minor gap of around 32 orders / £3,591 |
-| iS Clinical | `BRONZE_SHOPIFY_ISCLINICAL` | 175 | 2026-02-26 | 29 | £3,392 | 1,075 | £144,532 | Blocked: Airbyte sync only goes back around 10 weeks; needs full historical backfill |
-| Deese PRO | `BRONZE_SHOPIFY_DEESE_PRO` | 3,233 | 2019-01-24 | 20 | £13,731 | 20 | £13,731 | Live: matches PDF exactly |
-| Geske | `BRONZE_SHOPIFY_GESKE` | schema is empty / no `ORDERS` table | n/a | n/a | n/a | n/a | n/a | Blocked: Airbyte connection created but not synced |
-| Harpar Grace Intl | not declared as a source | n/a | n/a | n/a | n/a | 27 | £3,157 | Blocked: harpargrace.com Shopify not connected at all |
+### Shopify
 
-**Combined April 2026 Shopify revenue today:** £279,895 across the loaded stores. PDF target: £428,328 (combined incl HGI) or £425,171 (excl HGI). The current £145k gap is dominated by the iS Clinical sync gap.
+| Brand | Bronze schema | Status |
+|---|---|---|
+| iS Clinical | `BRONZE_SHOPIFY_ISCLINICAL` | Degraded: rotating OAuth token fails mid-sync and silently drops scattered records, Bronze runs ~2.6% short per month (April 2026: 1,047 orders ingested vs 1,075 in the PDF). See the note above. |
 
 ### Klaviyo
 
 | Account | Bronze schema | Status |
 |---|---|---|
 | iS Clinical (DTC) | `BRONZE_KLAVIYO_ISCLINICAL` | Live |
-| Deese PRO | `BRONZE_KLAVIYO_DEESE_PRO` | Live |
-| Revitalash | `BRONZE_KLAVIYO_REVITALASH` | Live |
-| Harper Grace (B2B) | `BRONZE_KLAVIYO_HARPER_GRACE` | Partial: connection emits records but no destination tables get written (see `airbyte/README.md`) |
-| Geske | `BRONZE_KLAVIYO_GESKE` | Blocked: schema exists, no sync configured |
+
+> Klaviyo CRM tiles (CRM revenue, campaign and flow revenue, open and click rates, subscriber growth) must be built from the raw `BRONZE_KLAVIYO_ISCLINICAL.EVENTS` table (5.9M rows, fully populated). Klaviyo's pre-aggregated reporting streams (`campaign_values_reports`, `flow_series_reports`) are deliberately not synced (lean stream selection), so any legacy Gold model that depended on them is empty. Engagement events (Received, Opened, Clicked Email) carry `$message`, `$campaign`, `$flow` and `Campaign Name` in `event_properties`; Placed Order events carry `$value` but no campaign or flow, so campaign and flow revenue is an attribution computation: attribute each Placed Order's `$value` to the campaign or flow of that profile's most recent email engagement within a 5-day window. Open and click rates come straight from the Received, Opened and Clicked Email event counts, no attribution join needed.
 
 ### Meta
 
 | Ad account | Bronze schema | Status |
 |---|---|---|
 | iS Clinical | `BRONZE_META_ISCLINICAL` | Live |
-| Deese PRO | `BRONZE_META_DEESE_PRO` | Live |
-| Revitalash | `BRONZE_META_REVITALASH` | Live |
 
 ### GA4 (Google Analytics)
 
 | Brand | Bronze schema | Status |
 |---|---|---|
-| iS Clinical | `BRONZE_GOOGLE_ANALYTICS_ISCLINICAL` | Live: 10 reports loaded (channel grouping, source/medium, conversions, events, demographics, pages, e-commerce purchases, daily active users, website overview), fresh to 2026-05-05 |
-| Revitalash | not declared | Blocked: not connected |
-| Deese PRO | not declared | Blocked: not connected |
-| Harpar Grace Intl | not declared | Blocked: not connected |
+| iS Clinical | `BRONZE_GOOGLE_ANALYTICS_ISCLINICAL` | Live: 10 reports loaded (channel grouping, source/medium, conversions, events, demographics, pages, e-commerce purchases, daily active users, website overview) |
 
 ### Google Ads
 
 | Brand | Bronze schema | Status |
 |---|---|---|
 | iS Clinical | `BRONZE_GOOGLE_ADS_ISCLINICAL` | Live: full Airbyte stream set (campaign, ad group, keyword, search query, shopping product, geo, age/gender, etc) |
-| Deese PRO | `BRONZE_GOOGLE_ADS_DEESE_PRO` | Partial: schema exists, no campaign-stats tables under the expected suffix yet (different ad account) |
-| Revitalash | not declared | Blocked: not connected (PDF page 7 explicitly says "no Adspirer for RL", but we still need Google Ads for branded vs non-branded reporting) |
 
 ### Cin7 and Prospect CRM
 Both live and out of scope for this batch (the PDF report doesn't reference them).
 
 ### Implication for tickets
 
-- **Shopify only tickets** (revenue, orders, AOV, customer mix) can be built today; the iSC gap will surface in verification and the ticket should note it explicitly and link a sibling "fix iSC Shopify sync" ticket.
-- **Klaviyo and Meta tickets** can be built for all live brands today.
-- **GA4 and Google Ads tickets** can only be verified for iSC today. For other brands the tile will show no data until the Airbyte connections land. List the connection ticket as a dependency in each such ticket.
+- **Shopify tickets** (revenue, orders, AOV, customer mix) can be built today. The ~2.6% iSC sync gap will surface at verification; the ticket must note it explicitly and link the "fix iS Clinical Shopify sync" prerequisite ticket.
+- **Klaviyo, Meta, GA4 and Google Ads tickets** can all be built and verified for iS Clinical today. Every source needed for the iS Clinical brand section is live.
 
 ## (d) Filter design (installed by ticket 001, reused by everything downstream)
 
-The dashboard layout mirrors the PDF: each metric tile is always on screen, the Brand filter does not switch the view, it only filters the data. Selecting "Deese PRO" makes the iS Clinical tile show £0, it does not hide it.
+This is a single-brand dashboard. There is **no Brand filter**. The dashboard layout mirrors the iS Clinical brand section of the PDF: each metric tile is always on screen, and the Month filter scopes every tile to one calendar month.
 
-### Brand filter (dashboard level)
-- Label shown to users: **"Brand"**.
-- Drop down values: **All**, **iS Clinical**, **Deese PRO**, **Geske** (add "Harpar Grace Intl" when its Shopify store is connected).
-- Underlying field: `store_id` on every Silver and Gold model that has it.
-- Slug to display name mapping:
-  - `isclinical` displays as "iS Clinical"
-  - `deese_pro` displays as "Deese PRO"
-  - `geske` displays as "Geske"
-- Implementation convention (decided in ticket 001 and reused everywhere after): the `store_id` dimension in the dbt model's `_schema.yml` carries `label: Brand` and a value-rename map so the drop down shows the display names instead of the slugs. Do not add a parallel `store_name` column unless ticket 001 specifies otherwise.
-
-### Month filter (dashboard level)
+### Month filter (dashboard level, the only filter)
 - Label: **"Month"**.
-- Values: each calendar month present in the data (auto populated by Lightdash).
-- Underlying field: `order_month` on every model with a month of event concept. For sources that don't already have it (Klaviyo, Meta, GA4, Google Ads), the Silver staging model adds `date_trunc('month', <event_timestamp>) as order_month` so a single dashboard filter drives every tile.
-- Format: month start date displayed as "April 2026", "March 2026", etc.
+- Underlying field: `fct_orders_order_month_label` on the `fct_orders` explore (matches the filter already present in `lightdash/dashboards/kpi-report.yml`).
+- Default value: **`2026-04`**, displayed as "April 2026".
+- For sources that don't already carry a month concept (Klaviyo, Meta, GA4, Google Ads), the Silver staging model adds `date_trunc('month', <event_timestamp>) as order_month` so the single dashboard filter drives every tile. Where a tile uses a different explore, it cross-applies the Month filter via `tileTargets` onto the matching field name.
 
 ### Tile compliance
-Every tile produced by these tickets must expose `store_id` and `order_month` (or the equivalent) in its underlying explore. If it does not, the dashboard filters silently won't apply, breaking the API verification step. Confirm this in the Lightdash work section before writing the migration.
+Every tile produced by these tickets must expose `order_month` (or the equivalent month-truncated dimension) in its underlying explore. If it does not, the dashboard Month filter silently won't apply, breaking verification. Confirm this in the "Lightdash work" section before editing the YAML.
 
 ## (e) Ticket inventory
 
-Numbering follows reading order through the PDF. The "April value" column is the verification target each ticket must hit when Brand = All, Month = April 2026.
+Numbering follows reading order through the PDF, 001 to 020. The "iSC April target" column is the verification target each ticket must hit with the Month filter on April 2026; entries marked "verify against PDF" must be read off the PDF by the generating subagent (rule 2). Exact PDF page numbers are confirmed per ticket by the generating subagent (rule 2): the iS Clinical brand section spans roughly PDF pages 12 to 19, and the cover page is page 1.
 
-### Cover page (PDF p.1), 4 tickets
-| # | Title | PDF April value | Notes |
+| # | slug | tile | iSC April target |
 |---|---|---|---|
-| 001 | Combined Shopify Revenue (Apr) | £428,328 (incl HGI) / £425,171 (excl HGI) / £279,895 (today's data) | Also installs dashboard level Brand and Month filters and the `store_id` label/rename convention |
-| 002 | Combined Shopify Orders (Apr) | 3,791 (incl HGI) | RL 2,669 + ISC 1,075 + Deese 20 + HGI 27 |
-| 003 | Combined Meta Spend (Apr) | £22,581 | 3 accounts: Revitalash, iSC, Deese |
-| 004 | Combined Klaviyo Revenue (Apr) | £190,834 | Placed Order, 5 day attribution window |
+| 001 | shopify_revenue | iS Clinical Shopify Revenue (big number). Also rescopes the dashboard, see the note below | £144,532 |
+| 002 | shopify_orders | iS Clinical Shopify Orders (big number) | 1,075 |
+| 003 | meta_spend | iS Clinical Meta Spend (big number) | £7,657 |
+| 004 | klaviyo_revenue | iS Clinical Klaviyo Revenue (big number) | verify against PDF |
+| 005 | revenue_channel_attribution_kpis | Revenue & channel attribution KPI strip | revenue £144,532, GA-attributed £73,808, AOV £134.45 |
+| 006 | channel_breakdown_table | Channel breakdown table (GA4 channels) | verify against PDF |
+| 007 | traffic_conversion_kpi_strip | Traffic & conversion KPI strip | 15,682 sessions, 13,300 users, 3.53% CVR |
+| 008 | top_traffic_sources_by_sessions | Top GA4 traffic sources by sessions | verify against PDF |
+| 009 | top_converting_sources_by_rps | Top GA4 converting sources by RPS | verify against PDF |
+| 010 | pr_media_highlights | PR & media highlights (top GA4 referrers) | verify against PDF |
+| 011 | customer_mix_aov_split | Customer mix & AOV split (new vs returning) | 385 new / 690 returning orders |
+| 012 | meta_remarketing_vs_acquisition | Meta ads: remarketing vs acquisition | £7,657 spend, 406 purchases, 7.46x ROAS |
+| 013 | paid_search_shopping | Paid search / shopping (Google Ads branded vs non-branded) | verify against PDF |
+| 014 | crm_kpi_strip | CRM KPI strip | CRM rev £64,885, campaign £50,667, flow £14,218 |
+| 015 | top_performing_campaigns | Top performing Klaviyo campaigns | verify against PDF |
+| 016 | top_performing_flows | Top performing Klaviyo flows | verify against PDF |
+| 017 | subscriber_growth_totals | 12-month subscriber growth totals | verify against PDF |
+| 018 | subscriber_growth_monthly_bar_chart | 12-month subscriber growth monthly bar chart | verify against PDF |
+| 019 | subscriber_growth_monthly_table | 12-month subscriber growth monthly table | verify against PDF |
+| 020 | methodology_data_sources | Methodology & data sources note (markdown tile) | n/a |
 
-### Cross brand summary (PDF p.2), 3 tickets
-| # | Title | Notes |
-|---|---|---|
-| 005 | Cross brand "April at a glance" table | Brand, revenue, orders, sessions, trans, CVR, RPS, vs Mar, vs Apr 25 |
-| 006 | GA4 revenue share by brand | RL 62.7%, ISC 32.3%, Deese 4.0%, HGI 0.9% (blocked on GA4 for non ISC brands) |
-| 007 | Meta spend share by brand | RL £14,467, ISC £7,657, Deese £457, HGI no spend |
-
-### Per brand sections (PDF p.4 to 30), 16 tickets, each brand filterable
-
-PDF page 1 of each brand section: "Revenue & Channel Attribution"
-| # | Title | Notes |
-|---|---|---|
-| 008 | Revenue & Channel Attribution KPI strip | 4 big numbers: total Shopify revenue, GA-attributed revenue, AOV, largest GA channel |
-| 009 | Channel breakdown table | Direct, Organic, Paid Search, Paid Social, Email/CRM, Referral, Other by revenue, sessions, trans, vs Mar, vs Apr 25 (needs GA4) |
-
-PDF page 2/3/4/5 of each brand section: "Traffic, conversion, PR, customer mix, AOV"
-| # | Title | Notes |
-|---|---|---|
-| 010 | Traffic & conversion KPI strip | Sessions, users, CVR, RPS, AOV (GA derived). Needs GA4 |
-| 011 | Top traffic sources by sessions | Top 8 GA source/medium with sessions, revenue, trans |
-| 012 | Top converting sources by RPS | Top 8 GA source/medium with RPS, CVR, trans |
-| 013 | PR & media highlights | Top GA4 referrers (sessions, revenue, trans) |
-| 014 | Customer mix & AOV split (new vs returning) | Orders, % orders, revenue, % rev, AOV. Shopify source of truth |
-
-PDF page 6 of each brand section: "Paid Media Performance"
-| # | Title | Notes |
-|---|---|---|
-| 015 | Meta ads: remarketing vs acquisition | Audience type, spend, purchases, revenue, ROAS, CPA |
-| 016 | Paid search / shopping | Google Ads: branded vs non branded for iSC, channel breakdown for RL/Deese. Partial blocked on Google Ads |
-
-PDF page 7 of each brand section: "CRM Performance"
-| # | Title | Notes |
-|---|---|---|
-| 017 | CRM KPI strip | Total CRM rev, campaign rev, flow rev, active profiles, engaged profiles, open rate, click rate |
-| 018 | Top performing campaigns | Klaviyo campaign by revenue (top 5) |
-| 019 | Top performing flows | Klaviyo flow by revenue (top 5) |
-
-PDF page 8/9 of each brand section: "12-month subscriber growth"
-| # | Title | Notes |
-|---|---|---|
-| 020 | 12-month subscriber growth totals | Subs added, unsubs, net change |
-| 021 | 12-month subscriber growth monthly bar chart | Net subscribers added per month |
-| 022 | 12-month subscriber growth monthly table | Month, subscribed, unsubscribed, net |
-
-### Appendix (PDF p.31), 1 ticket
-| # | Title | Notes |
-|---|---|---|
-| 023 | Methodology & data sources sticky note | Markdown tile on the dashboard summarising the source of truth hierarchy from the PDF appendix |
+> **Ticket 001 rescopes the dashboard.** In addition to building the iS Clinical Shopify Revenue tile, ticket 001 rescopes the existing `lightdash/dashboards/kpi-report.yml` into the iS Clinical KPI Report:
+> - rename the dashboard to "iS Clinical KPI Report",
+> - drop the disabled Brand filter (the `fct_orders_store_id` dimension filter) entirely,
+> - remove the four cross-brand tiles: `per-brand-breakdown`, `meta-spend-share-by-brand`, `ga4-revenue-share-by-brand`, `april-at-a-glance`,
+> - keep the Month filter on `fct_orders_order_month_label`, default `2026-04`.
+>
+> Tickets 002 to 020 each append exactly one tile to the rescoped dashboard.
 
 ## (f) Generation rules (read this before mass producing tickets)
 
-A future Claude session producing tickets 002 through 023 should follow these rules:
+A future Claude session producing tickets 002 through 020 should follow these rules:
 
 1. **One subagent per ticket.** Spawn a general purpose subagent for each ticket; give it this generator file as context plus the row in section (e). The subagent reads, writes one ticket file, returns. Parallelise within batches of 3 or 4 so context stays bounded.
 
-2. **Verify each PDF reference before writing.** The subagent must open the PDF (Read tool with `pages:`) at the page in the inventory row and confirm the April value before writing it into the ticket. Do not trust the inventory blindly. The PDF wins if they disagree, and the inventory is updated.
+2. **Verify each PDF reference before writing.** The subagent must open the PDF (Read tool with `pages:`) at the relevant page and confirm the iS Clinical April value before writing it into the ticket. Do not trust the inventory blindly. The PDF wins if they disagree, and the inventory is updated. Confirm the exact page number too: the inventory only gives an approximate range (iS Clinical brand section ~pages 12 to 19).
 
 3. **Verify the data path before writing the Lightdash work section.** Before writing "tile reads from explore X", `grep` for the relevant Gold model in `dbt/models/gold/` and confirm the columns exist. If the metric requires a model that does not exist, the ticket's "dbt work" section lists creating it. Do not pretend it exists.
 
-4. **Check the data availability map.** If section (c) marks the underlying source as blocked or partial, the ticket's "Data dependencies" section must say so explicitly and link a prerequisite ticket (or describe the prerequisite if no such ticket exists yet).
+4. **Check the data availability map.** If section (c) marks the underlying source as blocked, partial or degraded, the ticket's "Data dependencies" section must say so explicitly and link a prerequisite ticket (or describe the prerequisite if no such ticket exists yet). Every Shopify ticket must carry the iS Clinical sync-gap note.
 
-5. **Mirror the PDF layout decision.** Per brand breakouts that sit visually under their parent KPI on the PDF (e.g. "RL £266k + ISC £144k + ..." under "Combined Shopify Revenue") are bundled into the same ticket. They are one visual unit, they are one ticket.
+5. **Mirror the PDF layout.** A tile maps to one visual unit on the PDF. KPI strips that show several numbers in one row on the PDF are one tile and one ticket.
 
 6. **Push every ticket to Basecamp as HTML.** This is the deliverable: a card in the Triage column whose body renders correctly in Basecamp. The local `tickets/NNN_<slug>.md` file stays in the repo as a reviewable / recoverable copy, but the Basecamp card content must be **HTML, not Markdown**.
 
@@ -296,16 +225,17 @@ A future Claude session producing tickets 002 through 023 should follow these ru
 
 7. **Keep the index up to date.** Maintain `tickets/README.md` as the running index (ticket number, title, status, blockers). Add each ticket to it as you write it.
 
-8. **Don't free write.** Use the template in section (b) verbatim. The "Read this first" header, the workflow section, the verification block, all copy paste. Variability lives only in the bracketed placeholders.
+8. **Don't free write.** Use the template in section (b) verbatim. The preamble, the workflow section, the verification block, all copy paste. Variability lives only in the bracketed placeholders.
 
-9. **No em dashes.** The user's global writing style rule disallows em dashes. Use commas, full stops, colons, or parentheses instead. The card title uses a colon: `001: Combined Shopify Revenue (Apr)`, not `001 — ...`.
+9. **No em dashes.** The user's global writing style rule disallows em dashes. Use commas, full stops, colons, or parentheses instead. The card title uses a colon, for example `001: iS Clinical Shopify Revenue`.
 
 10. **Wrap `<placeholder>` text in backticks** (`` `<slug>` `` or fenced code blocks). Even after the pandoc-to-HTML pass, unbacktick'd `<like-this>` text gets eaten by Basecamp's renderer as a stray HTML tag. Backticks make pandoc emit `<code>&lt;like-this&gt;</code>` which renders correctly.
 
 11. **If you update a card (re-push), use `basecamp cards update <id> --content "$(cat /tmp/NNN.html)" --in 46863097 --json`.** Updates are idempotent; safe to re-run after fixing a markdown source.
 
-## (g) Open questions and known gaps to escalate before mass generation
+12. **Every chart and dashboard YAML file carries a Source comment.** Any `lightdash/charts/<slug>.yml` or `lightdash/dashboards/<slug>.yml` an executor creates or edits must have, as its first line, a comment in the exact form `# Source: April 2026 KPI Report, page <N> (<section title>)`. The ticket's "Lightdash work" section must state this requirement.
 
-- **iS Clinical Shopify Airbyte sync only has 175 orders since 2026-02-26.** Either the connection is incremental from a recent start date, or there's a stream config issue. Ticket 001 documents this; a separate data engineering ticket needs to fix it before April 2026 verification can pass.
-- **Harpar Grace Intl Shopify (harpargrace.com)** is not in the pipeline. The PDF includes 27 HGI orders / £3,157 on the cover. Decide whether to (a) connect harpargrace.com to Airbyte, or (b) accept HGI as an absence from the combined Shopify total.
-- **GA4 and Google Ads are only connected for iS Clinical.** A large chunk of the per brand inventory (tickets 009 to 013, 016) cannot verify against non iSC brands' PDF numbers until those connections land. Each affected ticket flags this.
+## (g) Open questions and known gaps
+
+- **The iS Clinical Shopify Airbyte sync is degraded (main blocker).** It authenticates with a rotating OAuth token that fails mid-sync; when it does, Airbyte silently drops scattered records instead of erroring. Bronze ends up ~2.6% short per month (April 2026: 1,047 orders ingested vs 1,075 in the PDF). Shopify-derived tiles (revenue, orders, AOV, customer mix) will read slightly low until this is fixed. A separate data-engineering ticket should fix the token; every Shopify ticket links it as a prerequisite and the PDF figure stays authoritative.
+- **GA4 and Google Ads are live for iS Clinical.** Every per-section tile in the iS Clinical brand inventory (channel attribution, traffic/conversion, paid search/shopping) is buildable and verifiable today; there is no GA4 or Google Ads connection blocker for this batch.
