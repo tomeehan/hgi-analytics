@@ -1,0 +1,54 @@
+# Source: April 2026 KPI Report, page 17 (12-month subscriber growth)
+chartConfig:
+  config:
+    flipColors: false
+    label: Unsubscribes (12 mo)
+    selectedField: fct_klaviyo_subscriber_growth_total_unsubscribes
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  iS Clinical Klaviyo email-list unsubscribes over the trailing 12 months
+  (May 2025 to April 2026): the count of "Unsubscribed from Email Marketing"
+  events in the window. Built from raw BRONZE_KLAVIYO_ISCLINICAL events via
+  fct_klaviyo_subscriber_growth (monthly grain). This is a fixed rolling
+  12-month total pinned to the April 2026 report month, so it deliberately does
+  not respond to the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_klaviyo_subscriber_growth
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_klaviyo_subscriber_growth_store_id
+          values:
+            - iS Clinical
+        - id: f2
+          operator: inBetween
+          target:
+            fieldId: fct_klaviyo_subscriber_growth_order_month
+          values:
+            - "2025-05-01"
+            - "2026-04-01"
+      id: isclinical-trailing-12mo
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_klaviyo_subscriber_growth_total_unsubscribes
+  sorts: []
+  tableCalculations: []
+name: iS Clinical Unsubscribes (12 mo)
+slug: isclinical-unsubscribes-12mo
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_klaviyo_subscriber_growth_total_unsubscribes
+tableName: fct_klaviyo_subscriber_growth
+verification: null
+version: 1

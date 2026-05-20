@@ -524,5 +524,58 @@ tiles:
     w: 18
     x: 18
     "y": 57
+  - h: 2
+    properties:
+      content: >-
+        ## 12-month subscriber growth (Klaviyo)
+
+        Page 17 of the April 2026 KPI Report. iS Clinical Klaviyo email-list
+        growth over the trailing 12 months (May 2025 to April 2026), counted
+        from raw "Subscribed to Email Marketing" and "Unsubscribed from Email
+        Marketing" events. This is a fixed rolling 12-month window pinned to the
+        report month, so these three tiles deliberately do not respond to the
+        dashboard Month filter.
+      title: 12-month subscriber growth (Klaviyo)
+    tabUuid: null
+    type: markdown
+    w: 36
+    x: 0
+    "y": 63
+  - h: 4
+    properties:
+      chartName: iS Clinical Subscribers Added (12 mo)
+      chartSlug: isclinical-subscribers-added-12mo
+      hideTitle: false
+      title: Subscribers Added (12 mo)
+    tabUuid: null
+    tileSlug: isclinical-subscribers-added-12mo
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 65
+  - h: 4
+    properties:
+      chartName: iS Clinical Unsubscribes (12 mo)
+      chartSlug: isclinical-unsubscribes-12mo
+      hideTitle: false
+      title: Unsubscribes (12 mo)
+    tabUuid: null
+    tileSlug: isclinical-unsubscribes-12mo
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 65
+  - h: 4
+    properties:
+      chartName: iS Clinical Net Subscriber Change (12 mo)
+      chartSlug: isclinical-net-subscriber-change-12mo
+      hideTitle: false
+      title: Net Change (12 mo)
+    tabUuid: null
+    tileSlug: isclinical-net-subscriber-change-12mo
+    type: saved_chart
+    w: 12
+    x: 24
+    "y": 65
 verification: null
 version: 1

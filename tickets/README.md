@@ -31,7 +31,7 @@ cross-brand tiles); tickets 002 to 020 each append one tile.
 | 014 | CRM KPI strip | Triage | Revenue + open/click rates buildable off raw `EVENTS`; active/engaged profile counts still need modelling. |
 | 015 | Top performing campaigns | Done | `fct_klaviyo_campaign_revenue` rolls up `fct_klaviyo_revenue` campaign rows by campaign; names from `stg_klaviyo__events`. |
 | 016 | Top performing flows | Triage | Build flow revenue off raw `EVENTS` (5-day-window attribution); flow names from the `FLOWS` table. |
-| 017 | 12-month subscriber growth totals | Triage | Needs a new `fct_klaviyo_subscriber_growth` model (shared with 018, 019). |
+| 017 | 12-month subscriber growth totals | Done | Built `fct_klaviyo_subscriber_growth` (monthly grain, shared with 018, 019); three big-number tiles, trailing 12 months pinned May 2025 to Apr 2026. Reproduces the PDF exactly (8,059 / 5,774 / 2,285). |
 | 018 | 12-month subscriber growth monthly bar chart | Triage | Needs `fct_klaviyo_subscriber_growth`. |
 | 019 | 12-month subscriber growth monthly table | Triage | Needs `fct_klaviyo_subscriber_growth`. |
 | 020 | Methodology & data sources note | Triage | Static markdown tile, no blocker. |
