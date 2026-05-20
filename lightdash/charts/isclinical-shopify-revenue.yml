@@ -1,29 +1,39 @@
+# Source: April 2026 KPI Report, page 12 (Revenue & Channel Attribution)
 chartConfig:
   config:
     flipColors: false
-    label: Combined Shopify Revenue
+    label: iS Clinical Shopify Revenue
     selectedField: fct_orders_total_revenue
     showComparison: false
   type: big_number
 contentType: chart
 description: >-
-  Sum of Shopify gross order value (total_price) for the month and brands
-  selected by the dashboard filters.
+  Total gross Shopify revenue (sum of order total_price) for the iS Clinical
+  store. Responds to the dashboard Month filter.
 metricQuery:
   additionalMetrics: []
   customDimensions: []
   dimensionOverrides: {}
   dimensions: []
   exploreName: fct_orders
-  filters: {}
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_orders_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
   limit: 1
   metricOverrides: {}
   metrics:
     - fct_orders_total_revenue
   sorts: []
   tableCalculations: []
-name: Combined Shopify Revenue
-slug: combined-shopify-revenue
+name: iS Clinical Shopify Revenue
+slug: isclinical-shopify-revenue
 spaceSlug: shared
 tableConfig:
   columnOrder:
