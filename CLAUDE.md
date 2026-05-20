@@ -8,11 +8,11 @@ dbt, and serves dashboards via Lightdash.
 
 | Tool | Role | Hosting |
 |------|------|---------|
-| Shopify | Source — 4+ stores (isClinical, Geske, Deese Pro, Revitalash; more anticipated) | SaaS |
+| Shopify | Source — 3+ stores (isClinical, Geske, Deese Pro; more anticipated) | SaaS |
 | Klaviyo | Source — 3+ accounts, paired 1:1 with Shopify stores | SaaS |
 | Cin7 Core | Source — inventory, sales orders, customers, products (formerly DEAR Systems) | SaaS |
 | Prospect CRM | Source — CRM (contacts, companies, leads, sales orders/invoices, transactions) — Connector Builder declarative YAML (`airbyte/source-prospect-crm/manifest.yaml`) | SaaS (OData v1 API at `crm-odata-v1.prospect365.com`) |
-| Meta (Facebook Marketing) | Source — paid ads insights (`ad_account`, `ad_sets`, `ads`, `campaigns`, `ads_insights*` family). One ad account per brand (iS Clinical, Deese Pro, Revitalash) | SaaS |
+| Meta (Facebook Marketing) | Source — paid ads insights (`ad_account`, `ad_sets`, `ads`, `campaigns`, `ads_insights*` family). One ad account per brand (iS Clinical, Deese Pro) | SaaS |
 | Airbyte | ELT — extracts from sources, writes raw into Snowflake Bronze | Self-hosted on a Hetzner Cloud VM (`hgi-airbyte`, Falkenstein `fsn1`), installed via `abctl` |
 | Snowflake | Data warehouse | AWS `eu-west-2`, Standard edition |
 | dbt Core | Transformations (Bronze → Silver → Gold → Metrics) | Local + GitHub Actions |
@@ -103,27 +103,23 @@ hgi-analytics/
   Gold and Lightdash require no changes.
 - **Cin7 deduplication** — `BRONZE_CIN7.SALE_LIST` and `BRONZE_CIN7.CUSTOMERS` contain ~36× duplicate rows from Airbyte incremental inserts. Silver models deduplicate via `row_number() over (partition by <pk> order by _airbyte_extracted_at desc) = 1` before any transformation.
 - **`is_first_order` is an integer (0/1), not boolean** — Gold models cast the boolean expression to `::integer` so that `SUM(is_first_order)` works in Snowflake (Snowflake cannot SUM a boolean directly).
-- **Airbyte Shopify connections** — four stores are connected; two are active in dbt, two are pending first-sync:
+- **Airbyte Shopify connections** — three stores are connected; two are active in dbt, one is pending first-sync:
   - `isclinical-store` → `BRONZE_SHOPIFY_ISCLINICAL` (active in Silver/Gold as `store_id = 'isclinical'`)
   - `deese-pro` → `BRONZE_SHOPIFY_DEESE_PRO` (active in Silver/Gold as `store_id = 'deese_pro'`)
-  - `revitalash-co-uk.myshopify.com` → `BRONZE_SHOPIFY_REVITALASH` (active in Silver/Gold as `store_id = 'revitalash'`; 4,734 orders, 76,730 customers)
   - Geske → `BRONZE_SHOPIFY_GESKE` (schema created, no data yet)
-  - `BRONZE_KLAVIYO_REVITALASH` and `BRONZE_KLAVIYO_GESKE` schemas also exist (empty).
-- **Meta (Facebook Marketing) connections** — three connections, one per ad account, all active on a 24h schedule:
+  - `BRONZE_KLAVIYO_GESKE` schema also exists (empty).
+- **Meta (Facebook Marketing) connections** — two connections, one per ad account, both active on a 24h schedule:
   - `Meta - iS Clinical → HGI Snowflake` → `BRONZE_META_ISCLINICAL`
   - `Meta - Deese Pro → HGI Snowflake` → `BRONZE_META_DEESE_PRO`
-  - `Meta - Revitalash → HGI Snowflake` → `BRONZE_META_REVITALASH`
-  - All three use `namespaceDefinition: custom_format` with a per-brand `namespaceFormat`. Without that, Airbyte falls back to the destination's default schema (`BRONZE_SHOPIFY_ISCLINICAL`) and the three Meta connections collide on identical table names. Meta schemas are LOADER-owned (mirrors the Prospect CRM ownership pattern).
-- **Klaviyo accounts** — five Klaviyo connections; four actively syncing:
+  - Both use `namespaceDefinition: custom_format` with a per-brand `namespaceFormat`. Without that, Airbyte falls back to the destination's default schema (`BRONZE_SHOPIFY_ISCLINICAL`) and the Meta connections collide on identical table names. Meta schemas are LOADER-owned (mirrors the Prospect CRM ownership pattern).
+- **Klaviyo accounts** — four Klaviyo connections; three actively syncing:
   - `BRONZE_KLAVIYO_ISCLINICAL` (DTC) — active, populated.
   - `BRONZE_KLAVIYO_DEESE_PRO` (DTC) — active, populated.
-  - `BRONZE_KLAVIYO_REVITALASH` (DTC) — active, populated.
   - `BRONZE_KLAVIYO_HARPER_GRACE` (B2B / wholesale) — active connection, source emits records but no destination tables get written; under investigation.
   - `BRONZE_KLAVIYO_GESKE` — schema exists, no sync configured yet.
   - All sources pinned to `start_date = 2024-07-01`; lean stream selection (no `*_detailed`, no `campaign_values_reports`) — see `airbyte/README.md` for the rationale and the recovery playbook for stuck `running` jobs.
-- **Revitalash Bronze contamination — resolved** — prior to the namespace fix, the Revitalash Airbyte connection had written 4,727 orders and 76,724 customers into `BRONZE_SHOPIFY_ISCLINICAL`. These were deleted after the Revitalash full refresh completed (2026-04-27). The cleanup script is `airbyte/cleanup_isclinical_contamination.sql` (audit only; DELETEs are no longer needed).
 - **`store_id` is the universal brand key** — present on every Silver+ table. Use it for joins and Lightdash dashboard filters (portfolio view = unfiltered; per-brand view = filtered).
-- **Store-name display mapping** — `store_id` raw values are lowercased slugs (`revitalash`, `isclinical`, `deese_pro`, `geske`). For Lightdash display, override the dimension SQL with a `case` that maps to human-readable names: `revitalash → Revitalash`, `isclinical → iS Clinical`, `deese_pro → Deese PRO`, `geske → Geske`. Currently applied on `fct_orders.store_id` (in `dbt/models/gold/_schema.yml`). Apply the same `case` on any future explore that surfaces `store_id` so the label is consistent across dashboards.
+- **Store-name display mapping** — `store_id` raw values are lowercased slugs (`isclinical`, `deese_pro`, `geske`). For Lightdash display, override the dimension SQL with a `case` that maps to human-readable names: `isclinical → iS Clinical`, `deese_pro → Deese PRO`, `geske → Geske`. Currently applied on `fct_orders.store_id` (in `dbt/models/gold/_schema.yml`). Apply the same `case` on any future explore that surfaces `store_id` so the label is consistent across dashboards.
 - **Group dashboard filter convention** — Lightdash dashboards that span multiple brands or months use two dashboard-level filters: a **Brand** filter on `store_id` (default disabled = "All"; enable to scope to a single brand) and a **Month** filter on `order_month` (default = the report's reference month, e.g. April 2026). Both filters cross-apply to other explores via `tileTargets` when a tile uses a different explore that exposes the same field name.
 - **Email normalisation** — `LOWER(TRIM(email))` in Silver before joining Shopify customers to Klaviyo profiles.
 - **Currency** — Shopify returns a per-order `currency`. Normalisation strategy (query-time vs GBP in Silver) is undecided — preserve the `currency` column everywhere until a decision is made.

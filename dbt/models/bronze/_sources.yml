@@ -24,12 +24,6 @@ sources:
     tables:
       - name: ads_insights
 
-  - name: bronze_meta_revitalash
-    database: HGI
-    schema: BRONZE_META_REVITALASH
-    tables:
-      - name: ads_insights
-
   - name: bronze_google_analytics_isclinical
     database: HGI
     schema: BRONZE_GOOGLE_ANALYTICS_ISCLINICAL
@@ -67,26 +61,9 @@ sources:
       - name: metrics
       - name: profiles
 
-  - name: bronze_klaviyo_revitalash
-    database: HGI
-    schema: BRONZE_KLAVIYO_REVITALASH
-    tables:
-      - name: events
-      - name: campaigns
-      - name: campaign_values_reports
-      - name: metrics
-      - name: profiles
-
   - name: bronze_shopify_deese_pro
     database: HGI
     schema: BRONZE_SHOPIFY_DEESE_PRO
-    tables:
-      - name: orders
-      - name: customers
-
-  - name: bronze_shopify_revitalash
-    database: HGI
-    schema: BRONZE_SHOPIFY_REVITALASH
     tables:
       - name: orders
       - name: customers
