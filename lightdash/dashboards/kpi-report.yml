@@ -67,6 +67,9 @@ filters:
         isclinical-crm-click-rate:
           fieldId: fct_campaign_performance_order_month_label
           tableName: fct_campaign_performance
+        isclinical-top-performing-campaigns:
+          fieldId: fct_klaviyo_campaign_revenue_order_month_label
+          tableName: fct_klaviyo_campaign_revenue
       values:
         - 2026-04
   metrics: []
@@ -494,5 +497,17 @@ tiles:
     w: 6
     x: 30
     "y": 53
+  - h: 6
+    properties:
+      chartName: iS Clinical Top Performing Campaigns
+      chartSlug: isclinical-top-performing-campaigns
+      hideTitle: false
+      title: Top Performing Campaigns
+    tabUuid: null
+    tileSlug: isclinical-top-performing-campaigns
+    type: saved_chart
+    w: 18
+    x: 0
+    "y": 57
 verification: null
 version: 1
