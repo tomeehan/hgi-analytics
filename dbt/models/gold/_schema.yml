@@ -178,105 +178,108 @@ models:
               round: 1
 
   - name: fct_campaign_performance
-    description: "Klaviyo campaign performance stats (opens, clicks, revenue) across all brands."
+    description: >-
+      Klaviyo email engagement performance, monthly grain (one row per
+      store_id x send_month). Rebuilt off raw BRONZE_KLAVIYO_*.EVENTS via
+      stg_klaviyo__email_engagement: the legacy version read Klaviyo's
+      campaign_values_reports stream, which Airbyte does not sync (lean
+      stream selection), so it was empty. delivered = Received Email
+      events; unique_opens / unique_clicks = distinct (message, profile)
+      pairs that opened / clicked. Backs the open-rate and click-rate
+      halves of the CRM KPI strip on the iS Clinical KPI Report (PDF p.16).
     meta:
       label: "Campaign Performance"
+      metrics:
+        # Weighted (aggregate) open / click rate: recompute the ratio
+        # post-aggregation so a Month-filtered Big Number tile reads the
+        # exact monthly rate (sum of opens / sum of delivered), not an
+        # average of per-row rates. type: average over open_rate would
+        # diverge once the grain carries more than one row.
+        avg_open_rate:
+          type: number
+          label: "Open Rate"
+          description: "Unique opens divided by delivered, recomputed post-aggregation."
+          sql: "${total_unique_opens} / nullif(${total_delivered}, 0)"
+          format: "percent"
+          round: 1
+        avg_click_rate:
+          type: number
+          label: "Click Rate"
+          description: "Unique clicks divided by delivered, recomputed post-aggregation."
+          sql: "${total_unique_clicks} / nullif(${total_delivered}, 0)"
+          format: "percent"
+          round: 2
     columns:
-      - name: campaign_id
-        description: "Klaviyo campaign ID."
+      - name: engagement_id
+        description: "Synthetic key: store_id plus YYYY-MM send month."
         tests:
           - not_null
-        meta:
-          metrics:
-            campaign_count:
-              type: count_distinct
-              label: "Campaigns Sent"
-              round: 0
+          - unique
       - name: store_id
         description: "Brand identifier."
         tests:
           - not_null
+        meta:
+          dimension:
+            label: "Brand"
+            # Keep in sync with fct_orders.store_id (CLAUDE.md ->
+            # store-name display mapping).
+            sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+      - name: send_month
+        description: "Month the emails were sent (first day of month)."
+        tests:
+          - not_null
+        meta:
+          dimension:
+            label: "Send Month (date)"
+          additional_dimensions:
+            # Mirrors fct_orders.order_month_label so the KPI Report's
+            # Month filter (on fct_orders_order_month_label) cross-applies
+            # to the open-rate / click-rate tiles via Lightdash's
+            # "same field name" lookup. See CLAUDE.md -> "Group dashboard
+            # filter convention".
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Compact YYYY-MM label for the dashboard Month filter."
+              sql: "to_char(${TABLE}.send_month, 'YYYY-MM')"
       - name: delivered
-        description: "Emails delivered."
+        description: "Emails delivered (Received Email event count)."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
         meta:
           metrics:
             total_delivered:
               type: sum
               label: "Emails Delivered"
               round: 0
-      - name: opens
-        description: "Total email opens."
-        meta:
-          metrics:
-            total_opens:
-              type: sum
-              label: "Total Opens"
-              round: 0
       - name: unique_opens
-        description: "Unique email opens."
+        description: "Unique email opens (distinct message-profile pairs)."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
         meta:
           metrics:
             total_unique_opens:
               type: sum
               label: "Unique Opens"
               round: 0
-      - name: clicks
-        description: "Total email clicks."
-        meta:
-          metrics:
-            total_clicks:
-              type: sum
-              label: "Total Clicks"
-              round: 0
       - name: unique_clicks
-        description: "Unique email clicks."
+        description: "Unique email clicks (distinct message-profile pairs)."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
         meta:
           metrics:
             total_unique_clicks:
               type: sum
               label: "Unique Clicks"
               round: 0
-      - name: revenue
-        description: "Revenue attributed to this campaign."
-        meta:
-          metrics:
-            total_attributed_revenue:
-              type: sum
-              label: "Attributed Revenue"
-              format: "gbp"
-              round: 0
-      - name: unsubscribed
-        description: "Unsubscribes resulting from this campaign."
-        meta:
-          metrics:
-            total_unsubscribes:
-              type: sum
-              label: "Unsubscribes"
-              round: 0
       - name: open_rate
-        description: "Unique opens / delivered (fraction 0-1)."
-        meta:
-          metrics:
-            avg_open_rate:
-              type: average
-              label: "Avg Open Rate"
-              format: "percent"
-              round: 1
+        description: "Per-row unique opens / delivered (fraction 0-1). Use the avg_open_rate metric for aggregated tiles."
       - name: click_rate
-        description: "Unique clicks / delivered (fraction 0-1)."
-        meta:
-          metrics:
-            avg_click_rate:
-              type: average
-              label: "Avg Click Rate"
-              format: "percent"
-              round: 1
-      - name: campaign_name
-        description: "Campaign name."
-      - name: send_time
-        description: "When the campaign was sent."
-      - name: send_month
-        description: "Month the campaign was sent (first day of month)."
+        description: "Per-row unique clicks / delivered (fraction 0-1). Use the avg_click_rate metric for aggregated tiles."
 
   - name: dim_campaigns
     description: "Klaviyo email campaigns across all brands."

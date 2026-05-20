@@ -1,0 +1,52 @@
+# Source: April 2026 KPI Report, page 16 (IS CLINICAL, 7. CRM Performance)
+chartConfig:
+  config:
+    flipColors: false
+    label: Campaign Revenue
+    selectedField: fct_klaviyo_revenue_total_klaviyo_revenue
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  Campaign-attributed slice of iS Clinical Klaviyo CRM revenue: Placed Order
+  value attributed to an email campaign within Klaviyo's 5-day engagement
+  window. Built from raw BRONZE_KLAVIYO_ISCLINICAL events
+  (fct_klaviyo_revenue.total_klaviyo_revenue) filtered to attribution_kind =
+  campaign. Responds to the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_klaviyo_revenue
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_klaviyo_revenue_store_id
+          values:
+            - iS Clinical
+        - id: f2
+          operator: equals
+          target:
+            fieldId: fct_klaviyo_revenue_attribution_kind
+          values:
+            - campaign
+      id: isclinical-campaign
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_klaviyo_revenue_total_klaviyo_revenue
+  sorts: []
+  tableCalculations: []
+name: iS Clinical Campaign Revenue
+slug: isclinical-crm-campaign-revenue
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_klaviyo_revenue_total_klaviyo_revenue
+tableName: fct_klaviyo_revenue
+verification: null
+version: 1
