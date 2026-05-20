@@ -33,12 +33,12 @@ tiles:
     "y": 0
   - h: 4
     properties:
-      chartName: Combined Shopify Orders
-      chartSlug: combined-shopify-orders
+      chartName: iS Clinical Shopify Orders
+      chartSlug: isclinical-shopify-orders
       hideTitle: false
       title: ""
     tabUuid: null
-    tileSlug: combined-shopify-orders
+    tileSlug: isclinical-shopify-orders
     type: saved_chart
     w: 18
     x: 18
