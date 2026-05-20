@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'dbt/**'
+      - 'lightdash/charts/**'
+      - 'lightdash/dashboards/**'
       - '.github/workflows/lightdash_deploy.yml'
   workflow_dispatch:
 
@@ -81,11 +83,18 @@ jobs:
           LIGHTDASH_API_KEY: ${{ secrets.LIGHTDASH_API_KEY }}
         run: lightdash deploy --target prod
 
+      - name: Lightdash upload content
+        env:
+          LIGHTDASH_URL: ${{ secrets.LIGHTDASH_URL }}
+          LIGHTDASH_PROJECT: ${{ secrets.LIGHTDASH_PROJECT }}
+          LIGHTDASH_API_KEY: ${{ secrets.LIGHTDASH_API_KEY }}
+        run: lightdash upload --force
+
       - name: Notify Slack on failure
         if: failure()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           curl -sS -X POST -H 'Content-Type: application/json' \
-            --data "{\"text\": \":x: Lightdash deploy failed on \`${GITHUB_REF_NAME}\` — <${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|view run>\"}" \
+            --data "{\"text\": \":x: Lightdash deploy/upload failed on \`${GITHUB_REF_NAME}\` — <${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}|view run>\"}" \
             "$SLACK_WEBHOOK_URL"
