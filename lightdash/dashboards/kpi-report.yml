@@ -601,5 +601,49 @@ tiles:
     w: 36
     x: 0
     "y": 76
+  - h: 9
+    properties:
+      content: >-
+        ## Methodology & data sources
+
+
+        Page 31 of the April 2026 KPI Report (APPENDIX, Methodology & data
+        sources). Each tile on this dashboard is backed by one source of truth.
+        This note records which source backs each metric and the attribution
+        window that source uses, so a number on this dashboard can always be
+        traced to its origin.
+
+
+        | Source | What it provides | Attribution window |
+
+        |---|---|---|
+
+        | Shopify | Order count, true revenue, AOV, customer order history |
+        Source of truth (no attribution) |
+
+        | GA4 | Channel/source revenue, sessions, CVR, customer mix | Last
+        non-direct click |
+
+        | Meta | Spend, impressions, clicks, ROAS, ad-set level performance |
+        7-day click + 1-day view (Meta default) |
+
+        | Google Ads | Spend, clicks, conversions, search terms, ROAS | 1-day
+        click + 1-day view |
+
+        | Klaviyo | Campaign + flow revenue, opens, clicks, profile counts |
+        Placed Order, 5-day attribution window |
+
+
+        Shopify is authoritative for revenue and orders. The attribution windows
+        differ by source, so spend-side platforms (Meta, Google Ads) and the
+        revenue source of truth (Shopify) will not reconcile to the penny: that
+        is expected. This is a fixed methodology note and does not respond to
+        the dashboard Month filter.
+      title: Methodology & data sources
+    tabUuid: null
+    type: markdown
+    w: 36
+    x: 0
+    "y": 84
 verification: null
 version: 1
