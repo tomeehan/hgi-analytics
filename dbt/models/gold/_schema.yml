@@ -1081,6 +1081,18 @@ models:
             # Same human-readable rename as fct_orders.store_id (CLAUDE.md →
             # store-name display mapping). Keep in sync across Gold models.
             sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+      - name: session_source
+        description: "GA4 session source (e.g. 'google', 'quizify', 'chatgpt.com')."
+        tests: [not_null]
+        meta:
+          dimension:
+            label: "Source"
+      - name: session_medium
+        description: "GA4 session medium (e.g. 'organic', 'referral', 'quiz', 'cpc'). Used by the PR & media highlights tile to isolate referral/off-site traffic."
+        tests: [not_null]
+        meta:
+          dimension:
+            label: "Medium"
       - name: source_medium
         description: "GA4 session source / medium pair (e.g. 'google / organic')."
         tests: [not_null]

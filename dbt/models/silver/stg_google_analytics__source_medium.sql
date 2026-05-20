@@ -14,13 +14,15 @@ with isclinical as (
     select
         to_date(date, 'YYYYMMDD') as session_date,
         'isclinical' as store_id,
+        sessionsource as session_source,
+        sessionmedium as session_medium,
         sessionsource || ' / ' || sessionmedium as source_medium,
         sum(sessions) as sessions,
         sum(totalrevenue) as revenue
     from {{ source('bronze_google_analytics_isclinical',
                    'traffic_acquisition_session_source_medium_report') }}
     where date is not null
-    group by 1, 2, 3
+    group by 1, 2, 3, 4, 5
 ),
 
 unioned as (
@@ -31,6 +33,8 @@ select
     session_date,
     date_trunc('month', session_date)::date as order_month,
     store_id,
+    session_source,
+    session_medium,
     source_medium,
     sessions,
     revenue
