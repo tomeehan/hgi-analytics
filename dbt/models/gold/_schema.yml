@@ -938,6 +938,63 @@ models:
               format: "gbp"
               round: 0
 
+  - name: fct_ga_channel_sessions
+    description: "Daily GA4 sessions and revenue by display channel and store_id (one row per session_date × store_id × channel). Sourced from BRONZE_GOOGLE_ANALYTICS_*.TRAFFIC_ACQUISITION_SESSION_DEFAULT_CHANNEL_GROUPING_REPORT, with the raw channel grouping folded into seven display channels. Powers the KPI Report's Channel breakdown table (PDF p.12). Currently iS Clinical only."
+    meta:
+      label: "GA Channel Sessions"
+    columns:
+      - name: session_date
+        tests: [not_null]
+      - name: order_month
+        description: "First day of the month of session_date (date_trunc month). Mirrors fct_orders.order_month so the dashboard Month filter cross-applies."
+        tests: [not_null]
+        meta:
+          dimension:
+            label: "Month (date)"
+          additional_dimensions:
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Compact YYYY-MM label for the dashboard's Month filter; mirrors fct_orders.order_month_label so the KPI Report's Month filter cross-applies via field-name lookup."
+              sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
+      - name: store_id
+        description: "Brand identifier."
+        tests: [not_null]
+        meta:
+          dimension:
+            label: "Brand"
+            # Same human-readable rename as fct_orders.store_id (CLAUDE.md →
+            # store-name display mapping). Keep in sync across Gold models.
+            sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+      - name: channel
+        description: "GA4 display channel (Direct, Organic Search, Paid Search, Paid Social, Email / CRM, Referral / Affiliates, Other)."
+        tests: [not_null]
+        meta:
+          dimension:
+            label: "Channel (GA4)"
+      - name: sessions
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+        meta:
+          metrics:
+            total_ga_channel_sessions:
+              type: sum
+              label: "GA Sessions"
+              round: 0
+      - name: channel_revenue
+        description: "GA-attributed revenue (purchase events) for the channel."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+        meta:
+          metrics:
+            total_ga_channel_revenue:
+              type: sum
+              label: "GA Revenue"
+              format: "gbp"
+              round: 0
+
   - name: fct_brand_monthly_summary
     description: "Per-brand, per-month rollup powering the KPI Report's 'April at a glance' table (PDF p.2). Outer-joined across Shopify (orders + revenue), GA4 (sessions + revenue + transactions). One row per (store_id, order_month). Brands without GA4 connections render with zero / null GA metrics."
     meta:

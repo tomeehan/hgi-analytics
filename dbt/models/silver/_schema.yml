@@ -285,6 +285,26 @@ models:
       - name: total_revenue
         description: "GA-attributed revenue (purchase events)."
 
+  - name: stg_google_analytics__channel_sessions
+    description: "Daily GA4 sessions and revenue by display channel, aggregated from TRAFFIC_ACQUISITION_SESSION_DEFAULT_CHANNEL_GROUPING_REPORT. The raw sessiondefaultchannelgrouping is folded into seven display channels (Direct, Organic Search, Paid Search, Paid Social, Email / CRM, Referral / Affiliates, Other). The Bronze DATE column is text in YYYYMMDD format and is cast to a date here."
+    columns:
+      - name: session_date
+        tests:
+          - not_null
+      - name: order_month
+        tests:
+          - not_null
+      - name: store_id
+        tests:
+          - not_null
+      - name: channel
+        description: "GA4 display channel (folded from sessiondefaultchannelgrouping)."
+        tests:
+          - not_null
+      - name: sessions
+      - name: channel_revenue
+        description: "GA-attributed revenue (purchase events) for the channel."
+
   - name: stg_google_analytics__transactions
     description: "Daily GA4 transaction (purchase event) count by store_id, sourced from EVENTS_REPORT filtered to eventname='purchase'. Currently iS Clinical only; mirrors stg_google_analytics__sessions coverage."
     columns:

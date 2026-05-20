@@ -1,0 +1,51 @@
+# Source: April 2026 KPI Report, page 12 (IS CLINICAL, 1. Revenue & Channel Attribution)
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: false
+  type: table
+contentType: chart
+description: >-
+  GA4-attributed revenue and sessions decomposed across GA4 default channel
+  groupings, mirroring the CHANNEL (GA4) table on KPI Report page 12.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_ga_channel_sessions_channel
+  exploreName: fct_ga_channel_sessions
+  filters: {}
+  limit: 500
+  metricOverrides: {}
+  metrics:
+    - fct_ga_channel_sessions_total_ga_channel_revenue
+    - fct_ga_channel_sessions_total_ga_channel_sessions
+  sorts:
+    - descending: true
+      fieldId: fct_ga_channel_sessions_total_ga_channel_revenue
+  tableCalculations:
+    - displayName: "% of Total"
+      format:
+        round: 1
+        type: percent
+      name: pct_of_total
+      sql: >-
+        ${fct_ga_channel_sessions.total_ga_channel_revenue} / NULLIF(SUM(${fct_ga_channel_sessions.total_ga_channel_revenue})
+        OVER (), 0)
+name: Channel Breakdown (GA4)
+slug: channel-breakdown-table
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_ga_channel_sessions_channel
+    - fct_ga_channel_sessions_total_ga_channel_revenue
+    - pct_of_total
+    - fct_ga_channel_sessions_total_ga_channel_sessions
+tableName: fct_ga_channel_sessions
+verification: null
+version: 1
