@@ -1,0 +1,46 @@
+# Source: April 2026 KPI Report, page 16 (IS CLINICAL, 7. CRM Performance)
+chartConfig:
+  config:
+    flipColors: false
+    label: Total CRM Revenue
+    selectedField: fct_klaviyo_revenue_total_klaviyo_revenue
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  Total Klaviyo CRM revenue for iS Clinical: the sum of Placed Order value
+  attributed to a campaign or a flow within Klaviyo's 5-day engagement window.
+  Equals campaign revenue plus flow revenue. Built from raw
+  BRONZE_KLAVIYO_ISCLINICAL events (fct_klaviyo_revenue.total_klaviyo_revenue),
+  no attribution_kind filter. Responds to the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_klaviyo_revenue
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_klaviyo_revenue_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_klaviyo_revenue_total_klaviyo_revenue
+  sorts: []
+  tableCalculations: []
+name: iS Clinical Total CRM Revenue
+slug: isclinical-crm-total-revenue
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_klaviyo_revenue_total_klaviyo_revenue
+tableName: fct_klaviyo_revenue
+verification: null
+version: 1

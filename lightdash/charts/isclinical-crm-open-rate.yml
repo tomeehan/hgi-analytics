@@ -1,0 +1,46 @@
+# Source: April 2026 KPI Report, page 16 (IS CLINICAL, 7. CRM Performance)
+chartConfig:
+  config:
+    flipColors: false
+    label: Open Rate
+    selectedField: fct_campaign_performance_avg_open_rate
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  iS Clinical email open rate: unique opens divided by delivered, recomputed
+  post-aggregation (weighted ratio metric) so the Month-filtered value reads
+  the exact monthly figure. Built from raw BRONZE_KLAVIYO_ISCLINICAL Received
+  and Opened Email events (fct_campaign_performance). Responds to the dashboard
+  Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_campaign_performance
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_campaign_performance_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_campaign_performance_avg_open_rate
+  sorts: []
+  tableCalculations: []
+name: iS Clinical Open Rate
+slug: isclinical-crm-open-rate
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_campaign_performance_avg_open_rate
+tableName: fct_campaign_performance
+verification: null
+version: 1

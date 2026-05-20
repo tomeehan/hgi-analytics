@@ -93,7 +93,7 @@ models:
           - not_null
 
   - name: stg_klaviyo__campaign_stats
-    description: "Pre-aggregated campaign performance stats from Klaviyo Campaign Values Reports."
+    description: "Pre-aggregated campaign performance stats from Klaviyo Campaign Values Reports. NOTE: campaign_values_reports is not synced by Airbyte (lean stream selection), so this model is empty. Email engagement performance is built from raw EVENTS via stg_klaviyo__email_engagement instead."
     columns:
       - name: campaign_id
         description: "Klaviyo campaign ID."
@@ -102,6 +102,26 @@ models:
       - name: store_id
         tests:
           - not_null
+
+  - name: stg_klaviyo__email_engagement
+    description: "Klaviyo email engagement aggregated monthly off raw EVENTS (one row per store_id x send_month). delivered = Received Email event count; unique_opens / unique_clicks = distinct (message, profile) pairs that opened / clicked. Built from raw EVENTS because Klaviyo's pre-aggregated reporting streams are not synced. Feeds fct_campaign_performance."
+    columns:
+      - name: engagement_id
+        description: "Synthetic key: store_id plus YYYY-MM send month."
+        tests:
+          - not_null
+          - unique
+      - name: store_id
+        tests:
+          - not_null
+      - name: send_month
+        tests:
+          - not_null
+      - name: delivered
+        description: "Received Email event count for the month."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
 
   - name: stg_cin7__sales
     description: "Deduplicated Cin7 sales across all channels (Shopify DTC, B2B, WooCommerce, Amazon UK)."

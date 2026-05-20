@@ -52,6 +52,21 @@ filters:
         paid-search-shopping:
           fieldId: fct_google_ads_search_terms_order_month_label
           tableName: fct_google_ads_search_terms
+        isclinical-crm-total-revenue:
+          fieldId: fct_klaviyo_revenue_order_month_label
+          tableName: fct_klaviyo_revenue
+        isclinical-crm-campaign-revenue:
+          fieldId: fct_klaviyo_revenue_order_month_label
+          tableName: fct_klaviyo_revenue
+        isclinical-crm-flow-revenue:
+          fieldId: fct_klaviyo_revenue_order_month_label
+          tableName: fct_klaviyo_revenue
+        isclinical-crm-open-rate:
+          fieldId: fct_campaign_performance_order_month_label
+          tableName: fct_campaign_performance
+        isclinical-crm-click-rate:
+          fieldId: fct_campaign_performance_order_month_label
+          tableName: fct_campaign_performance
       values:
         - 2026-04
   metrics: []
@@ -382,5 +397,102 @@ tiles:
     w: 18
     x: 18
     "y": 46
+  - h: 2
+    properties:
+      content: >-
+        ## CRM Performance (Klaviyo)
+
+        Page 16 of the April 2026 KPI Report. iS Clinical Klaviyo CRM
+        performance. Total / campaign / flow revenue is Placed Order value
+        attributed to a campaign or flow within Klaviyo's 5-day engagement
+        window, reconstructed from raw Klaviyo events. Open and click rate are
+        derived from Received / Opened / Clicked Email event counts. The live
+        figures sit a few percent above the PDF: the PDF reads Klaviyo's native
+        attribution engine, while these are reconstructed from raw events.
+      title: CRM Performance (Klaviyo)
+    tabUuid: null
+    type: markdown
+    w: 36
+    x: 0
+    "y": 51
+  - h: 4
+    properties:
+      chartName: iS Clinical Total CRM Revenue
+      chartSlug: isclinical-crm-total-revenue
+      hideTitle: false
+      title: Total CRM Revenue
+    tabUuid: null
+    tileSlug: isclinical-crm-total-revenue
+    type: saved_chart
+    w: 6
+    x: 0
+    "y": 53
+  - h: 4
+    properties:
+      chartName: iS Clinical Campaign Revenue
+      chartSlug: isclinical-crm-campaign-revenue
+      hideTitle: false
+      title: Campaign Revenue
+    tabUuid: null
+    tileSlug: isclinical-crm-campaign-revenue
+    type: saved_chart
+    w: 6
+    x: 6
+    "y": 53
+  - h: 4
+    properties:
+      chartName: iS Clinical Flow Revenue
+      chartSlug: isclinical-crm-flow-revenue
+      hideTitle: false
+      title: Flow Revenue
+    tabUuid: null
+    tileSlug: isclinical-crm-flow-revenue
+    type: saved_chart
+    w: 6
+    x: 12
+    "y": 53
+  - h: 4
+    properties:
+      chartName: iS Clinical Open Rate
+      chartSlug: isclinical-crm-open-rate
+      hideTitle: false
+      title: Open Rate
+    tabUuid: null
+    tileSlug: isclinical-crm-open-rate
+    type: saved_chart
+    w: 6
+    x: 18
+    "y": 53
+  - h: 4
+    properties:
+      chartName: iS Clinical Click Rate
+      chartSlug: isclinical-crm-click-rate
+      hideTitle: false
+      title: Click Rate
+    tabUuid: null
+    tileSlug: isclinical-crm-click-rate
+    type: saved_chart
+    w: 6
+    x: 24
+    "y": 53
+  - h: 4
+    properties:
+      content: >-
+        ### Profile counts (point-in-time)
+
+        **Active profiles: 43,658** (Everyone minus unsubs / bounces)
+
+        **Engaged profiles: 10,156** (Engaged 30 Days)
+
+        Static April 2026 PDF figures. These are point-in-time Klaviyo
+        profile / segment snapshots, not monthly event counts, so they do not
+        respond to the Month filter. Modelling Klaviyo profiles / segments
+        into the warehouse is a follow-up.
+      title: Profile counts (point-in-time)
+    tabUuid: null
+    type: markdown
+    w: 6
+    x: 30
+    "y": 53
 verification: null
 version: 1
