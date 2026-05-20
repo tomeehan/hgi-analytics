@@ -69,6 +69,22 @@ models:
               type: sum
               label: "New Customer Orders"
               round: 0
+            returning_customer_orders:
+              type: sum
+              label: "Returning Customer Orders"
+              # is_first_order is an integer 0/1 (see CLAUDE.md): returning =
+              # the inverse flag. Mirrors new_customer_orders.
+              sql: "case when ${TABLE}.is_first_order = 0 then 1 else 0 end"
+              round: 0
+            new_customer_share:
+              type: average
+              label: "New Customer Share"
+              # Average of the 0/1 is_first_order flag is the new-order
+              # fraction. format: percent renders it as a percentage in
+              # Lightdash (e.g. 0.408 -> 41%). Powers the Customer Mix
+              # KPI-strip tile on the iS Clinical KPI Report.
+              format: "percent"
+              round: 0
       - name: order_month
         description: "Month the order was placed (first day of month)."
         meta:

@@ -16,6 +16,9 @@ filters:
         isclinical-klaviyo-revenue:
           fieldId: fct_klaviyo_revenue_order_month_label
           tableName: fct_klaviyo_revenue
+        isclinical-ga4-attributed-revenue:
+          fieldId: fct_ga_sessions_order_month_label
+          tableName: fct_ga_sessions
       values:
         - 2026-04
   metrics: []
@@ -73,5 +76,68 @@ tiles:
     w: 18
     x: 18
     "y": 4
+  - h: 1
+    properties:
+      content: >-
+        ## Revenue & Channel Attribution
+
+
+        Page 12 of the April 2026 KPI Report. Shopify is the source of truth for
+        revenue, orders, AOV and customer mix; GA4 supplies the attributed
+        revenue figure.
+      title: Revenue & Channel Attribution
+    tabUuid: null
+    type: markdown
+    w: 36
+    x: 0
+    "y": 8
+  - h: 4
+    properties:
+      chartName: iS Clinical Shopify Revenue
+      chartSlug: isclinical-shopify-revenue
+      hideTitle: false
+      title: Total Revenue (Shopify)
+    tabUuid: null
+    tileSlug: isclinical-shopify-revenue
+    type: saved_chart
+    w: 9
+    x: 0
+    "y": 9
+  - h: 4
+    properties:
+      chartName: iS Clinical Revenue (GA4-attributed)
+      chartSlug: isclinical-ga4-attributed-revenue
+      hideTitle: false
+      title: Revenue (GA4-attributed)
+    tabUuid: null
+    tileSlug: isclinical-ga4-attributed-revenue
+    type: saved_chart
+    w: 9
+    x: 9
+    "y": 9
+  - h: 4
+    properties:
+      chartName: iS Clinical AOV (Shopify)
+      chartSlug: isclinical-aov
+      hideTitle: false
+      title: AOV (Shopify)
+    tabUuid: null
+    tileSlug: isclinical-aov
+    type: saved_chart
+    w: 9
+    x: 18
+    "y": 9
+  - h: 4
+    properties:
+      chartName: iS Clinical Customer Mix (new %)
+      chartSlug: isclinical-customer-mix
+      hideTitle: false
+      title: Customer Mix (new %)
+    tabUuid: null
+    tileSlug: isclinical-customer-mix
+    type: saved_chart
+    w: 9
+    x: 27
+    "y": 9
 verification: null
 version: 1

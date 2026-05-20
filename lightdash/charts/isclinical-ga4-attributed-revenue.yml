@@ -1,0 +1,45 @@
+# Source: April 2026 KPI Report, page 12 (IS CLINICAL, 1. REVENUE & CHANNEL ATTRIBUTION)
+chartConfig:
+  config:
+    flipColors: false
+    label: iS Clinical Revenue (GA4-attributed)
+    selectedField: fct_ga_sessions_ga_total_revenue
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  GA4-attributed revenue: the sum of GA4 purchase-event revenue (total_revenue)
+  for iS Clinical sessions in the month. Structurally lower than the Shopify
+  total because GA4 misses sessions without analytics consent and cross-device
+  journeys. Responds to the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_ga_sessions
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_ga_sessions_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_ga_sessions_ga_total_revenue
+  sorts: []
+  tableCalculations: []
+name: iS Clinical Revenue (GA4-attributed)
+slug: isclinical-ga4-attributed-revenue
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_ga_sessions_ga_total_revenue
+tableName: fct_ga_sessions
+verification: null
+version: 1
