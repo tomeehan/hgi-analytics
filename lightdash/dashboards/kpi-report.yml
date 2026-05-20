@@ -19,6 +19,9 @@ filters:
         isclinical-ga4-attributed-revenue:
           fieldId: fct_ga_sessions_order_month_label
           tableName: fct_ga_sessions
+        channel-breakdown-table:
+          fieldId: fct_ga_channel_sessions_order_month_label
+          tableName: fct_ga_channel_sessions
       values:
         - 2026-04
   metrics: []
@@ -139,5 +142,17 @@ tiles:
     w: 9
     x: 27
     "y": 9
+  - h: 7
+    properties:
+      chartName: Channel Breakdown (GA4)
+      chartSlug: channel-breakdown-table
+      hideTitle: false
+      title: Channel Breakdown (GA4)
+    tabUuid: null
+    tileSlug: channel-breakdown-table
+    type: saved_chart
+    w: 36
+    x: 0
+    "y": 13
 verification: null
 version: 1
