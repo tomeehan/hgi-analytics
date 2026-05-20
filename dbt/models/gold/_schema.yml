@@ -806,12 +806,23 @@ models:
               round: 0
 
   - name: fct_klaviyo_revenue
-    description: "Klaviyo Placed Order revenue attributed to a campaign or a flow within Klaviyo's 5-day attribution window. Grain: one row per Placed Order event. Both campaign-attributed and flow-attributed rows are kept; sum(revenue) reproduces the PDF's hero 'Combined Klaviyo Revenue' figure."
+    description: >-
+      Klaviyo Placed Order revenue attributed to a campaign or a flow via a
+      5-day-window engagement join. Grain: one row per attributed (deduplicated)
+      Placed Order event. Built from raw BRONZE_KLAVIYO_*.EVENTS: each deduped
+      Placed Order is matched to that profile's most recent Opened/Clicked Email
+      engagement in the 5 days before the order, and inherits its campaign or
+      flow. Orders with no qualifying engagement in-window are excluded. Both
+      campaign-attributed and flow-attributed rows are kept; sum(revenue)
+      reproduces the PDF's 'TOTAL CRM REVENUE' figure. This reconstructs
+      Klaviyo's native attribution from raw events (the pre-aggregated
+      *_values_reports streams are not synced), so a few-percent residual gap
+      against Klaviyo's own engine is expected.
     meta:
       label: "Klaviyo Revenue"
     columns:
       - name: event_id
-        description: "Klaviyo event ID (one per Placed Order)."
+        description: "Klaviyo event ID (one per attributed Placed Order)."
         tests:
           - not_null
           - unique
