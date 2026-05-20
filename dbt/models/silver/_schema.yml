@@ -318,6 +318,20 @@ models:
         tests:
           - not_null
       - name: transactions
+
+  - name: stg_google_analytics__users
+    description: "Daily GA4 total users by store_id, sourced from WEBSITE_OVERVIEW (the totalusers column). Currently iS Clinical only; mirrors stg_google_analytics__sessions coverage."
+    columns:
+      - name: session_date
+        tests:
+          - not_null
+      - name: order_month
+        tests:
+          - not_null
+      - name: store_id
+        tests:
+          - not_null
+      - name: users
         description: "GA4 purchase event count (used as transactions for the cross-brand KPI table)."
 
   - name: stg_shopify__order_refunds
