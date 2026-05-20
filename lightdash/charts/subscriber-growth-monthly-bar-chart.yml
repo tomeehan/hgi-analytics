@@ -1,0 +1,84 @@
+# Source: April 2026 KPI Report, page 18 (iS Clinical, 12-month subscriber growth)
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_klaviyo_subscriber_growth_order_month
+            yRef:
+              field: fct_klaviyo_subscriber_growth_total_net_subscriber_change
+          type: bar
+      xAxis:
+        - axisLabel:
+            formatter: "{MMM} {yy}"
+            hideOverlap: true
+    layout:
+      flipAxes: false
+      xField: fct_klaviyo_subscriber_growth_order_month
+      yField:
+        - fct_klaviyo_subscriber_growth_total_net_subscriber_change
+  type: cartesian
+contentType: chart
+description: >-
+  iS Clinical Klaviyo net subscriber change per calendar month over the trailing
+  12 months (May 2025 to April 2026): "Subscribed to Email Marketing" events
+  minus "Unsubscribed from Email Marketing" events. Built from raw
+  BRONZE_KLAVIYO_ISCLINICAL events via fct_klaviyo_subscriber_growth (monthly
+  grain). A positive bar means the subscribed base grew that month; a negative
+  bar means it shrank. This is a fixed rolling 12-month window pinned to the
+  April 2026 report month, so the chart is scoped to the trailing 12 months by
+  its own order_month_label IN filter and deliberately does not respond to the
+  dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_klaviyo_subscriber_growth_order_month
+  exploreName: fct_klaviyo_subscriber_growth
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_klaviyo_subscriber_growth_store_id
+          values:
+            - iS Clinical
+        - id: f2
+          operator: equals
+          target:
+            fieldId: fct_klaviyo_subscriber_growth_order_month_label
+          values:
+            - "2025-05"
+            - "2025-06"
+            - "2025-07"
+            - "2025-08"
+            - "2025-09"
+            - "2025-10"
+            - "2025-11"
+            - "2025-12"
+            - "2026-01"
+            - "2026-02"
+            - "2026-03"
+            - "2026-04"
+      id: isclinical-trailing-12mo
+  limit: 12
+  metricOverrides: {}
+  metrics:
+    - fct_klaviyo_subscriber_growth_total_net_subscriber_change
+  sorts:
+    - descending: false
+      fieldId: fct_klaviyo_subscriber_growth_order_month
+  tableCalculations: []
+name: iS Clinical Subscriber Growth (12 mo, monthly)
+slug: subscriber-growth-monthly-bar-chart
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_klaviyo_subscriber_growth_order_month
+    - fct_klaviyo_subscriber_growth_total_net_subscriber_change
+tableName: fct_klaviyo_subscriber_growth
+verification: null
+version: 1
