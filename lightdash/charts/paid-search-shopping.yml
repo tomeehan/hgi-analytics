@@ -1,0 +1,60 @@
+# Source: April 2026 KPI Report, page 15 (Paid Media Performance)
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: true
+    showRowCalculation: false
+    showTableNames: false
+  type: table
+contentType: chart
+description: >-
+  iS Clinical Google Ads search-term performance for the month split by brand
+  intent, mirroring the GOOGLE ADS, BRANDED VS NON-BRANDED panel on KPI Report
+  page 15. Two rows (Branded, Non-branded) with clicks, cost, conversions and a
+  "% of cost" table calculation (that row's cost as a share of the table total).
+  brand_intent is a name-pattern classification of the search-term text, scoped
+  to the top 100 search terms by cost for the month. Responds to the dashboard
+  Month filter. Coverage note: Google Ads' search-term view only retains terms
+  above a minimum impression threshold, so the live table reads below the PDF
+  panel (Bronze holds fewer search terms than the PDF report was built from).
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_google_ads_search_terms_brand_intent
+  exploreName: fct_google_ads_search_terms
+  filters: {}
+  limit: 500
+  metricOverrides: {}
+  metrics:
+    - fct_google_ads_search_terms_total_clicks
+    - fct_google_ads_search_terms_total_cost
+    - fct_google_ads_search_terms_total_conversions
+  sorts:
+    - descending: true
+      fieldId: fct_google_ads_search_terms_total_cost
+  tableCalculations:
+    - displayName: "% of Cost"
+      format:
+        round: 1
+        type: percent
+      name: pct_of_cost
+      sql: >-
+        ${fct_google_ads_search_terms.total_cost} /
+        NULLIF(SUM(${fct_google_ads_search_terms.total_cost}) OVER (), 0)
+name: iS Clinical Paid Search, Branded vs Non-branded
+slug: paid-search-shopping
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_google_ads_search_terms_brand_intent
+    - fct_google_ads_search_terms_total_clicks
+    - fct_google_ads_search_terms_total_cost
+    - fct_google_ads_search_terms_total_conversions
+    - pct_of_cost
+tableName: fct_google_ads_search_terms
+verification: null
+version: 1

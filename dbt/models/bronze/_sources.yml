@@ -33,6 +33,18 @@ sources:
       - name: events_report
       - name: website_overview
 
+  - name: bronze_google_ads_isclinical
+    database: HGI
+    schema: BRONZE_GOOGLE_ADS_ISCLINICAL
+    tables:
+      # Airbyte's Google Ads connector lands the search-query / search-term
+      # stream as ADS_SEARCHQUERYSTATS_<ad_account_id>. The 5994178388 suffix
+      # is the iS Clinical ad-account id; the P_ADS_* variant is the
+      # partitioned table, identical row counts, so we read the unpartitioned
+      # ADS_* table directly.
+      - name: search_query_stats
+        identifier: ADS_SEARCHQUERYSTATS_5994178388
+
   - name: bronze_klaviyo_isclinical
     database: HGI
     schema: BRONZE_KLAVIYO_ISCLINICAL

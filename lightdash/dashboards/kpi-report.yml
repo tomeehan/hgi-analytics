@@ -49,6 +49,9 @@ filters:
         meta-remarketing-vs-acquisition:
           fieldId: fct_ad_spend_order_month_label
           tableName: fct_ad_spend
+        paid-search-shopping:
+          fieldId: fct_google_ads_search_terms_order_month_label
+          tableName: fct_google_ads_search_terms
       values:
         - 2026-04
   metrics: []
@@ -366,6 +369,18 @@ tiles:
     type: saved_chart
     w: 18
     x: 0
+    "y": 46
+  - h: 5
+    properties:
+      chartName: iS Clinical Paid Search, Branded vs Non-branded
+      chartSlug: paid-search-shopping
+      hideTitle: false
+      title: Google Ads, Branded vs Non-branded
+    tabUuid: null
+    tileSlug: paid-search-shopping
+    type: saved_chart
+    w: 18
+    x: 18
     "y": 46
 verification: null
 version: 1
