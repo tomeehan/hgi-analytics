@@ -13,6 +13,9 @@ filters:
         meta-spend:
           fieldId: fct_ad_spend_order_month_label
           tableName: fct_ad_spend
+        isclinical-klaviyo-revenue:
+          fieldId: fct_klaviyo_revenue_order_month_label
+          tableName: fct_klaviyo_revenue
       values:
         - 2026-04
   metrics: []
@@ -57,6 +60,18 @@ tiles:
     type: saved_chart
     w: 18
     x: 0
+    "y": 4
+  - h: 4
+    properties:
+      chartName: iS Clinical Klaviyo Revenue
+      chartSlug: isclinical-klaviyo-revenue
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: isclinical-klaviyo-revenue
+    type: saved_chart
+    w: 18
+    x: 18
     "y": 4
 verification: null
 version: 1

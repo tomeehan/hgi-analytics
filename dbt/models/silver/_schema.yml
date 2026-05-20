@@ -36,7 +36,7 @@ models:
         description: "Normalised customer email (nullable for guest/partial records)."
 
   - name: stg_klaviyo__events
-    description: "Klaviyo events unioned across iSClinical, Deese Pro. Harper Grace is declared as a Bronze source but its EVENTS table has no rows yet (per airbyte/README.md; under investigation), so it's intentionally excluded from this union until the sync lands."
+    description: "Klaviyo events unioned across iSClinical, Deese Pro. Harper Grace is declared as a Bronze source but its EVENTS table has no rows yet (per airbyte/README.md; under investigation), so it's intentionally excluded from this union until the sync lands. Email engagement events (Received / Opened / Clicked Email) carry campaign_id / flow_id / message_id (parsed from event_properties keys $campaign / $flow / $message); Placed Order events carry order_value / order_currency / order_id instead."
     columns:
       - name: event_id
         description: "Klaviyo event ID."
@@ -66,7 +66,7 @@ models:
           - not_null
 
   - name: stg_klaviyo__placed_orders
-    description: "Klaviyo Placed Order events with attribution kind (campaign / flow / unattributed) derived from $campaign_id and $flow_id event_properties."
+    description: "Klaviyo 'Placed Order' events, deduplicated to one row per (store_id, OrderID). Each Klaviyo account fires a Placed Order metric for the same order from more than one integration (native Shopify + server-side API), so the raw events double-count revenue; the earliest event per OrderID is kept. Placed Order events carry no campaign / flow keys, so attribution is computed downstream in fct_klaviyo_revenue."
     columns:
       - name: event_id
         tests:
@@ -78,6 +78,11 @@ models:
       - name: order_month
         tests:
           - not_null
+      - name: revenue
+        description: "Order value ($value) for the deduplicated Placed Order event."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
 
   - name: stg_klaviyo__campaigns
     description: "Klaviyo campaigns unioned across isClinical, Deese Pro, and Harper Grace."
