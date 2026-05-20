@@ -1,0 +1,54 @@
+# Source: April 2026 KPI Report, page 16 (IS CLINICAL, 7. CRM Performance, panel TOP PERFORMING CAMPAIGNS)
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: false
+  type: table
+contentType: chart
+description: >-
+  Top five iS Clinical Klaviyo email campaigns by placed-order revenue,
+  mirroring the TOP PERFORMING CAMPAIGNS panel on KPI Report page 16. Revenue
+  is Placed Order value attributed to a campaign within Klaviyo's 5-day
+  engagement window, reconstructed from raw Klaviyo events
+  (fct_klaviyo_campaign_revenue, which reuses fct_klaviyo_revenue). The live
+  per-campaign figures sit a few percent above the PDF because the PDF reads
+  Klaviyo's native attribution engine. Responds to the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_klaviyo_campaign_revenue_campaign_name
+  exploreName: fct_klaviyo_campaign_revenue
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_klaviyo_campaign_revenue_store_id
+          values:
+            - iS Clinical
+      id: isclinical-campaigns
+  limit: 5
+  metricOverrides: {}
+  metrics:
+    - fct_klaviyo_campaign_revenue_total_campaign_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_klaviyo_campaign_revenue_total_campaign_revenue
+  tableCalculations: []
+name: iS Clinical Top Performing Campaigns
+slug: isclinical-top-performing-campaigns
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_klaviyo_campaign_revenue_campaign_name
+    - fct_klaviyo_campaign_revenue_total_campaign_revenue
+tableName: fct_klaviyo_campaign_revenue
+verification: null
+version: 1

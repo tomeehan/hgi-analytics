@@ -29,7 +29,7 @@ cross-brand tiles); tickets 002 to 020 each append one tile.
 | 012 | Meta ads remarketing vs acquisition | Triage | Needs an audience-type classification in `fct_ad_spend`. |
 | 013 | Paid search / shopping | Triage | Google Ads is unmodelled: build the Bronze source + Silver + Gold. |
 | 014 | CRM KPI strip | Triage | Revenue + open/click rates buildable off raw `EVENTS`; active/engaged profile counts still need modelling. |
-| 015 | Top performing campaigns | Triage | Build campaign revenue off raw `EVENTS` (5-day-window attribution, grouped by campaign). |
+| 015 | Top performing campaigns | Done | `fct_klaviyo_campaign_revenue` rolls up `fct_klaviyo_revenue` campaign rows by campaign; names from `stg_klaviyo__events`. |
 | 016 | Top performing flows | Triage | Build flow revenue off raw `EVENTS` (5-day-window attribution); flow names from the `FLOWS` table. |
 | 017 | 12-month subscriber growth totals | Triage | Needs a new `fct_klaviyo_subscriber_growth` model (shared with 018, 019). |
 | 018 | 12-month subscriber growth monthly bar chart | Triage | Needs `fct_klaviyo_subscriber_growth`. |
