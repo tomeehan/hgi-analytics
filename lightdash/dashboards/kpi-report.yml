@@ -9,7 +9,10 @@ filters:
       target:
         fieldId: fct_orders_order_month_label
         tableName: fct_orders
-      tileTargets: {}
+      tileTargets:
+        meta-spend:
+          fieldId: fct_ad_spend_order_month_label
+          tableName: fct_ad_spend
       values:
         - 2026-04
   metrics: []
@@ -45,12 +48,12 @@ tiles:
     "y": 0
   - h: 4
     properties:
-      chartName: Combined Meta Spend
-      chartSlug: combined-meta-spend
+      chartName: iS Clinical Meta Spend
+      chartSlug: meta-spend
       hideTitle: false
       title: ""
     tabUuid: null
-    tileSlug: combined-meta-spend
+    tileSlug: meta-spend
     type: saved_chart
     w: 18
     x: 0
