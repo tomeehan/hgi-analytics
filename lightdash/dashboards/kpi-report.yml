@@ -43,6 +43,9 @@ filters:
         isclinical-top-converting-sources-by-rps:
           fieldId: fct_ga_source_medium_order_month_label
           tableName: fct_ga_source_medium
+        isclinical-pr-media-highlights:
+          fieldId: fct_ga_source_medium_order_month_label
+          tableName: fct_ga_source_medium
       values:
         - 2026-04
   metrics: []
@@ -275,5 +278,33 @@ tiles:
     w: 18
     x: 18
     "y": 25
+  - h: 1
+    properties:
+      content: >-
+        ## PR & media highlights (GA4 referrers)
+
+
+        Page 14 of the April 2026 KPI Report. The top GA4 referral / off-site
+        traffic sources for iS Clinical, the closest proxy the report has for
+        earned PR and media coverage. Restricted to referral and quiz mediums.
+        No standalone PR placement detected above 100 sessions.
+      title: PR & media highlights (GA4 referrers)
+    tabUuid: null
+    type: markdown
+    w: 36
+    x: 0
+    "y": 32
+  - h: 6
+    properties:
+      chartName: iS Clinical PR & Media Highlights (GA4 referrers)
+      chartSlug: isclinical-pr-media-highlights
+      hideTitle: false
+      title: PR & Media Highlights (GA4 referrers)
+    tabUuid: null
+    tileSlug: isclinical-pr-media-highlights
+    type: saved_chart
+    w: 36
+    x: 0
+    "y": 33
 verification: null
 version: 1
