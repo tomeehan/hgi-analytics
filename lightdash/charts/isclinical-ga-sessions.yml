@@ -1,0 +1,45 @@
+# Source: April 2026 KPI Report, page 13 (IS CLINICAL, Traffic, conversion, PR, customer mix, AOV)
+chartConfig:
+  config:
+    flipColors: false
+    label: Sessions (GA4)
+    selectedField: fct_ga_sessions_total_ga_sessions
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  Total GA4 sessions for iS Clinical in the month, from the GA4
+  traffic-acquisition report. Responds to the dashboard Month filter. Reads
+  slightly below the PDF figure because GA4 reports keep re-processing for
+  several days after month close.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_ga_sessions
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_ga_sessions_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_ga_sessions_total_ga_sessions
+  sorts: []
+  tableCalculations: []
+name: iS Clinical Sessions (GA4)
+slug: isclinical-ga-sessions
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_ga_sessions_total_ga_sessions
+tableName: fct_ga_sessions
+verification: null
+version: 1

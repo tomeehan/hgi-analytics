@@ -1,0 +1,43 @@
+# Source: April 2026 KPI Report, page 13 (IS CLINICAL, Traffic, conversion, PR, customer mix, AOV)
+chartConfig:
+  config:
+    flipColors: false
+    label: RPS (GA4)
+    selectedField: fct_ga_sessions_ga_revenue_per_session
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  GA4 revenue per session for iS Clinical: GA-attributed purchase revenue
+  divided by GA4 sessions. Responds to the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_ga_sessions
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_ga_sessions_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_ga_sessions_ga_revenue_per_session
+  sorts: []
+  tableCalculations: []
+name: iS Clinical RPS (GA4)
+slug: isclinical-ga-rps
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_ga_sessions_ga_revenue_per_session
+tableName: fct_ga_sessions
+verification: null
+version: 1

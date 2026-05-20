@@ -1,0 +1,45 @@
+# Source: April 2026 KPI Report, page 13 (IS CLINICAL, Traffic, conversion, PR, customer mix, AOV)
+chartConfig:
+  config:
+    flipColors: false
+    label: AOV (GA-derived)
+    selectedField: fct_ga_sessions_ga_aov
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  GA-derived average order value for iS Clinical: GA-attributed purchase revenue
+  divided by GA4 transactions. Deliberately distinct from the Shopify
+  source-of-truth AOV (page 12) because GA's transaction count and revenue
+  differ from Shopify's. Responds to the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_ga_sessions
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_ga_sessions_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_ga_sessions_ga_aov
+  sorts: []
+  tableCalculations: []
+name: iS Clinical AOV (GA-derived)
+slug: isclinical-ga-aov
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_ga_sessions_ga_aov
+tableName: fct_ga_sessions
+verification: null
+version: 1

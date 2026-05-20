@@ -887,9 +887,31 @@ models:
         description: "Klaviyo flow ID, null for campaign-attributed events."
 
   - name: fct_ga_sessions
-    description: "Daily GA4 sessions by store_id (one row per session_date × store_id). Sourced from BRONZE_GOOGLE_ANALYTICS_*.TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT aggregated across source/medium. Currently iS Clinical only; Deese PRO / HGI GA4 connections not yet landed."
+    description: "Daily GA4 traffic-and-conversion fact by store_id (one row per session_date × store_id). Sessions and GA-attributed revenue from BRONZE_GOOGLE_ANALYTICS_*.TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT; users from WEBSITE_OVERVIEW; transactions from the EVENTS_REPORT purchase event count. Exposes derived CVR / RPS / AOV metrics. Currently iS Clinical only; Deese PRO / HGI GA4 connections not yet landed."
     meta:
       label: "GA Sessions"
+      metrics:
+        ga_conversion_rate:
+          type: number
+          label: "GA Conversion Rate"
+          description: "GA4 transactions divided by GA4 sessions, expressed as a percentage."
+          sql: "${total_ga_transactions} / nullif(${total_ga_sessions}, 0)"
+          format: "percent"
+          round: 2
+        ga_revenue_per_session:
+          type: number
+          label: "GA Revenue per Session"
+          description: "GA-attributed revenue divided by GA4 sessions."
+          sql: "${ga_total_revenue} / nullif(${total_ga_sessions}, 0)"
+          format: "gbp"
+          round: 2
+        ga_aov:
+          type: number
+          label: "GA AOV"
+          description: "GA-derived average order value: GA-attributed revenue divided by GA4 transactions. Deliberately distinct from the Shopify source-of-truth AOV because GA's transaction count and revenue differ from Shopify's."
+          sql: "${ga_total_revenue} / nullif(${total_ga_transactions}, 0)"
+          format: "gbp"
+          round: 2
     columns:
       - name: session_date
         tests: [not_null]
@@ -936,6 +958,28 @@ models:
               type: sum
               label: "GA Total Revenue"
               format: "gbp"
+              round: 0
+      - name: users
+        description: "GA4 total users (distinct users, GA4 totalUsers) for the day. Left-joined from stg_google_analytics__users; coalesced to 0 for days with sessions but no website-overview row."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+        meta:
+          metrics:
+            total_ga_users:
+              type: sum
+              label: "GA Users"
+              round: 0
+      - name: transactions
+        description: "GA4 transaction count (purchase event count) for the day. Left-joined from stg_google_analytics__transactions; coalesced to 0 for days with sessions but no purchase events."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+        meta:
+          metrics:
+            total_ga_transactions:
+              type: sum
+              label: "GA Transactions"
               round: 0
 
   - name: fct_ga_channel_sessions
