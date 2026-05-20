@@ -1039,6 +1039,70 @@ models:
               format: "gbp"
               round: 0
 
+  - name: fct_ga_source_medium
+    description: "GA4 traffic fact at session_date x store_id x source/medium grain. Pass-through over stg_google_analytics__source_medium (mirrors how fct_ga_sessions wraps stg_google_analytics__sessions). Powers the KPI Report's 'Top traffic sources by sessions' table (PDF p.13) and is reused by the converting-sources and PR-referrer tiles. No transactions column: the source/medium Bronze report has no purchase-event count and no GA4 events report carries the source/medium dimension. Currently iS Clinical only."
+    meta:
+      label: "GA Source / Medium"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - session_date
+            - store_id
+            - source_medium
+    columns:
+      - name: session_date
+        tests: [not_null]
+      - name: order_month
+        description: "First day of the month of session_date (date_trunc month). Mirrors fct_orders.order_month so the dashboard Month filter cross-applies."
+        tests: [not_null]
+        meta:
+          dimension:
+            label: "Month (date)"
+          additional_dimensions:
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Compact YYYY-MM label for the dashboard's Month filter; mirrors fct_orders.order_month_label so the KPI Report's Month filter cross-applies via field-name lookup."
+              sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
+      - name: store_id
+        description: "Brand identifier."
+        tests: [not_null]
+        meta:
+          dimension:
+            label: "Brand"
+            # Same human-readable rename as fct_orders.store_id (CLAUDE.md →
+            # store-name display mapping). Keep in sync across Gold models.
+            sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+      - name: source_medium
+        description: "GA4 session source / medium pair (e.g. 'google / organic')."
+        tests: [not_null]
+        meta:
+          dimension:
+            label: "Source / Medium"
+      - name: sessions
+        description: "GA4 session count for the source/medium."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+        meta:
+          metrics:
+            total_ga_source_medium_sessions:
+              type: sum
+              label: "GA Sessions"
+              round: 0
+      - name: revenue
+        description: "GA-attributed revenue (purchase events) for the source/medium."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+        meta:
+          metrics:
+            total_ga_source_medium_revenue:
+              type: sum
+              label: "GA Revenue"
+              format: "gbp"
+              round: 0
+
   - name: fct_brand_monthly_summary
     description: "Per-brand, per-month rollup powering the KPI Report's 'April at a glance' table (PDF p.2). Outer-joined across Shopify (orders + revenue), GA4 (sessions + revenue + transactions). One row per (store_id, order_month). Brands without GA4 connections render with zero / null GA metrics."
     meta:
