@@ -244,7 +244,7 @@ models:
           - unique
 
   - name: stg_meta__ads_spend
-    description: "Daily Meta ad spend aggregated from BRONZE_META_*.ADS_INSIGHTS, unioned across iS Clinical and Deese PRO. Purchases / purchase_value extracted from the ACTIONS / ACTION_VALUES JSON arrays where action_type='purchase'."
+    description: "Daily Meta ad spend aggregated from BRONZE_META_*.ADS_INSIGHTS, unioned across iS Clinical and Deese PRO. Grain: one row per (spend_date, store_id, audience_type). Purchases / purchase_value extracted from the ACTIONS / ACTION_VALUES JSON arrays where action_type='purchase'. audience_type is a name-pattern classification of the Meta campaign / ad-set name (remarketing / acquisition / other)."
     columns:
       - name: spend_date
         description: "Activity date (date_start from Meta)."
@@ -256,6 +256,12 @@ models:
         description: "Brand identifier."
         tests:
           - not_null
+      - name: audience_type
+        description: "Audience-type classification derived from the Meta campaign / ad-set naming convention: remarketing (name contains REMARKETING / RETARGETING / EXISTING CUSTOMERS), acquisition (PROSPECTING / ACQUISITION / LOOKALIKE) or other (everything else, dominated by the Skin Quiz lead campaign). Not a native Meta field."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['remarketing', 'acquisition', 'other']
       - name: spend
         description: "Total Meta ad spend for the day."
         tests:
@@ -265,8 +271,14 @@ models:
       - name: clicks
       - name: purchases
         description: "Sum of ACTIONS where action_type='purchase'."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
       - name: purchase_value
         description: "Sum of ACTION_VALUES where action_type='purchase'."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
 
   - name: stg_google_analytics__sessions
     description: "Daily GA4 sessions aggregated from TRAFFIC_ACQUISITION_SESSION_SOURCE_MEDIUM_REPORT (across source/medium). The Bronze DATE column is text in YYYYMMDD format and is cast to a date here."

@@ -46,6 +46,9 @@ filters:
         isclinical-pr-media-highlights:
           fieldId: fct_ga_source_medium_order_month_label
           tableName: fct_ga_source_medium
+        meta-remarketing-vs-acquisition:
+          fieldId: fct_ad_spend_order_month_label
+          tableName: fct_ad_spend
       values:
         - 2026-04
   metrics: []
@@ -334,5 +337,35 @@ tiles:
     w: 36
     x: 0
     "y": 40
+  - h: 1
+    properties:
+      content: >-
+        ## Paid Media Performance
+
+        Page 15 of the April 2026 KPI Report. iS Clinical Meta (Facebook
+        Marketing) paid-ads performance split by audience type: Remarketing,
+        Acquisition (cold) and Other (dominated by the Skin Quiz lead campaign).
+        audience_type is classified from the Meta campaign / ad-set naming
+        convention. The page uses a 7-day click plus 1-day view attribution
+        window. Bronze Meta currently starts April 4, so April 1-3 spend is
+        not yet loaded.
+      title: Paid Media Performance
+    tabUuid: null
+    type: markdown
+    w: 36
+    x: 0
+    "y": 45
+  - h: 5
+    properties:
+      chartName: iS Clinical Meta Remarketing vs Acquisition
+      chartSlug: meta-remarketing-vs-acquisition
+      hideTitle: false
+      title: Meta Ads, Remarketing vs Acquisition
+    tabUuid: null
+    tileSlug: meta-remarketing-vs-acquisition
+    type: saved_chart
+    w: 18
+    x: 0
+    "y": 46
 verification: null
 version: 1
