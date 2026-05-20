@@ -380,3 +380,48 @@ models:
         description: "Sum of successful refund-transaction amounts for this order."
       - name: last_refunded_at
         description: "Most recent refund timestamp on this order."
+
+  - name: stg_google_ads__search_terms
+    description: "iS Clinical Google Ads search-term performance, one row per (search_date, search_term). Sourced from BRONZE_GOOGLE_ADS_ISCLINICAL.ADS_SEARCHQUERYSTATS_5994178388 (the Airbyte search-query stream), aggregated from the raw (day, search term, ad group, campaign) grain to (day, search term). cost is converted from micros (cost_micros / 1e6). brand_intent is a name-pattern classification of the search-term text (branded if it contains the brand name, a misspelling or an iS Clinical product name; non_branded otherwise). Not a native Google Ads field."
+    columns:
+      - name: search_date
+        description: "Activity date (segments_date from Google Ads)."
+        tests:
+          - not_null
+      - name: search_term
+        description: "Lower-cased, trimmed Google Ads search term (search_term_view_search_term)."
+        tests:
+          - not_null
+      - name: order_month
+        description: "First day of the month the search term was recorded (date_trunc month of search_date). Surfaced so the dashboard's Month filter can target this model."
+        tests:
+          - not_null
+      - name: order_month_label
+        description: "Compact YYYY-MM label for the dashboard Month filter."
+        tests:
+          - not_null
+      - name: store_id
+        description: "Brand identifier (constant 'isclinical')."
+        tests:
+          - not_null
+      - name: brand_intent
+        description: "Brand-intent classification derived from the search-term text: branded (contains 'is clinical' / 'isclinical' / 'is-clinical', a common misspelling, or an iS Clinical product name) or non_branded (everything else, generic acquisition intent). Not a native Google Ads field. See CLAUDE.md -> Google Ads brand_intent classification."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['branded', 'non_branded']
+      - name: clicks
+        description: "Sum of metrics_clicks for the (day, search term)."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: cost
+        description: "Google Ads cost in GBP (sum of metrics_cost_micros / 1e6)."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: conversions
+        description: "Sum of metrics_conversions for the (day, search term)."
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0

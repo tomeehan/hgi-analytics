@@ -1329,7 +1329,7 @@ models:
               format: "percent"
               round: 1
       - name: ad_spend
-        description: "Meta ad spend for the day. Google Ads pending source-side fix."
+        description: "Meta ad spend for the day. Google Ads is modelled separately by fct_google_ads_search_terms (search-term grain) and is not folded into this Meta-only daily-spend fact."
         meta:
           metrics:
             ad_spend_l30d:
@@ -1404,3 +1404,84 @@ models:
               label: "Average Order Value (Prev 30D)"
               format: "gbp"
               round: 2
+
+  - name: fct_google_ads_search_terms
+    description: >-
+      iS Clinical Google Ads search-term performance, aggregated to one row
+      per (order_month, brand_intent). Backs the KPI Report's "Paid search /
+      shopping" tile (PDF page 15: GOOGLE ADS, BRANDED VS NON-BRANDED).
+      Sourced from BRONZE_GOOGLE_ADS_ISCLINICAL.ADS_SEARCHQUERYSTATS_5994178388
+      via stg_google_ads__search_terms. The PDF panel is a "search term raw
+      report" scoped to the top 100 search terms by cost for the month; this
+      model reproduces that scope (top-100-by-cost per month) before
+      aggregating. brand_intent splits the terms into branded / non_branded
+      from the search-term text. Coverage note: Google Ads' search-term view
+      only retains terms above a minimum impression threshold, so Bronze
+      holds fewer search terms than the PDF's report was generated from
+      (Bronze April 2026 search-query spend ~£2,556 vs the PDF panel's
+      £5,076 top-100 total), so the live tile reads below the PDF panel.
+    meta:
+      label: "Google Ads Search Terms"
+    columns:
+      - name: order_month
+        description: "First day of the month the search terms were recorded (date_trunc month of search_date)."
+        tests:
+          - not_null
+        meta:
+          dimension:
+            label: "Month (date)"
+          additional_dimensions:
+            # Mirrors fct_orders.order_month_label so the KPI Report's Month
+            # filter (on fct_orders_order_month_label) cross-applies to this
+            # tile via Lightdash's "same field name" lookup. See CLAUDE.md ->
+            # "Group dashboard filter convention".
+            order_month_label:
+              type: string
+              label: "Month"
+              description: "Compact YYYY-MM label for the dashboard Month filter."
+              sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
+      - name: order_month_label
+        description: "Compact YYYY-MM label for the dashboard Month filter."
+        tests:
+          - not_null
+      - name: store_id
+        description: "Brand identifier (constant 'isclinical')."
+        tests:
+          - not_null
+      - name: brand_intent
+        description: "Brand-intent classification derived from the search-term text (branded / non_branded). Not a native Google Ads field. See CLAUDE.md -> Google Ads brand_intent classification."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['branded', 'non_branded']
+        meta:
+          dimension:
+            label: "Type"
+            # Human-readable display labels for the branded-vs-non-branded
+            # table on the KPI Report (PDF page 15).
+            sql: "case ${TABLE}.brand_intent when 'branded' then 'Branded' when 'non_branded' then 'Non-branded' else ${TABLE}.brand_intent end"
+      - name: clicks
+        description: "Sum of Google Ads clicks for the (month, brand_intent), within the top-100-by-cost scope."
+        meta:
+          metrics:
+            total_clicks:
+              type: sum
+              label: "Clicks"
+              round: 0
+      - name: cost
+        description: "Google Ads cost in GBP for the (month, brand_intent), within the top-100-by-cost scope."
+        meta:
+          metrics:
+            total_cost:
+              type: sum
+              label: "Cost"
+              format: "gbp"
+              round: 0
+      - name: conversions
+        description: "Sum of Google Ads conversions for the (month, brand_intent), within the top-100-by-cost scope."
+        meta:
+          metrics:
+            total_conversions:
+              type: sum
+              label: "Conversions"
+              round: 0
