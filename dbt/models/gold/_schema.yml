@@ -764,7 +764,7 @@ models:
       - name: delivery_postcode
 
   - name: fct_ad_spend
-    description: "Daily Meta ad spend by store_id (one row per spend_date × store_id), unioned across iS Clinical and Deese PRO. Sourced from BRONZE_META_*.ADS_INSIGHTS aggregated to daily; purchases / purchase_value are extracted from the ACTIONS / ACTION_VALUES JSON arrays where action_type='purchase'."
+    description: "Daily Meta ad spend by store_id and audience_type (one row per spend_date × store_id × audience_type), unioned across iS Clinical and Deese PRO. Sourced from BRONZE_META_*.ADS_INSIGHTS aggregated to daily; purchases / purchase_value are extracted from the ACTIONS / ACTION_VALUES JSON arrays where action_type='purchase'. audience_type splits spend into remarketing / acquisition / other from the Meta campaign / ad-set naming convention."
     meta:
       label: "Ad Spend"
     columns:
@@ -795,6 +795,18 @@ models:
             # Same human-readable rename as fct_orders.store_id (per ticket 001
             # and CLAUDE.md → store-name display mapping). Keep in sync.
             sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
+      - name: audience_type
+        description: "Audience-type classification derived from the Meta campaign / ad-set naming convention (remarketing / acquisition / other). Not a native Meta field. See CLAUDE.md → Meta audience-type classification."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['remarketing', 'acquisition', 'other']
+        meta:
+          dimension:
+            label: "Audience Type"
+            # Human-readable display labels for the remarketing-vs-acquisition
+            # table on the KPI Report (PDF page 15).
+            sql: "case ${TABLE}.audience_type when 'remarketing' then 'Remarketing' when 'acquisition' then 'Acquisition' when 'other' then 'Other' else ${TABLE}.audience_type end"
       - name: spend
         description: "Total Meta ad spend."
         meta:
@@ -833,6 +845,11 @@ models:
             total_meta_purchase_value:
               type: sum
               label: "Meta Purchase Value"
+              format: "gbp"
+              round: 0
+            total_meta_revenue:
+              type: sum
+              label: "Meta Revenue"
               format: "gbp"
               round: 0
 

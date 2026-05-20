@@ -1,7 +1,16 @@
 -- Daily Meta ads spend, unioned across the loaded ad accounts (iS
 -- Clinical, Deese PRO). Each brand's raw ADS_INSIGHTS table is
--- aggregated to one row per day, then we union and add order_month so
--- the dashboard's Month filter can target this model.
+-- aggregated to one row per (day, audience_type), then we union and add
+-- order_month so the dashboard's Month filter can target this model.
+--
+-- audience_type is a classification derived from the Meta campaign /
+-- ad-set naming convention (it is not a native Meta field). See
+-- CLAUDE.md → "Meta audience-type classification". It splits spend into
+-- remarketing / acquisition / other so the KPI Report can show the
+-- "remarketing vs acquisition" panel (PDF page 15). The classifier
+-- concatenates campaign_name and adset_name, upper-cases, and matches on
+-- substrings; remarketing is tested before acquisition so a campaign
+-- carrying both signals lands in remarketing.
 --
 -- Per the project's multi-brand union convention (CLAUDE.md → Multi-brand
 -- Shopify/Klaviyo union) we use one CTE trio per brand rather than
@@ -11,42 +20,63 @@
 
 {% set brands = ['isclinical', 'deese_pro'] %}
 
+{% set audience_type_case %}
+    case
+        when upper(campaign_name || ' ' || adset_name) like '%REMARKETING%'
+          or upper(campaign_name || ' ' || adset_name) like '%RETARGETING%'
+          or upper(campaign_name || ' ' || adset_name) like '%EXISTING CUSTOMERS%'
+            then 'remarketing'
+        when upper(campaign_name || ' ' || adset_name) like '%PROSPECTING%'
+          or upper(campaign_name || ' ' || adset_name) like '%ACQUISITION%'
+          or upper(campaign_name || ' ' || adset_name) like '%LOOKALIKE%'
+            then 'acquisition'
+        else 'other'
+    end
+{% endset %}
+
 with
 {% for brand in brands %}
 {{ brand }}_raw as (
-    select * from {{ source('bronze_meta_' ~ brand, 'ads_insights') }}
+    select
+        *,
+        {{ audience_type_case }} as audience_type
+    from {{ source('bronze_meta_' ~ brand, 'ads_insights') }}
     where date_start is not null
 ),
 {{ brand }}_base_daily as (
     select
         date_start as spend_date,
+        audience_type,
         sum(spend) as spend,
         sum(impressions) as impressions,
         sum(clicks) as clicks
     from {{ brand }}_raw
-    group by date_start
+    group by date_start, audience_type
 ),
 {{ brand }}_purchases_daily as (
     select
         r.date_start as spend_date,
+        r.audience_type,
         sum(case when a.value:action_type::string = 'purchase'
                  then a.value:value::float else 0 end) as purchases
     from {{ brand }}_raw r,
          lateral flatten(input => r.actions, outer => true) a
-    group by r.date_start
+    group by r.date_start, r.audience_type
 ),
 {{ brand }}_purchase_value_daily as (
     select
         r.date_start as spend_date,
+        r.audience_type,
         sum(case when av.value:action_type::string = 'purchase'
                  then av.value:value::float else 0 end) as purchase_value
     from {{ brand }}_raw r,
          lateral flatten(input => r.action_values, outer => true) av
-    group by r.date_start
+    group by r.date_start, r.audience_type
 ),
 {{ brand }} as (
     select
         b.spend_date,
+        b.audience_type,
         '{{ brand }}' as store_id,
         b.spend,
         b.impressions,
@@ -54,8 +84,8 @@ with
         coalesce(p.purchases, 0) as purchases,
         coalesce(pv.purchase_value, 0) as purchase_value
     from {{ brand }}_base_daily b
-    left join {{ brand }}_purchases_daily p using (spend_date)
-    left join {{ brand }}_purchase_value_daily pv using (spend_date)
+    left join {{ brand }}_purchases_daily p using (spend_date, audience_type)
+    left join {{ brand }}_purchase_value_daily pv using (spend_date, audience_type)
 ){% if not loop.last %},{% endif %}
 {% endfor %}
 
@@ -63,6 +93,7 @@ select
     spend_date,
     date_trunc('month', spend_date)::date as order_month,
     store_id,
+    audience_type,
     spend,
     impressions,
     clicks,

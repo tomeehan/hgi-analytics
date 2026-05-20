@@ -1,0 +1,77 @@
+# Source: April 2026 KPI Report, page 15 (Paid Media Performance)
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: true
+    showRowCalculation: false
+    showTableNames: false
+  type: table
+contentType: chart
+description: >-
+  iS Clinical Meta (Facebook Marketing) paid-ads performance for the month split
+  by audience type, mirroring the META ADS, REMARKETING VS ACQUISITION panel on
+  KPI Report page 15. Three rows (Remarketing, Acquisition, Other) with spend,
+  purchases, revenue and two table calculations: ROAS (revenue / spend) and CPA
+  (spend / purchases). audience_type is a name-pattern classification of the Meta
+  campaign / ad-set name. Responds to the dashboard Month filter.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_ad_spend_audience_type
+  exploreName: fct_ad_spend
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_ad_spend_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 500
+  metricOverrides: {}
+  metrics:
+    - fct_ad_spend_total_meta_spend
+    - fct_ad_spend_total_meta_purchases
+    - fct_ad_spend_total_meta_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_ad_spend_total_meta_spend
+  tableCalculations:
+    - displayName: ROAS
+      format:
+        round: 2
+        suffix: x
+        type: number
+      name: roas
+      sql: >-
+        ${fct_ad_spend.total_meta_revenue} /
+        NULLIF(${fct_ad_spend.total_meta_spend}, 0)
+    - displayName: CPA
+      format:
+        currency: GBP
+        round: 2
+        type: currency
+      name: cpa
+      sql: >-
+        ${fct_ad_spend.total_meta_spend} /
+        NULLIF(${fct_ad_spend.total_meta_purchases}, 0)
+name: iS Clinical Meta Remarketing vs Acquisition
+slug: meta-remarketing-vs-acquisition
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_ad_spend_audience_type
+    - fct_ad_spend_total_meta_spend
+    - fct_ad_spend_total_meta_purchases
+    - fct_ad_spend_total_meta_revenue
+    - roas
+    - cpa
+tableName: fct_ad_spend
+verification: null
+version: 1
