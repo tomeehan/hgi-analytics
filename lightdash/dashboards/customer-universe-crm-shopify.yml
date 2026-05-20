@@ -1,0 +1,88 @@
+contentType: dashboard
+description: >-
+  Who are our customers, and which silo(s) do we know them through? Surfaces the
+  cross-channel overlap (CRM B2B accounts also shopping DTC) and the single-silo
+  customers each system can't see on its own.
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: Customer Universe — CRM × Shopify
+slug: customer-universe-crm-shopify
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 6
+    properties:
+      chartName: Customers by Universe
+      chartSlug: customers-by-universe
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: customers-by-universe
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 0
+  - h: 6
+    properties:
+      chartName: CRM Customers — B2B vs B2C
+      chartSlug: crm-customers-b2b-vs-b2c
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: crm-customers-b2b-vs-b2c
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Customers by Country
+      chartSlug: customers-by-country
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: customers-by-country
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 6
+  - h: 6
+    properties:
+      chartName: Total DTC Spend by Customer Universe
+      chartSlug: total-dtc-spend-by-customer-universe
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: total-dtc-spend-by-customer-universe
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 6
+  - h: 6
+    properties:
+      chartName: Top DTC Spenders — CRM Presence Flags
+      chartSlug: top-dtc-spenders-crm-presence-flags
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: top-dtc-spenders-crm-presence-flags
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 12
+  - h: 6
+    properties:
+      chartName: Klaviyo Bridge — Contacts with Klaviyo Profile
+      chartSlug: klaviyo-bridge-contacts-with-klaviyo-profile
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: klaviyo-bridge-contacts-with-klaviyo-profile
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 12
+verification: null
+version: 1

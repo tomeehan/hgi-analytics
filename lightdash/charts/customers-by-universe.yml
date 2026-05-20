@@ -1,0 +1,35 @@
+chartConfig:
+  config:
+    groupFieldIds:
+      - dim_customer_unified_customer_universe
+    isDonut: false
+    metricId: dim_customer_unified_customer_count
+  type: pie
+contentType: chart
+description: Where each customer is seen — CRM only, Shopify only, or both
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_customer_universe
+  exploreName: dim_customer_unified
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_customer_count
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_customer_count
+  tableCalculations: []
+name: Customers by Universe
+slug: customers-by-universe
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_customer_universe
+    - dim_customer_unified_customer_count
+tableName: dim_customer_unified
+verification: null
+version: 1

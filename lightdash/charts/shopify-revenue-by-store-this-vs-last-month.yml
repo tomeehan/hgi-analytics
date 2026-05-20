@@ -1,0 +1,60 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_orders_store_id
+            yRef:
+              field: fct_orders_total_revenue
+          type: bar
+    layout:
+      flipAxes: true
+      xField: fct_orders_store_id
+      yField:
+        - fct_orders_total_revenue
+  type: cartesian
+contentType: chart
+description: >-
+  Per-store Shopify revenue (GBP) for the last 2 months. Each store appears once
+  per month — biggest contributors top.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_orders_store_id
+    - fct_orders_order_month
+  exploreName: fct_orders
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: inThePast
+          settings:
+            completed: false
+            unitOfTime: months
+          target:
+            fieldId: fct_orders_order_month
+          values:
+            - 2
+      id: rolling-2-months
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - fct_orders_total_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_orders_total_revenue
+  tableCalculations: []
+name: Shopify Revenue by Store — This vs Last Month
+slug: shopify-revenue-by-store-this-vs-last-month
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_orders_store_id
+    - fct_orders_order_month
+    - fct_orders_total_revenue
+tableName: fct_orders
+verification: null
+version: 1

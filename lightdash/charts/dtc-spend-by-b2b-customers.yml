@@ -1,0 +1,62 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: dim_customer_unified_customer_universe
+            yRef:
+              field: dim_customer_unified_total_dtc_spend
+          type: bar
+        - encode:
+            xRef:
+              field: dim_customer_unified_customer_universe
+            yRef:
+              field: dim_customer_unified_total_dtc_orders
+          type: bar
+    layout:
+      flipAxes: true
+      xField: dim_customer_unified_customer_universe
+      yField:
+        - dim_customer_unified_total_dtc_spend
+        - dim_customer_unified_total_dtc_orders
+  type: cartesian
+contentType: chart
+description: How much these dual-channel B2B accounts spend on Shopify DTC
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_customer_universe
+  exploreName: dim_customer_unified
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: dim_customer_unified_seen_in_crm
+          values:
+            - b2b
+      id: b2b-only
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_total_dtc_spend
+    - dim_customer_unified_total_dtc_orders
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_total_dtc_spend
+  tableCalculations: []
+name: DTC Spend by B2B Customers
+slug: dtc-spend-by-b2b-customers
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_customer_universe
+    - dim_customer_unified_total_dtc_spend
+    - dim_customer_unified_total_dtc_orders
+tableName: dim_customer_unified
+verification: null
+version: 1

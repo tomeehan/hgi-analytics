@@ -1,0 +1,43 @@
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: true
+  type: table
+contentType: chart
+description: Top 30 B2B customers by lifetime revenue, with margin and order count
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_b2b_sales_customer_name
+    - fct_b2b_sales_country
+  exploreName: fct_b2b_sales
+  filters: {}
+  limit: 30
+  metricOverrides: {}
+  metrics:
+    - fct_b2b_sales_b2b_revenue
+    - fct_b2b_sales_b2b_margin
+    - fct_b2b_sales_b2b_order_count
+  sorts:
+    - descending: true
+      fieldId: fct_b2b_sales_b2b_revenue
+  tableCalculations: []
+name: Top B2B Accounts
+slug: top-b2b-accounts
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_b2b_sales_customer_name
+    - fct_b2b_sales_country
+    - fct_b2b_sales_b2b_revenue
+    - fct_b2b_sales_b2b_margin
+    - fct_b2b_sales_b2b_order_count
+tableName: fct_b2b_sales
+verification: null
+version: 1

@@ -1,0 +1,41 @@
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: true
+  type: table
+contentType: chart
+description: Total buyers vs those who came back, per product
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_product_repeat_rate_product_title
+    - fct_product_repeat_rate_store_id
+  exploreName: fct_product_repeat_rate
+  filters: {}
+  limit: 25
+  metricOverrides: {}
+  metrics:
+    - fct_product_repeat_rate_total_buyers
+    - fct_product_repeat_rate_total_repeat_buyers
+  sorts:
+    - descending: true
+      fieldId: fct_product_repeat_rate_total_buyers
+  tableCalculations: []
+name: Repeat Buyers vs Unique Buyers
+slug: repeat-buyers-vs-unique-buyers
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_product_repeat_rate_product_title
+    - fct_product_repeat_rate_store_id
+    - fct_product_repeat_rate_total_buyers
+    - fct_product_repeat_rate_total_repeat_buyers
+tableName: fct_product_repeat_rate
+verification: null
+version: 1

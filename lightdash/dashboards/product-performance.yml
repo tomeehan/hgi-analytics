@@ -1,0 +1,61 @@
+contentType: dashboard
+description: Best sellers by revenue and units, cross-sell pairs, and revenue trends
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: Product Performance
+slug: product-performance
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 6
+    properties:
+      chartName: Top Products by Revenue
+      chartSlug: top-products-by-revenue
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: top-products-by-revenue
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Top Products by Units Sold
+      chartSlug: top-products-by-units-sold
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: top-products-by-units-sold
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 0
+  - h: 6
+    properties:
+      chartName: null
+      chartSlug: null
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: null
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 6
+  - h: 6
+    properties:
+      chartName: Revenue by Store — Product View
+      chartSlug: revenue-by-store-product-view
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: revenue-by-store-product-view
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 12
+verification: null
+version: 1

@@ -1,0 +1,53 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_orders_store_id
+            yRef:
+              field: fct_orders_order_count
+          type: bar
+        - encode:
+            xRef:
+              field: fct_orders_store_id
+            yRef:
+              field: fct_orders_new_customer_orders
+          type: bar
+    layout:
+      flipAxes: true
+      xField: fct_orders_store_id
+      yField:
+        - fct_orders_order_count
+        - fct_orders_new_customer_orders
+  type: cartesian
+contentType: chart
+description: New vs returning order count per Shopify store
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_orders_store_id
+  exploreName: fct_orders
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - fct_orders_order_count
+    - fct_orders_new_customer_orders
+  sorts:
+    - descending: true
+      fieldId: fct_orders_order_count
+  tableCalculations: []
+name: Returning Customers — Shopify by Store
+slug: returning-customers-shopify-by-store
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_orders_store_id
+    - fct_orders_order_count
+    - fct_orders_new_customer_orders
+tableName: fct_orders
+verification: null
+version: 1

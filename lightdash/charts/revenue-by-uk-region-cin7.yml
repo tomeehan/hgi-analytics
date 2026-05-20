@@ -1,0 +1,68 @@
+chartConfig:
+  config:
+    conditionalFormattings: []
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_cin7_sales_uk_region
+            yRef:
+              field: fct_cin7_sales_total_revenue
+          isFilteredOut: false
+          type: bar
+          yAxisIndex: 0
+        - encode:
+            xRef:
+              field: fct_cin7_sales_uk_region
+            yRef:
+              field: fct_cin7_sales_order_count
+          isFilteredOut: false
+          type: bar
+          yAxisIndex: 0
+      showAxisTicks: false
+    layout:
+      flipAxes: true
+      xField: fct_cin7_sales_uk_region
+      yField:
+        - fct_cin7_sales_total_revenue
+        - fct_cin7_sales_order_count
+  type: cartesian
+contentType: chart
+description: Total revenue per UK region from Cin7 ERP
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_cin7_sales_uk_region
+  exploreName: fct_cin7_sales
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: notEquals
+          target:
+            fieldId: fct_cin7_sales_uk_region
+          values:
+            - International
+      id: uk-only
+  limit: 15
+  metricOverrides: {}
+  metrics:
+    - fct_cin7_sales_total_revenue
+    - fct_cin7_sales_order_count
+  sorts:
+    - descending: true
+      fieldId: fct_cin7_sales_total_revenue
+  tableCalculations: []
+name: Revenue by UK Region
+slug: revenue-by-uk-region-cin7
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_cin7_sales_uk_region
+    - fct_cin7_sales_total_revenue
+    - fct_cin7_sales_order_count
+tableName: fct_cin7_sales
+verification: null
+version: 1

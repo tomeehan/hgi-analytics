@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_product_sales_product_title
+            yRef:
+              field: fct_product_sales_product_revenue
+          type: bar
+    layout:
+      flipAxes: true
+      xField: fct_product_sales_product_title
+      yField:
+        - fct_product_sales_product_revenue
+  type: cartesian
+contentType: chart
+description: Top 20 products by total revenue (GBP)
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_product_sales_product_title
+  exploreName: fct_product_sales
+  filters: {}
+  limit: 20
+  metricOverrides: {}
+  metrics:
+    - fct_product_sales_product_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_product_sales_product_revenue
+  tableCalculations: []
+name: Top Products by Revenue
+slug: top-products-by-revenue
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_product_sales_product_title
+    - fct_product_sales_product_revenue
+tableName: fct_product_sales
+verification: null
+version: 1

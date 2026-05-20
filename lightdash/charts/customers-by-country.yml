@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: dim_customer_unified_country
+            yRef:
+              field: dim_customer_unified_customer_count
+          type: bar
+    layout:
+      flipAxes: true
+      xField: dim_customer_unified_country
+      yField:
+        - dim_customer_unified_customer_count
+  type: cartesian
+contentType: chart
+description: Top 15 countries by customer count (CRM-known countries)
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_country
+  exploreName: dim_customer_unified
+  filters: {}
+  limit: 15
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_customer_count
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_customer_count
+  tableCalculations: []
+name: Customers by Country
+slug: customers-by-country
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_country
+    - dim_customer_unified_customer_count
+tableName: dim_customer_unified
+verification: null
+version: 1

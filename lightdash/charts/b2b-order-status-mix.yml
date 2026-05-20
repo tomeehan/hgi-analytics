@@ -1,0 +1,35 @@
+chartConfig:
+  config:
+    groupFieldIds:
+      - fct_b2b_sales_order_status
+    isDonut: false
+    metricId: fct_b2b_sales_b2b_order_count
+  type: pie
+contentType: chart
+description: Open vs shipped vs invoiced vs other — order status breakdown
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_b2b_sales_order_status
+  exploreName: fct_b2b_sales
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - fct_b2b_sales_b2b_order_count
+  sorts:
+    - descending: true
+      fieldId: fct_b2b_sales_b2b_order_count
+  tableCalculations: []
+name: B2B Order Status Mix
+slug: b2b-order-status-mix
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_b2b_sales_order_status
+    - fct_b2b_sales_b2b_order_count
+tableName: fct_b2b_sales
+verification: null
+version: 1

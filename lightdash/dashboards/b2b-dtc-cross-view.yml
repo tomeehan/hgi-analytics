@@ -1,0 +1,64 @@
+contentType: dashboard
+description: >-
+  Cross-channel signal: which B2B (CRM) accounts also shop DTC on Shopify, and
+  how much they spend there. Useful for rep prioritisation, loyalty outreach,
+  and identifying wholesale accounts that are testing products via DTC.
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: B2B × DTC Cross-View
+slug: b2b-dtc-cross-view
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 6
+    properties:
+      chartName: B2B Customers Also Shopping DTC
+      chartSlug: b2b-customers-also-shopping-dtc
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: b2b-customers-also-shopping-dtc
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 0
+  - h: 6
+    properties:
+      chartName: DTC Spend by B2B Customers
+      chartSlug: dtc-spend-by-b2b-customers
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: dtc-spend-by-b2b-customers
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 0
+  - h: 6
+    properties:
+      chartName: B2B Accounts with Highest DTC Spend
+      chartSlug: b2b-accounts-with-highest-dtc-spend
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: b2b-accounts-with-highest-dtc-spend
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 6
+  - h: 6
+    properties:
+      chartName: B2B Customers by isClinical DTC Spend Tier
+      chartSlug: b2b-customers-by-isclinical-dtc-spend-tier
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: b2b-customers-by-isclinical-dtc-spend-tier
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 6
+verification: null
+version: 1

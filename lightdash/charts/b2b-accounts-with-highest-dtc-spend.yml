@@ -1,0 +1,56 @@
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: true
+  type: table
+contentType: chart
+description: >-
+  B2B customers ranked by their personal DTC Shopify spend — potential signal
+  for cross-channel rep follow-up
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_display_name
+    - dim_customer_unified_country
+    - dim_customer_unified_seen_in_shopify_isclinical
+    - dim_customer_unified_seen_in_shopify_deese_pro
+  exploreName: dim_customer_unified
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: dim_customer_unified_seen_in_crm
+          values:
+            - b2b
+      id: b2b-only
+  limit: 50
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_total_dtc_spend
+    - dim_customer_unified_total_dtc_orders
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_total_dtc_spend
+  tableCalculations: []
+name: B2B Accounts with Highest DTC Spend
+slug: b2b-accounts-with-highest-dtc-spend
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_display_name
+    - dim_customer_unified_country
+    - dim_customer_unified_seen_in_shopify_isclinical
+    - dim_customer_unified_seen_in_shopify_deese_pro
+    - dim_customer_unified_total_dtc_spend
+    - dim_customer_unified_total_dtc_orders
+tableName: dim_customer_unified
+verification: null
+version: 1

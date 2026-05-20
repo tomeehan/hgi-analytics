@@ -1,0 +1,57 @@
+chartConfig:
+  config:
+    conditionalFormattings: []
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_cin7_sales_uk_region
+            yRef:
+              field: fct_cin7_sales_aov
+          isFilteredOut: false
+          type: bar
+          yAxisIndex: 0
+      showAxisTicks: false
+    layout:
+      flipAxes: true
+      xField: fct_cin7_sales_uk_region
+      yField:
+        - fct_cin7_sales_aov
+  type: cartesian
+contentType: chart
+description: Average order value per UK region
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_cin7_sales_uk_region
+  exploreName: fct_cin7_sales
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: notEquals
+          target:
+            fieldId: fct_cin7_sales_uk_region
+          values:
+            - International
+      id: uk-only
+  limit: 15
+  metricOverrides: {}
+  metrics:
+    - fct_cin7_sales_aov
+  sorts:
+    - descending: true
+      fieldId: fct_cin7_sales_aov
+  tableCalculations: []
+name: AOV by UK Region
+slug: aov-by-uk-region-cin7
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_cin7_sales_uk_region
+    - fct_cin7_sales_aov
+tableName: fct_cin7_sales
+verification: null
+version: 1

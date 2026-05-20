@@ -1,0 +1,35 @@
+chartConfig:
+  config:
+    groupFieldIds:
+      - fct_cin7_sales_channel_group
+    isDonut: false
+    metricId: fct_cin7_sales_total_revenue
+  type: pie
+contentType: chart
+description: Revenue split by sales channel
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_cin7_sales_channel_group
+  exploreName: fct_cin7_sales
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - fct_cin7_sales_total_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_cin7_sales_total_revenue
+  tableCalculations: []
+name: Revenue by Channel (Cin7)
+slug: revenue-by-channel-cin7
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_cin7_sales_channel_group
+    - fct_cin7_sales_total_revenue
+tableName: fct_cin7_sales
+verification: null
+version: 1

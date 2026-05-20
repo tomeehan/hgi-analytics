@@ -1,0 +1,45 @@
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: true
+  type: table
+contentType: chart
+description: Top 50 Shopify spenders, with CRM presence visible
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_display_name
+    - dim_customer_unified_country
+    - dim_customer_unified_seen_in_crm
+    - dim_customer_unified_customer_universe
+  exploreName: dim_customer_unified
+  filters: {}
+  limit: 50
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_total_dtc_spend
+    - dim_customer_unified_total_dtc_orders
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_total_dtc_spend
+  tableCalculations: []
+name: Top DTC Spenders — CRM Presence Flags
+slug: top-dtc-spenders-crm-presence-flags
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_display_name
+    - dim_customer_unified_country
+    - dim_customer_unified_seen_in_crm
+    - dim_customer_unified_customer_universe
+    - dim_customer_unified_total_dtc_spend
+    - dim_customer_unified_total_dtc_orders
+tableName: dim_customer_unified
+verification: null
+version: 1

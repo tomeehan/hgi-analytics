@@ -1,0 +1,43 @@
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: true
+  type: table
+contentType: chart
+description: Highest LTV customers across all channels
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_cin7_customers_customer_name
+    - dim_cin7_customers_email
+    - dim_cin7_customers_customer_id
+  exploreName: dim_cin7_customers
+  filters: {}
+  limit: 25
+  metricOverrides: {}
+  metrics:
+    - dim_cin7_customers_total_customer_ltv
+    - dim_cin7_customers_avg_orders_per_customer
+  sorts:
+    - descending: true
+      fieldId: dim_cin7_customers_total_customer_ltv
+  tableCalculations: []
+name: Top Customers by Lifetime Value
+slug: top-customers-by-lifetime-value
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_cin7_customers_customer_name
+    - dim_cin7_customers_email
+    - dim_cin7_customers_customer_id
+    - dim_cin7_customers_total_customer_ltv
+    - dim_cin7_customers_avg_orders_per_customer
+tableName: dim_cin7_customers
+verification: null
+version: 1

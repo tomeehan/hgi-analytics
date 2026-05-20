@@ -1,0 +1,35 @@
+chartConfig:
+  config:
+    groupFieldIds:
+      - dim_cin7_customers_customer_segment
+    isDonut: false
+    metricId: dim_cin7_customers_customer_count
+  type: pie
+contentType: chart
+description: "Breakdown: one-time, occasional (2-4x), loyal (5+) buyers"
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_cin7_customers_customer_segment
+  exploreName: dim_cin7_customers
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - dim_cin7_customers_customer_count
+  sorts:
+    - descending: true
+      fieldId: dim_cin7_customers_customer_count
+  tableCalculations: []
+name: Customer Segments
+slug: customer-segments
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_cin7_customers_customer_segment
+    - dim_cin7_customers_customer_count
+tableName: dim_cin7_customers
+verification: null
+version: 1

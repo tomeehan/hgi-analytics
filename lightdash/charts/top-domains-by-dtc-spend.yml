@@ -1,0 +1,53 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: dim_customer_unified_email_domain
+            yRef:
+              field: dim_customer_unified_total_dtc_spend
+          type: bar
+    layout:
+      flipAxes: true
+      xField: dim_customer_unified_email_domain
+      yField:
+        - dim_customer_unified_total_dtc_spend
+  type: cartesian
+contentType: chart
+description: Email domains contributing most uncaptured B2B revenue (DTC-only spend)
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_email_domain
+  exploreName: dim_customer_unified
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: dim_customer_unified_is_dtc_b2b_lead
+          values:
+            - true
+      id: dtc-b2b-leads
+  limit: 20
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_total_dtc_spend
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_total_dtc_spend
+  tableCalculations: []
+name: Top Domains by DTC Spend
+slug: top-domains-by-dtc-spend
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_email_domain
+    - dim_customer_unified_total_dtc_spend
+tableName: dim_customer_unified
+verification: null
+version: 1

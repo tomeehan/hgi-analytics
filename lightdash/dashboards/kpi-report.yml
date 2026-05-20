@@ -1,0 +1,114 @@
+contentType: dashboard
+description: ""
+filters:
+  dimensions:
+    - disabled: true
+      label: Brand
+      operator: equals
+      target:
+        fieldId: fct_orders_store_id
+        tableName: fct_orders
+      tileTargets: {}
+      values: []
+    - disabled: false
+      label: Month
+      operator: equals
+      target:
+        fieldId: fct_orders_order_month_label
+        tableName: fct_orders
+      tileTargets: {}
+      values:
+        - 2026-04
+  metrics: []
+  tableCalculations: []
+name: KPI Report
+slug: kpi-report
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 4
+    properties:
+      chartName: Combined Shopify Revenue
+      chartSlug: combined-shopify-revenue
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: combined-shopify-revenue
+    type: saved_chart
+    w: 18
+    x: 0
+    "y": 0
+  - h: 4
+    properties:
+      chartName: Combined Shopify Orders
+      chartSlug: combined-shopify-orders
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: combined-shopify-orders
+    type: saved_chart
+    w: 18
+    x: 18
+    "y": 0
+  - h: 5
+    properties:
+      chartName: Per-brand breakdown
+      chartSlug: per-brand-breakdown
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: per-brand-breakdown
+    type: saved_chart
+    w: 18
+    x: 0
+    "y": 4
+  - h: 4
+    properties:
+      chartName: Combined Meta Spend
+      chartSlug: combined-meta-spend
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: combined-meta-spend
+    type: saved_chart
+    w: 18
+    x: 0
+    "y": 9
+  - h: 6
+    properties:
+      chartName: Meta Spend Share by Brand
+      chartSlug: meta-spend-share-by-brand
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: meta-spend-share-by-brand
+    type: saved_chart
+    w: 18
+    x: 18
+    "y": 13
+  - h: 6
+    properties:
+      chartName: GA4 Revenue Share by Brand
+      chartSlug: ga4-revenue-share-by-brand
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: ga4-revenue-share-by-brand
+    type: saved_chart
+    w: 18
+    x: 0
+    "y": 19
+  - h: 6
+    properties:
+      chartName: April at a Glance
+      chartSlug: april-at-a-glance
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: april-at-a-glance
+    type: saved_chart
+    w: 36
+    x: 0
+    "y": 25
+verification: null
+version: 1

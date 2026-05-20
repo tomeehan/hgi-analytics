@@ -1,0 +1,52 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_orders_order_month
+            yRef:
+              field: fct_orders_order_count
+          type: bar
+      xAxis:
+        - axisLabel:
+            formatter: "{MMMM} {yyyy}"
+            hideOverlap: true
+    layout:
+      flipAxes: false
+      xField: fct_orders_order_month
+      yField:
+        - fct_orders_order_count
+  type: cartesian
+contentType: chart
+description: >-
+  Monthly order count from Shopify Admin API across all 3 active stores
+  (isClinical, Deese Pro, Revitalash). Volume looks low because most orders flow
+  through Cin7. See 'Total Revenue by Month (Cin7)' for the full B2B + DTC +
+  WooCommerce + Amazon picture.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_orders_order_month
+  exploreName: fct_orders
+  filters: {}
+  limit: 36
+  metricOverrides: {}
+  metrics:
+    - fct_orders_order_count
+  sorts:
+    - descending: false
+      fieldId: fct_orders_order_month
+  tableCalculations: []
+name: Direct Shopify Orders by Month
+slug: orders-by-month-shopify
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_orders_order_month
+    - fct_orders_order_count
+tableName: fct_orders
+verification: null
+version: 1

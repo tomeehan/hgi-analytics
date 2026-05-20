@@ -1,0 +1,135 @@
+contentType: dashboard
+description: >-
+  isClinical marketing KPIs. Last 30 days vs previous 30 days. Ad spend is Meta
+  only (Google Ads pending source-side fix).
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: isClincal Marketing KPIs
+slug: isclincal-marketing-kpis
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 3
+    properties:
+      chartName: Gross Sales
+      chartSlug: gross-sales
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: gross-sales
+    type: saved_chart
+    w: 6
+    x: 0
+    "y": 0
+  - h: 3
+    properties:
+      chartName: Net Sales
+      chartSlug: net-sales
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: net-sales
+    type: saved_chart
+    w: 6
+    x: 6
+    "y": 0
+  - h: 3
+    properties:
+      chartName: Total Orders
+      chartSlug: total-orders
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: total-orders
+    type: saved_chart
+    w: 6
+    x: 12
+    "y": 0
+  - h: 3
+    properties:
+      chartName: Average Order Value
+      chartSlug: average-order-value
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: average-order-value
+    type: saved_chart
+    w: 6
+    x: 18
+    "y": 0
+  - h: 3
+    properties:
+      chartName: Ad Spend
+      chartSlug: ad-spend
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: ad-spend
+    type: saved_chart
+    w: 6
+    x: 0
+    "y": 3
+  - h: 3
+    properties:
+      chartName: Blended ROAS (MER)
+      chartSlug: blended-roas-mer
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: blended-roas-mer
+    type: saved_chart
+    w: 6
+    x: 6
+    "y": 3
+  - h: 3
+    properties:
+      chartName: New Customer %
+      chartSlug: new-customer
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: new-customer
+    type: saved_chart
+    w: 6
+    x: 12
+    "y": 3
+  - h: 3
+    properties:
+      chartName: Blended CAC
+      chartSlug: blended-cac
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: blended-cac
+    type: saved_chart
+    w: 6
+    x: 18
+    "y": 3
+  - h: 3
+    properties:
+      chartName: Sessions
+      chartSlug: sessions
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: sessions
+    type: saved_chart
+    w: 6
+    x: 0
+    "y": 6
+  - h: 3
+    properties:
+      chartName: Shopify Conversion Rate
+      chartSlug: shopify-conversion-rate
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: shopify-conversion-rate
+    type: saved_chart
+    w: 6
+    x: 6
+    "y": 6
+verification: null
+version: 1

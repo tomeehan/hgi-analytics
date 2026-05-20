@@ -1,0 +1,49 @@
+contentType: dashboard
+description: Which products bring customers back? Repeat purchase rate per product.
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: Product Repeat Rate
+slug: product-repeat-rate
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 6
+    properties:
+      chartName: Top Products by Repeat Rate
+      chartSlug: top-products-by-repeat-rate
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: top-products-by-repeat-rate
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Repeat Buyers vs Unique Buyers
+      chartSlug: repeat-buyers-vs-unique-buyers
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: repeat-buyers-vs-unique-buyers
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 0
+  - h: 6
+    properties:
+      chartName: Repeat Rate Distribution
+      chartSlug: repeat-rate-distribution
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: repeat-rate-distribution
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 6
+verification: null
+version: 1

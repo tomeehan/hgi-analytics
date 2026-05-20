@@ -1,0 +1,48 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_orders_order_month
+            yRef:
+              field: fct_orders_order_count
+          type: line
+      xAxis:
+        - axisLabel:
+            formatter: "{MMMM} {yyyy}"
+            hideOverlap: true
+    layout:
+      flipAxes: false
+      xField: fct_orders_order_month
+      yField:
+        - fct_orders_order_count
+  type: cartesian
+contentType: chart
+description: Shopify DTC order trend across both stores
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_orders_order_month
+  exploreName: fct_orders
+  filters: {}
+  limit: 36
+  metricOverrides: {}
+  metrics:
+    - fct_orders_order_count
+  sorts:
+    - descending: false
+      fieldId: fct_orders_order_month
+  tableCalculations: []
+name: Orders by Month — Shopify DTC
+slug: orders-by-month-shopify-dtc
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_orders_order_month
+    - fct_orders_order_count
+tableName: fct_orders
+verification: null
+version: 1

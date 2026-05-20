@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: dim_customer_unified_customer_universe
+            yRef:
+              field: dim_customer_unified_total_dtc_spend
+          type: bar
+    layout:
+      flipAxes: true
+      xField: dim_customer_unified_customer_universe
+      yField:
+        - dim_customer_unified_total_dtc_spend
+  type: cartesian
+contentType: chart
+description: Lifetime Shopify spend split by where the customer is also seen
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_customer_universe
+  exploreName: dim_customer_unified
+  filters: {}
+  limit: 10
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_total_dtc_spend
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_total_dtc_spend
+  tableCalculations: []
+name: Total DTC Spend by Customer Universe
+slug: total-dtc-spend-by-customer-universe
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_customer_universe
+    - dim_customer_unified_total_dtc_spend
+tableName: dim_customer_unified
+verification: null
+version: 1

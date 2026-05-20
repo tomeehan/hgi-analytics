@@ -1,0 +1,33 @@
+chartConfig:
+  config:
+    flipColors: false
+    label: Combined Shopify Orders
+    selectedField: fct_orders_order_count
+    showComparison: false
+  type: big_number
+contentType: chart
+description: >-
+  Count of Shopify orders for the month and brands selected by the dashboard
+  filters. Uses fct_orders.order_count (count_distinct on order_id).
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions: []
+  exploreName: fct_orders
+  filters: {}
+  limit: 1
+  metricOverrides: {}
+  metrics:
+    - fct_orders_order_count
+  sorts: []
+  tableCalculations: []
+name: Combined Shopify Orders
+slug: combined-shopify-orders
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_orders_order_count
+tableName: fct_orders
+verification: null
+version: 1

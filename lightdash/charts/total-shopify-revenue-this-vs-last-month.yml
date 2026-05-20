@@ -1,0 +1,62 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_orders_order_month
+            yRef:
+              field: fct_orders_total_revenue
+          type: bar
+      xAxis:
+        - axisLabel:
+            formatter: "{MMMM} {yyyy}"
+            hideOverlap: true
+    layout:
+      flipAxes: false
+      xField: fct_orders_order_month
+      yField:
+        - fct_orders_total_revenue
+  type: cartesian
+contentType: chart
+description: >-
+  Sum of Shopify revenue (GBP) per month, rolling last 2 months. Two bars:
+  previous full month and current in-progress month.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_orders_order_month
+  exploreName: fct_orders
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: inThePast
+          settings:
+            completed: false
+            unitOfTime: months
+          target:
+            fieldId: fct_orders_order_month
+          values:
+            - 2
+      id: rolling-2-months
+  limit: 5
+  metricOverrides: {}
+  metrics:
+    - fct_orders_total_revenue
+  sorts:
+    - descending: false
+      fieldId: fct_orders_order_month
+  tableCalculations: []
+name: Total Shopify Revenue — This vs Last Month
+slug: total-shopify-revenue-this-vs-last-month
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_orders_order_month
+    - fct_orders_total_revenue
+tableName: fct_orders
+verification: null
+version: 1

@@ -1,0 +1,195 @@
+contentType: dashboard
+description: >-
+  DTC Shopify customers who look like business buyers (non-consumer email
+  domains, real spend) and aren't yet in Prospect CRM. Each row is an outreach
+  candidate — typically a clinic/business sourcing product via the consumer
+  storefront. Use 'Top Domains' to spot fleet purchasing.
+filters:
+  dimensions: []
+  metrics: []
+  tableCalculations: []
+name: DTC → B2B Lead Signals
+slug: dtc-b2b-lead-signals
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 6
+    properties:
+      chartName: Likely B2B Leads from DTC
+      chartSlug: likely-b2b-leads-from-dtc
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: likely-b2b-leads-from-dtc
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 6
+  - h: 6
+    properties:
+      chartName: Top Domains by Lead Count
+      chartSlug: top-domains-by-lead-count
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: top-domains-by-lead-count
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 6
+  - h: 6
+    properties:
+      chartName: Top Domains by DTC Spend
+      chartSlug: top-domains-by-dtc-spend
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: top-domains-by-dtc-spend
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 12
+  - h: 14
+    properties:
+      content: >-
+        ## What this dashboard surfaces
+
+
+        A "DTC to B2B lead" is a person who has been buying from our Shopify
+        direct-to-consumer storefronts (isClinical, Deese Pro) but who looks
+        more like a business than a retail shopper, and who is not yet on file
+        in Prospect CRM. Each row is a credible candidate for the wholesale
+        sales team to qualify and onboard as a B2B account.
+
+
+        The intuition: a clinic, medispa, or salon that is interested in our
+        products will often place a small Shopify order with a work email before
+        committing to a wholesale relationship. Catching those purchases early
+        lets us reach out before the customer drifts to a competitor or settles
+        permanently into the consumer pricing tier.
+
+
+        ## How a record qualifies
+
+
+        A customer appears here only when **all four** of the following are
+        true:
+
+
+        1. **The email domain looks like a business.** The domain is not on our
+        list of known consumer providers (gmail, yahoo, hotmail, outlook,
+        icloud, btinternet, sky, aol, plus around forty others). It also avoids
+        common spam-pattern top-level domains (`.fun`, `.in.net`).
+
+        2. **The customer is a real Shopify buyer.** They appear as a customer
+        record in `BRONZE_SHOPIFY_ISCLINICAL` or `BRONZE_SHOPIFY_DEESE_PRO`.
+
+        3. **They have actually spent money.** Lifetime DTC spend is greater
+        than zero. This filters out accounts that signed up but never converted,
+        including the large volume of bulk spam signups that accumulate over
+        time.
+
+        4. **They are not already in Prospect CRM.** The lower-cased email does
+        not match any record on `stg_prospect_crm__sales_ledgers`. Customers who
+        exist in CRM as B2C consumers are also excluded, so the team focuses on
+        genuinely net-new prospects.
+
+
+        ## Caveats
+
+
+        The signal is heuristic, not a verified prospect list. Three things to
+        keep in mind:
+
+
+        * The consumer-domain exclusion list is hand-maintained. New providers
+        (regional ISPs, niche email services) will slip through and produce
+        false positives. The list lives in
+        `dbt/models/gold/dim_customer_unified.sql` and is straightforward to
+        extend.
+
+        * A business-looking domain does not guarantee a business. Sole traders
+        and freelancers commonly use a personal `@theirname.com` address for
+        non-work purchases.
+
+        * Email matching is exact (after lower-casing and trimming whitespace).
+        A buyer who used a personal Gmail on Shopify and a work address with us
+        in CRM will still show up here as a "lead", because we cannot link the
+        two identities without manual review.
+
+
+        ## Sharpening the list
+
+
+        Use the Lightdash filter bar at the top of the dashboard to narrow the
+        candidate pool:
+
+
+        * Filter `total_dtc_spend` above a meaningful threshold (for example,
+        fifty pounds) to focus on serious buyers.
+
+        * Filter `total_dtc_orders` to two or more to find repeat purchasers,
+        the strongest signal that someone is buying for a business.
+
+        * Filter `country` to a specific market when the team is running a
+        regional campaign.
+
+
+        The "Top Domains by Lead Count" chart is particularly useful: when
+        several distinct individuals all share the same business domain, that
+        domain is almost certainly a clinic or distributor sourcing product
+        through the consumer storefront.
+
+
+        ## Source
+
+
+        The flag is computed in `dbt/models/gold/dim_customer_unified.sql`, in
+        the `with_email_class` and `with_lead_flag` CTEs. Edit the
+        consumer-domain list there if you want to refine the heuristic.
+      hideFrame: false
+      hideTitle: false
+      title: Methodology
+    tabUuid: null
+    type: markdown
+    w: 24
+    x: 12
+    "y": 12
+  - h: 6
+    properties:
+      chartName: Top Individual Leads
+      chartSlug: top-individual-leads
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: top-individual-leads
+    type: saved_chart
+    w: 12
+    x: 12
+    "y": 12
+  - h: 6
+    properties:
+      chartName: Total Uncaptured DTC Revenue
+      chartSlug: total-uncaptured-dtc-revenue
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: total-uncaptured-dtc-revenue
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 19
+  - h: 6
+    properties:
+      chartName: Leads by Country
+      chartSlug: leads-by-country
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: leads-by-country
+    type: saved_chart
+    w: 12
+    x: 0
+    "y": 22
+verification: null
+version: 1

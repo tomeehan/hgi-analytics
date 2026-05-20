@@ -21,6 +21,9 @@ venv/
 # Snowflake CLI config (operator-local; shipped to bothy via .bothy.yml copy:)
 .snowflake/
 
+# Lightdash content-as-code (per-machine download state, not source of truth)
+lightdash/.lightdash-metadata.json
+
 # OS / editors
 .DS_Store
 .vscode/

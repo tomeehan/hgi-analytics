@@ -1,0 +1,39 @@
+chartConfig:
+  config:
+    columns: {}
+    hideRowNumbers: false
+    metricsAsRows: false
+    showColumnCalculation: false
+    showRowCalculation: false
+    showTableNames: false
+  type: table
+contentType: chart
+description: Product pairs most frequently bought together in the same order
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_product_pairs_product_a
+    - fct_product_pairs_product_b
+  exploreName: fct_product_pairs
+  filters: {}
+  limit: 25
+  metricOverrides: {}
+  metrics:
+    - fct_product_pairs_times_bought_together
+  sorts:
+    - descending: true
+      fieldId: fct_product_pairs_times_bought_together
+  tableCalculations: []
+name: Top Cross-Sell Pairs
+slug: top-cross-sell-pairs
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_product_pairs_product_a
+    - fct_product_pairs_product_b
+    - fct_product_pairs_times_bought_together
+tableName: fct_product_pairs
+verification: null
+version: 1

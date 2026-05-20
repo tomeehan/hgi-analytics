@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    groupFieldIds:
+      - dim_customer_unified_seen_in_shopify_isclinical
+    isDonut: false
+    metricId: dim_customer_unified_customer_count
+  type: pie
+contentType: chart
+description: Distribution of B2B accounts by their isClinical lifetime spend
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_seen_in_shopify_isclinical
+  exploreName: dim_customer_unified
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: dim_customer_unified_seen_in_crm
+          values:
+            - b2b
+      id: b2b-only
+  limit: 5
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_customer_count
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_customer_count
+  tableCalculations: []
+name: B2B Customers by isClinical DTC Spend Tier
+slug: b2b-customers-by-isclinical-dtc-spend-tier
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_seen_in_shopify_isclinical
+    - dim_customer_unified_customer_count
+tableName: dim_customer_unified
+verification: null
+version: 1

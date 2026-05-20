@@ -1,0 +1,46 @@
+chartConfig:
+  config:
+    comparisonFormat: null
+    defaultFormat: null
+    flipColors: false
+    label: Total Uncaptured DTC Revenue
+  type: big_number
+contentType: chart
+description: >-
+  Sum of DTC spend from likely-B2B leads — the value of converting them to B2B
+  accounts
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_is_dtc_b2b_lead
+  exploreName: dim_customer_unified
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: dim_customer_unified_is_dtc_b2b_lead
+          values:
+            - true
+      id: dtc-b2b-leads
+  limit: 2
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_total_dtc_spend
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_total_dtc_spend
+  tableCalculations: []
+name: Total Uncaptured DTC Revenue
+slug: total-uncaptured-dtc-revenue
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_is_dtc_b2b_lead
+    - dim_customer_unified_total_dtc_spend
+tableName: dim_customer_unified
+verification: null
+version: 1

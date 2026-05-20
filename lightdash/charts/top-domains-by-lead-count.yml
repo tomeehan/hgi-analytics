@@ -1,0 +1,55 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: dim_customer_unified_email_domain
+            yRef:
+              field: dim_customer_unified_customer_count
+          type: bar
+    layout:
+      flipAxes: true
+      xField: dim_customer_unified_email_domain
+      yField:
+        - dim_customer_unified_customer_count
+  type: cartesian
+contentType: chart
+description: >-
+  Email domains with the most non-CRM DTC buyers — clinics/businesses sourcing
+  from us
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - dim_customer_unified_email_domain
+  exploreName: dim_customer_unified
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: dim_customer_unified_is_dtc_b2b_lead
+          values:
+            - true
+      id: dtc-b2b-leads
+  limit: 20
+  metricOverrides: {}
+  metrics:
+    - dim_customer_unified_customer_count
+  sorts:
+    - descending: true
+      fieldId: dim_customer_unified_customer_count
+  tableCalculations: []
+name: Top Domains by Lead Count
+slug: top-domains-by-lead-count
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - dim_customer_unified_email_domain
+    - dim_customer_unified_customer_count
+tableName: dim_customer_unified
+verification: null
+version: 1

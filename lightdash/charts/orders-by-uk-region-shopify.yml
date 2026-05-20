@@ -1,0 +1,44 @@
+chartConfig:
+  config:
+    groupFieldIds:
+      - fct_product_sales_uk_region
+    isDonut: false
+    metricId: fct_product_sales_order_count
+  type: pie
+contentType: chart
+description: Shopify order volume per UK region
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_product_sales_uk_region
+  exploreName: fct_product_sales
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: notEquals
+          target:
+            fieldId: fct_product_sales_uk_region
+          values:
+            - International
+      id: uk-only
+  limit: 15
+  metricOverrides: {}
+  metrics:
+    - fct_product_sales_order_count
+  sorts:
+    - descending: true
+      fieldId: fct_product_sales_order_count
+  tableCalculations: []
+name: Orders by UK Region — Shopify
+slug: orders-by-uk-region-shopify
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_product_sales_uk_region
+    - fct_product_sales_order_count
+tableName: fct_product_sales
+verification: null
+version: 1

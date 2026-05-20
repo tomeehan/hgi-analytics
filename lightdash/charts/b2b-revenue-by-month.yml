@@ -1,0 +1,57 @@
+chartConfig:
+  config:
+    eChartsConfig:
+      series:
+        - encode:
+            xRef:
+              field: fct_b2b_sales_order_month
+            yRef:
+              field: fct_b2b_sales_b2b_revenue
+          type: bar
+        - encode:
+            xRef:
+              field: fct_b2b_sales_order_month
+            yRef:
+              field: fct_b2b_sales_b2b_margin
+          type: bar
+      xAxis:
+        - axisLabel:
+            formatter: "{MMMM} {yyyy}"
+            hideOverlap: true
+    layout:
+      flipAxes: false
+      xField: fct_b2b_sales_order_month
+      yField:
+        - fct_b2b_sales_b2b_revenue
+        - fct_b2b_sales_b2b_margin
+  type: cartesian
+contentType: chart
+description: Monthly B2B sales from Prospect CRM (last 24 months)
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_b2b_sales_order_month
+  exploreName: fct_b2b_sales
+  filters: {}
+  limit: 24
+  metricOverrides: {}
+  metrics:
+    - fct_b2b_sales_b2b_revenue
+    - fct_b2b_sales_b2b_margin
+  sorts:
+    - descending: false
+      fieldId: fct_b2b_sales_order_month
+  tableCalculations: []
+name: B2B Revenue by Month
+slug: b2b-revenue-by-month
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_b2b_sales_order_month
+    - fct_b2b_sales_b2b_revenue
+    - fct_b2b_sales_b2b_margin
+tableName: fct_b2b_sales
+verification: null
+version: 1
