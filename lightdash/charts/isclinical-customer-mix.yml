@@ -1,4 +1,3 @@
-# Source: April 2026 KPI Report, page 12 (IS CLINICAL, 1. REVENUE & CHANNEL ATTRIBUTION)
 chartConfig:
   config:
     flipColors: false
@@ -8,11 +7,8 @@ chartConfig:
   type: big_number
 contentType: chart
 description: >-
-  Customer mix for iS Clinical Shopify orders, expressed as the new-customer
-  share: the percentage of orders that are a customer's first order
-  (is_first_order = 1). The PDF KPI strip frames this as new / returning (April
-  2026: 36% / 64%); this tile surfaces the new-customer half. Responds to the
-  dashboard Month filter.
+  New-customer share of iS Clinical Shopify orders: the percentage of orders
+  placed by a customer for the first time.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

@@ -1,4 +1,3 @@
-# Source: April 2026 KPI Report, page 16 (IS CLINICAL, 7. CRM Performance)
 chartConfig:
   config:
     columns: {}
@@ -10,14 +9,9 @@ chartConfig:
   type: table
 contentType: chart
 description: >-
-  Top five iS Clinical Klaviyo automated flows by placed-order revenue,
-  mirroring the TOP PERFORMING FLOWS panel on KPI Report page 16. Revenue is
-  Placed Order value attributed to a flow within Klaviyo's 5-day engagement
-  window, reconstructed from raw Klaviyo events (fct_klaviyo_flow_revenue, which
-  reuses fct_klaviyo_revenue). The PDF splits Abandoned Checkout / Abandoned
-  Cart into base and variant rows; this reconstruction reports one row per
-  flow, so per-flow figures differ from the PDF for that documented Klaviyo
-  attribution methodology gap.
+  Top five iS Clinical Klaviyo automated flows by placed-order revenue. Revenue
+  is order value attributed to a flow within a 5-day engagement window. Each
+  flow is shown as a single row, including flows with multiple variants.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

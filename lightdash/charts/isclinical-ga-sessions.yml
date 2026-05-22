@@ -1,4 +1,3 @@
-# Source: April 2026 KPI Report, page 13 (IS CLINICAL, Traffic, conversion, PR, customer mix, AOV)
 chartConfig:
   config:
     flipColors: false
@@ -9,8 +8,8 @@ chartConfig:
 contentType: chart
 description: >-
   Total GA4 sessions for iS Clinical in the month, from the GA4
-  traffic-acquisition report. Reads slightly below the PDF figure because GA4
-  reports keep re-processing for several days after month close.
+  traffic-acquisition report. GA4 figures may be slightly updated in the days
+  after month close.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

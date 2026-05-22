@@ -1,4 +1,3 @@
-# Source: April 2026 KPI Report, page 17 (12-month subscriber growth)
 chartConfig:
   config:
     flipColors: false
@@ -8,12 +7,8 @@ chartConfig:
   type: big_number
 contentType: chart
 description: >-
-  iS Clinical Klaviyo email-list subscribers added over the trailing 12 months
-  (May 2025 to April 2026): the count of "Subscribed to Email Marketing" events
-  in the window. Built from raw BRONZE_KLAVIYO_ISCLINICAL events via
-  fct_klaviyo_subscriber_growth (monthly grain). This is a fixed rolling
-  12-month total pinned to the April 2026 report month, so it deliberately does
-  not respond to the dashboard Month filter.
+  iS Clinical Klaviyo email-list subscribers added over a trailing 12-month
+  window.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

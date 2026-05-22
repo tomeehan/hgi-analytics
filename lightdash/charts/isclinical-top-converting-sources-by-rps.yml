@@ -1,4 +1,3 @@
-# Source: April 2026 KPI Report, page 13 (IS CLINICAL, Traffic, conversion, PR, customer mix, AOV)
 chartConfig:
   config:
     columns: {}
@@ -11,11 +10,9 @@ chartConfig:
 contentType: chart
 description: >-
   Top GA4 traffic-acquisition source/medium combinations for iS Clinical,
-  ranked by RPS (revenue per session), mirroring panel 2B on KPI Report page
-  13. RPS is a non-additive ratio metric (GA-attributed revenue divided by GA4
-  sessions). The PDF panel also shows per-source CVR and transactions columns;
-  GA4 has no source/medium-dimensioned purchase-event report, so those columns
-  are omitted here (see ticket 008's data-engineering prerequisite).
+  ranked by revenue per session (RPS). RPS is GA-attributed revenue divided by
+  GA4 sessions. CVR and transaction data are not available at source/medium
+  grain in GA4.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

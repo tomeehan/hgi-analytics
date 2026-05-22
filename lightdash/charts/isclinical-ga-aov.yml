@@ -1,4 +1,3 @@
-# Source: April 2026 KPI Report, page 13 (IS CLINICAL, Traffic, conversion, PR, customer mix, AOV)
 chartConfig:
   config:
     flipColors: false
@@ -9,9 +8,8 @@ chartConfig:
 contentType: chart
 description: >-
   GA-derived average order value for iS Clinical: GA-attributed purchase revenue
-  divided by GA4 transactions. Deliberately distinct from the Shopify
-  source-of-truth AOV (page 12) because GA's transaction count and revenue
-  differ from Shopify's.
+  divided by GA4 transactions. Distinct from the Shopify AOV because GA's
+  transaction count and revenue differ from Shopify's.
 metricQuery:
   additionalMetrics: []
   customDimensions: []
