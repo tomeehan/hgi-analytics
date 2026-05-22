@@ -1,0 +1,35 @@
+# sqlfluff configuration for the hgi dbt project.
+#
+# Templater: jinja, not dbt. The jinja templater renders ref() / source() /
+# config() as stubs (apply_dbt_builtins) without compiling against the
+# warehouse, so linting needs no Snowflake credentials and is fast enough to
+# run on every file save via the Claude Code PostToolUse hook.
+#
+# Layout rules are deliberately relaxed to match the established house
+# style: the project hand-aligns column aliases (id::number   as order_id),
+# uses implicit table aliases (from orders o), puts select wildcards inline
+# (select *, row_number() ...) and joins with USING. The excluded rules are
+# the ones the existing models consistently and intentionally break. The
+# correctness-oriented rules (ambiguous UNION, capitalisation, references)
+# are kept on. Tune exclude_rules below if the team wants stricter layout.
+
+[sqlfluff]
+templater = jinja
+dialect = snowflake
+max_line_length = 120
+exclude_rules = LT01, LT02, LT05, LT09, LT14, AL01, ST05, ST06, ST07, AM04, RF02, RF03, RF04, CP02
+
+[sqlfluff:indentation]
+tab_space_size = 4
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = true
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower

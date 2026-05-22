@@ -19,6 +19,11 @@ jobs:
 
       - run: pip install -r dbt/requirements.txt
 
+      - name: sqlfluff lint
+        working-directory: dbt/
+        continue-on-error: true
+        run: sqlfluff lint models/
+
       - name: Write Snowflake private key
         env:
           SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
