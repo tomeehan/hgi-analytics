@@ -16,6 +16,7 @@ models:
             order_count:
               type: count_distinct
               label: "Order Count"
+              description: "Number of distinct Shopify orders placed in the month. Shopify is the source of truth for order count."
               round: 0
       - name: store_id
         description: "Brand identifier."
@@ -36,11 +37,13 @@ models:
             total_revenue:
               type: sum
               label: "Total Revenue"
+              description: "Total gross Shopify revenue for the month: the sum of every order's value before refunds are netted off. Shopify is the source of truth for revenue."
               format: "gbp"
               round: 0
             aov:
               type: average
               label: "Avg Order Value"
+              description: "Average order value: Shopify total revenue divided by Shopify order count for the month. This is the Shopify source-of-truth AOV, distinct from the GA-derived AOV."
               format: "gbp"
               round: 0
       - name: net_sales
@@ -50,6 +53,7 @@ models:
             total_net_sales:
               type: sum
               label: "Net Sales"
+              description: "Net Shopify revenue for the month: gross order value minus refunds."
               format: "gbp"
               round: 0
       - name: refund_amount
@@ -94,6 +98,7 @@ models:
             new_customer_share:
               type: average
               label: "New Customer Share"
+              description: "Share of the month's Shopify orders placed by new customers, shown as a percentage. A new customer order is the customer's first ever order."
               # Average of the 0/1 is_first_order flag is the new-order
               # fraction. format: percent renders it as a percentage in
               # Lightdash (e.g. 0.408 -> 41%). Powers the Customer Mix
@@ -817,6 +822,7 @@ models:
             total_meta_spend:
               type: sum
               label: "Meta Ad Spend"
+              description: "Total Meta (Facebook Marketing) ad spend for the month: the sum of daily spend across every Meta ad set, in GBP."
               format: "gbp"
               round: 0
       - name: impressions
@@ -825,6 +831,7 @@ models:
             total_impressions:
               type: sum
               label: "Impressions"
+              description: "Total Meta ad impressions for the month."
               round: 0
       - name: clicks
         meta:
@@ -832,6 +839,7 @@ models:
             total_meta_clicks:
               type: sum
               label: "Meta Clicks"
+              description: "Total Meta ad clicks for the month."
               round: 0
       - name: purchases
         description: "Meta-attributed purchases (sum of ACTIONS where action_type='purchase')."
@@ -840,6 +848,7 @@ models:
             total_meta_purchases:
               type: sum
               label: "Meta Purchases"
+              description: "Count of purchases Meta attributes to its ads in the month, under Meta's 7-day click plus 1-day view attribution window."
               round: 0
       - name: purchase_value
         description: "Meta-attributed purchase value (sum of ACTION_VALUES where action_type='purchase')."
@@ -848,11 +857,13 @@ models:
             total_meta_purchase_value:
               type: sum
               label: "Meta Purchase Value"
+              description: "Total purchase value Meta attributes to its ads in the month, under Meta's 7-day click plus 1-day view attribution window."
               format: "gbp"
               round: 0
             total_meta_revenue:
               type: sum
               label: "Meta Revenue"
+              description: "Revenue Meta attributes to its ads in the month. Used as the numerator for Meta ROAS (Meta revenue divided by Meta ad spend)."
               format: "gbp"
               round: 0
 
@@ -909,6 +920,7 @@ models:
             total_klaviyo_revenue:
               type: sum
               label: "Klaviyo Revenue"
+              description: "Total revenue Klaviyo claims credit for: the sum of order value across Klaviyo Placed Order events attributed to a campaign or a flow within Klaviyo's 5-day attribution window."
               format: "gbp"
               round: 0
         tests:
@@ -979,6 +991,7 @@ models:
             total_campaign_revenue:
               type: sum
               label: "Revenue"
+              description: "Placed Order revenue Klaviyo attributes to an email campaign within its 5-day attribution window. The campaign-attributed slice of total Klaviyo revenue."
               format: "gbp"
               round: 0
     tests:
@@ -1047,6 +1060,7 @@ models:
             total_flow_revenue:
               type: sum
               label: "Revenue"
+              description: "Placed Order revenue Klaviyo attributes to an automated flow within its 5-day attribution window. The flow-attributed slice of total Klaviyo revenue."
               format: "gbp"
               round: 0
     tests:
@@ -1112,6 +1126,7 @@ models:
             total_ga_sessions:
               type: sum
               label: "GA Sessions"
+              description: "Total GA4 website sessions for the month."
               round: 0
       - name: engaged_sessions
         meta:
@@ -1119,6 +1134,7 @@ models:
             total_engaged_sessions:
               type: sum
               label: "Engaged Sessions"
+              description: "Total GA4 engaged sessions for the month."
               round: 0
       - name: total_revenue
         description: "GA-attributed revenue (purchase events)."
@@ -1127,6 +1143,7 @@ models:
             ga_total_revenue:
               type: sum
               label: "GA Total Revenue"
+              description: "GA4-attributed revenue for the month: purchase-event revenue GA4 attributes across all channels. Structurally lower than Shopify revenue because GA4 misses sessions without analytics consent or cross-device journeys."
               format: "gbp"
               round: 0
       - name: users
@@ -1139,6 +1156,7 @@ models:
             total_ga_users:
               type: sum
               label: "GA Users"
+              description: "Total GA4 distinct users for the month."
               round: 0
       - name: transactions
         description: "GA4 transaction count (purchase event count) for the day. Left-joined from stg_google_analytics__transactions; coalesced to 0 for days with sessions but no purchase events."
@@ -1195,6 +1213,7 @@ models:
             total_ga_channel_sessions:
               type: sum
               label: "GA Sessions"
+              description: "GA4 sessions for the month, broken down by GA4 display channel."
               round: 0
       - name: channel_revenue
         description: "GA-attributed revenue (purchase events) for the channel."
@@ -1206,6 +1225,7 @@ models:
             total_ga_channel_revenue:
               type: sum
               label: "GA Revenue"
+              description: "GA4-attributed revenue for the month, broken down by GA4 display channel."
               format: "gbp"
               round: 0
 
@@ -1279,6 +1299,7 @@ models:
             total_ga_source_medium_sessions:
               type: sum
               label: "GA Sessions"
+              description: "GA4 sessions for the month, broken down by traffic source / medium."
               round: 0
       - name: revenue
         description: "GA-attributed revenue (purchase events) for the source/medium."
@@ -1290,6 +1311,7 @@ models:
             total_ga_source_medium_revenue:
               type: sum
               label: "GA Revenue"
+              description: "GA4-attributed revenue for the month, broken down by traffic source / medium."
               format: "gbp"
               round: 0
 
@@ -1605,6 +1627,7 @@ models:
             total_clicks:
               type: sum
               label: "Clicks"
+              description: "Total Google Ads search-term clicks for the month, within the top-100-search-terms-by-cost scope."
               round: 0
       - name: cost
         description: "Google Ads cost in GBP for the (month, brand_intent), within the top-100-by-cost scope."
@@ -1613,6 +1636,7 @@ models:
             total_cost:
               type: sum
               label: "Cost"
+              description: "Total Google Ads search-term cost in GBP for the month, within the top-100-search-terms-by-cost scope."
               format: "gbp"
               round: 0
       - name: conversions
@@ -1622,6 +1646,7 @@ models:
             total_conversions:
               type: sum
               label: "Conversions"
+              description: "Total Google Ads search-term conversions for the month, within the top-100-search-terms-by-cost scope."
               round: 0
 
   - name: fct_klaviyo_subscriber_growth
@@ -1677,6 +1702,7 @@ models:
             total_subscribers_added:
               type: sum
               label: "Subscribers Added"
+              description: "Count of Klaviyo Subscribed to Email Marketing events in the period."
               round: 0
       - name: unsubscribes
         description: "Count of 'Unsubscribed from Email Marketing' events in the month."
@@ -1688,6 +1714,7 @@ models:
             total_unsubscribes:
               type: sum
               label: "Unsubscribes"
+              description: "Count of Klaviyo Unsubscribed from Email Marketing events in the period."
               round: 0
       - name: net_subscriber_change
         description: "subscribers_added minus unsubscribes for the month. Signed (can be negative), so no range test."
@@ -1696,4 +1723,5 @@ models:
             total_net_subscriber_change:
               type: sum
               label: "Net Subscriber Change"
+              description: "Subscribers added minus unsubscribes for the period. A positive number means the email list grew; negative means it shrank."
               round: 0
