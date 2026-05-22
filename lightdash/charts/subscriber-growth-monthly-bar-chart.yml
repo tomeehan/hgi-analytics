@@ -11,7 +11,7 @@ chartConfig:
           type: bar
       xAxis:
         - axisLabel:
-            formatter: "{MMM} {yy}"
+            formatter: "{MMMM} {yyyy}"
             hideOverlap: true
     layout:
       flipAxes: false
