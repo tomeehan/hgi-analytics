@@ -1,7 +1,12 @@
 # Source: April 2026 KPI Report, page 18 (iS Clinical, 12-month subscriber growth)
 chartConfig:
   config:
-    columns: {}
+    columns:
+      # The raw date order_month is kept in the query purely to sort rows
+      # chronologically (order_month_name is a string and would sort
+      # alphabetically); hide it so only the readable "Month YYYY" column shows.
+      fct_klaviyo_subscriber_growth_order_month:
+        visible: false
     hideRowNumbers: false
     metricsAsRows: false
     showColumnCalculation: true
@@ -25,6 +30,7 @@ metricQuery:
   dimensionOverrides: {}
   dimensions:
     - fct_klaviyo_subscriber_growth_order_month
+    - fct_klaviyo_subscriber_growth_order_month_name
   exploreName: fct_klaviyo_subscriber_growth
   filters:
     dimensions:
@@ -68,6 +74,7 @@ slug: subscriber-growth-monthly-table
 spaceSlug: shared
 tableConfig:
   columnOrder:
+    - fct_klaviyo_subscriber_growth_order_month_name
     - fct_klaviyo_subscriber_growth_order_month
     - fct_klaviyo_subscriber_growth_total_subscribers_added
     - fct_klaviyo_subscriber_growth_total_unsubscribes

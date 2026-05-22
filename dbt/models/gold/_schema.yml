@@ -1685,6 +1685,11 @@ models:
           - not_null
         meta:
           dimension:
+            # type: date is set explicitly: Lightdash does not reliably infer
+            # the warehouse type for this newer model, and an un-typed
+            # dimension falls back to string (raw ISO timestamps on chart axes
+            # and JS Date strings in tables).
+            type: date
             label: "Month (date)"
           additional_dimensions:
             order_month_label:
@@ -1692,6 +1697,11 @@ models:
               label: "Month"
               description: "Compact YYYY-MM label for human-facing dashboard month filters; mirrors fct_orders.order_month_label so the KPI Report's Month filter cross-applies via field-name lookup."
               sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
+            order_month_name:
+              type: string
+              label: "Month"
+              description: "Human-readable 'Month YYYY' label (e.g. May 2025) for table-column display. Sorts alphabetically, so any table showing it must sort by order_month (the underlying date) for chronological order."
+              sql: "to_char(${TABLE}.order_month, 'MMMM YYYY')"
       - name: subscribers_added
         description: "Count of 'Subscribed to Email Marketing' events in the month."
         tests:
