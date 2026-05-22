@@ -10,7 +10,7 @@ contentType: chart
 description: >-
   Total Meta (Facebook Marketing) ad spend for the iS Clinical ad account (sum
   of daily spend across every iS Clinical Meta ad set, in GBP). Uses
-  fct_ad_spend.total_meta_spend. Responds to the dashboard Month filter.
+  fct_ad_spend.total_meta_spend.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

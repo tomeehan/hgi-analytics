@@ -9,7 +9,7 @@ chartConfig:
 contentType: chart
 description: >-
   GA4 revenue per session for iS Clinical: GA-attributed purchase revenue
-  divided by GA4 sessions. Responds to the dashboard Month filter.
+  divided by GA4 sessions.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

@@ -11,7 +11,7 @@ description: >-
   GA-derived average order value for iS Clinical: GA-attributed purchase revenue
   divided by GA4 transactions. Deliberately distinct from the Shopify
   source-of-truth AOV (page 12) because GA's transaction count and revenue
-  differ from Shopify's. Responds to the dashboard Month filter.
+  differ from Shopify's.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

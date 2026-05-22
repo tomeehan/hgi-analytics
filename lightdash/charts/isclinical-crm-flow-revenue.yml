@@ -12,7 +12,7 @@ description: >-
   attributed to an automated flow within Klaviyo's 5-day engagement window.
   Built from raw BRONZE_KLAVIYO_ISCLINICAL events
   (fct_klaviyo_revenue.total_klaviyo_revenue) filtered to attribution_kind =
-  flow. Responds to the dashboard Month filter.
+  flow.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

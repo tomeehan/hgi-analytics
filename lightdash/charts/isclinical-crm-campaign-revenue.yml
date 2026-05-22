@@ -12,7 +12,7 @@ description: >-
   value attributed to an email campaign within Klaviyo's 5-day engagement
   window. Built from raw BRONZE_KLAVIYO_ISCLINICAL events
   (fct_klaviyo_revenue.total_klaviyo_revenue) filtered to attribution_kind =
-  campaign. Responds to the dashboard Month filter.
+  campaign.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

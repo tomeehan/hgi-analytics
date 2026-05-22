@@ -16,7 +16,7 @@ description: >-
   engagement window, reconstructed from raw Klaviyo events
   (fct_klaviyo_campaign_revenue, which reuses fct_klaviyo_revenue). The live
   per-campaign figures sit a few percent above the PDF because the PDF reads
-  Klaviyo's native attribution engine. Responds to the dashboard Month filter.
+  Klaviyo's native attribution engine.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

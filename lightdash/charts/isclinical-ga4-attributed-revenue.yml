@@ -11,7 +11,7 @@ description: >-
   GA4-attributed revenue: the sum of GA4 purchase-event revenue (total_revenue)
   for iS Clinical sessions in the month. Structurally lower than the Shopify
   total because GA4 misses sessions without analytics consent and cross-device
-  journeys. Responds to the dashboard Month filter.
+  journeys.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

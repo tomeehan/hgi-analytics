@@ -9,7 +9,7 @@ chartConfig:
 contentType: chart
 description: >-
   GA4 conversion rate for iS Clinical: GA4 transactions divided by GA4 sessions,
-  shown as a percentage. Responds to the dashboard Month filter.
+  shown as a percentage.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

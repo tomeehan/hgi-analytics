@@ -12,7 +12,7 @@ description: >-
   attributed to a campaign or a flow within Klaviyo's 5-day engagement window.
   Equals campaign revenue plus flow revenue. Built from raw
   BRONZE_KLAVIYO_ISCLINICAL events (fct_klaviyo_revenue.total_klaviyo_revenue),
-  no attribution_kind filter. Responds to the dashboard Month filter.
+  no attribution_kind filter.
 metricQuery:
   additionalMetrics: []
   customDimensions: []
