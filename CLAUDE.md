@@ -81,10 +81,11 @@ Roles & service accounts:
 
 ```
 hgi-analytics/
+├── .claude/              shared Claude Code config: skills, agents, hooks (see "Claude Code setup")
 ├── bin/setup             one-shot bootstrap for a fresh checkout (mac + linux): venv, dbt deps, scaffolds profiles.yml + .env
 ├── airbyte/              connection config docs only (no code; configs live in Airbyte UI / on the Hetzner VM's disk)
 ├── dbt/                  the dbt project
-│   ├── dbt_project.yml · packages.yml · profiles.yml (gitignored)
+│   ├── dbt_project.yml · packages.yml · .sqlfluff · profiles.yml (gitignored)
 │   ├── models/
 │   │   ├── bronze/       _sources.yml (declares Bronze schemas as dbt sources)
 │   │   ├── silver/       stg_* models
@@ -210,6 +211,31 @@ Production content now comes from committed YAML, so the spaces holding
 code-managed dashboards should be view-only for non-admins. That stops UI
 edits from silently diverging from the repo; any drift surfaces in `git diff`
 after the next `lightdash download`.
+
+## Claude Code setup
+
+Shared Claude Code configuration lives in `.claude/` and is committed
+(`settings.local.json` and `worktrees/` stay machine-local and gitignored).
+
+- **Skills** (`.claude/skills/`) are invokable playbooks for repeated work:
+  - `add-shopify-store` — onboard a new Shopify store or Klaviyo account.
+  - `new-gold-model` — scaffold a Gold `fct_`/`dim_` model with the conventions.
+  - `lightdash-change` — the download / preview / PR workflow for dashboards.
+- **Agents** (`.claude/agents/`) are read-only review subagents:
+  - `dbt-model-reviewer` — audits a model diff against the conventions above.
+  - `snowflake-cost-auditor` — flags credit-burning SQL and materialisations.
+  - `metric-reconciler` — reconciles a Gold metric against its raw Bronze source.
+- **Hooks** (`.claude/settings.json` + `.claude/hooks/`):
+  - `guard-bronze` blocks any edit under `dbt/models/bronze/` except
+    `_sources.yml` (Bronze is immutable).
+  - `guard-prod-target` blocks a mutating `dbt` command against `--target prod`
+    from an interactive session (production builds run via `dbt_run.yml`).
+  - `sqlfluff-lint` lints an edited dbt SQL model and feeds findings back.
+- **sqlfluff** is the SQL linter for the dbt models, config at `dbt/.sqlfluff`
+  (jinja templater, Snowflake dialect, layout rules relaxed to the house
+  style). It is installed via `dbt/requirements.txt`, runs as an advisory step
+  in `dbt_ci.yml`, and fires on every model edit through the hook above. Run it
+  by hand from `dbt/` with `sqlfluff lint models/` or `sqlfluff fix <file>`.
 
 ## Project management
 

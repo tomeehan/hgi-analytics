@@ -1,1 +1,2 @@
 dbt-snowflake==1.11.*
+sqlfluff>=3.0,<4.0
