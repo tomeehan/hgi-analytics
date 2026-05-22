@@ -15,7 +15,7 @@ description: >-
   KPI Report page 15. Three rows (Remarketing, Acquisition, Other) with spend,
   purchases, revenue and two table calculations: ROAS (revenue / spend) and CPA
   (spend / purchases). audience_type is a name-pattern classification of the Meta
-  campaign / ad-set name. Responds to the dashboard Month filter.
+  campaign / ad-set name.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

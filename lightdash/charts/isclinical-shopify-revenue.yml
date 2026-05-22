@@ -9,7 +9,7 @@ chartConfig:
 contentType: chart
 description: >-
   Total gross Shopify revenue (sum of order total_price) for the iS Clinical
-  store. Responds to the dashboard Month filter.
+  store.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

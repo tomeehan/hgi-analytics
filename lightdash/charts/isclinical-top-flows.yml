@@ -17,7 +17,7 @@ description: >-
   reuses fct_klaviyo_revenue). The PDF splits Abandoned Checkout / Abandoned
   Cart into base and variant rows; this reconstruction reports one row per
   flow, so per-flow figures differ from the PDF for that documented Klaviyo
-  attribution methodology gap. Responds to the dashboard Month filter.
+  attribution methodology gap.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

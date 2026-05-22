@@ -9,9 +9,8 @@ chartConfig:
 contentType: chart
 description: >-
   Total GA4 sessions for iS Clinical in the month, from the GA4
-  traffic-acquisition report. Responds to the dashboard Month filter. Reads
-  slightly below the PDF figure because GA4 reports keep re-processing for
-  several days after month close.
+  traffic-acquisition report. Reads slightly below the PDF figure because GA4
+  reports keep re-processing for several days after month close.
 metricQuery:
   additionalMetrics: []
   customDimensions: []
