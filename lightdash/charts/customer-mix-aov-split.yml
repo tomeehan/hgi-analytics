@@ -1,4 +1,3 @@
-# Source: April 2026 KPI Report, page 14 (4. Customer Mix & 5. AOV Split)
 chartConfig:
   config:
     columns: {}
@@ -10,13 +9,9 @@ chartConfig:
   type: table
 contentType: chart
 description: >-
-  iS Clinical Shopify orders for the month split into new customers (their first
-  ever order, is_first_order = 1) and returning customers, mirroring the CUSTOMER
-  MIX & AOV SPLIT table on KPI Report page 14. Five value columns per segment:
-  order count, share of orders, net revenue, share of revenue and AOV. The
-  Overall row is the table's column-total row. Net revenue is net_sales
-  (total_price minus refunds); AOV is net revenue divided by orders. Responds to
-  the dashboard Month filter.
+  iS Clinical Shopify orders split into new and returning customers, with order
+  count, revenue share and AOV per segment. Net revenue is total order value
+  minus refunds; AOV is net revenue divided by orders.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

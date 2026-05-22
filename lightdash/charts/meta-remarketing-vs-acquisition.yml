@@ -1,4 +1,3 @@
-# Source: April 2026 KPI Report, page 15 (Paid Media Performance)
 chartConfig:
   config:
     columns: {}
@@ -10,12 +9,9 @@ chartConfig:
   type: table
 contentType: chart
 description: >-
-  iS Clinical Meta (Facebook Marketing) paid-ads performance for the month split
-  by audience type, mirroring the META ADS, REMARKETING VS ACQUISITION panel on
-  KPI Report page 15. Three rows (Remarketing, Acquisition, Other) with spend,
-  purchases, revenue and two table calculations: ROAS (revenue / spend) and CPA
-  (spend / purchases). audience_type is a name-pattern classification of the Meta
-  campaign / ad-set name.
+  iS Clinical Meta paid-ads performance split by audience type (Remarketing,
+  Acquisition, Other): spend, purchases, revenue, ROAS and CPA. Audience type
+  is a classification of the campaign and ad-set name.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

@@ -1,4 +1,3 @@
-# Source: April 2026 KPI Report, page 13 (IS CLINICAL, Traffic, conversion, PR, customer mix, AOV)
 chartConfig:
   config:
     flipColors: false
@@ -8,10 +7,8 @@ chartConfig:
   type: big_number
 contentType: chart
 description: >-
-  Total GA4 users (distinct users, GA4 totalUsers) for iS Clinical in the
-  month, from the GA4 website-overview report. Responds to the dashboard Month
-  filter. Reads slightly above the PDF figure because GA4 reports keep
-  re-processing for several days after month close.
+  Total GA4 users for iS Clinical in the month, from the GA4 website-overview
+  report. GA4 figures may be slightly updated in the days after month close.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

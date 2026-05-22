@@ -1,4 +1,3 @@
-# Source: April 2026 KPI Report, page 16 (IS CLINICAL, 7. CRM Performance)
 chartConfig:
   config:
     flipColors: false
@@ -8,11 +7,8 @@ chartConfig:
   type: big_number
 contentType: chart
 description: >-
-  iS Clinical email click rate: unique clicks divided by delivered, recomputed
-  post-aggregation (weighted ratio metric) so the Month-filtered value reads
-  the exact monthly figure. Built from raw BRONZE_KLAVIYO_ISCLINICAL Received
-  and Clicked Email events (fct_campaign_performance). Responds to the dashboard
-  Month filter.
+  iS Clinical email click rate: unique clicks divided by delivered emails for
+  the month.
 metricQuery:
   additionalMetrics: []
   customDimensions: []

@@ -1,4 +1,3 @@
-# Source: April 2026 KPI Report, page 12 (IS CLINICAL, 1. Revenue & Channel Attribution)
 chartConfig:
   config:
     columns: {}
@@ -10,8 +9,8 @@ chartConfig:
   type: table
 contentType: chart
 description: >-
-  GA4-attributed revenue and sessions decomposed across GA4 default channel
-  groupings, mirroring the CHANNEL (GA4) table on KPI Report page 12.
+  GA4-attributed revenue and sessions broken down by GA4 default channel
+  grouping.
 metricQuery:
   additionalMetrics: []
   customDimensions: []
