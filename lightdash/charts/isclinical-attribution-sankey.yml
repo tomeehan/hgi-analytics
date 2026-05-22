@@ -1,0 +1,53 @@
+chartConfig:
+  config:
+    metricFieldId: fct_ga_source_medium_total_ga_source_medium_revenue
+    nodeAlign: justify
+    orient: horizontal
+    sourceFieldId: fct_ga_source_medium_channel
+    targetFieldId: fct_ga_source_medium_source_medium
+  type: sankey
+contentType: chart
+description: >-
+  GA4-attributed revenue for iS Clinical, flowing from marketing channel into
+  the underlying traffic source / medium. Channel is a name-pattern
+  classification of the GA4 source/medium (not a native GA4 field on the
+  source/medium report). Shows the top 25 source/medium combinations by revenue.
+  Transaction counts are not available at source/medium grain in GA4, so
+  GA-attributed revenue is the flow weight.
+metricQuery:
+  additionalMetrics: []
+  customDimensions: []
+  dimensionOverrides: {}
+  dimensions:
+    - fct_ga_source_medium_channel
+    - fct_ga_source_medium_source_medium
+  exploreName: fct_ga_source_medium
+  filters:
+    dimensions:
+      and:
+        - id: f1
+          operator: equals
+          target:
+            fieldId: fct_ga_source_medium_store_id
+          values:
+            - iS Clinical
+      id: isclinical-only
+  limit: 25
+  metricOverrides: {}
+  metrics:
+    - fct_ga_source_medium_total_ga_source_medium_revenue
+  sorts:
+    - descending: true
+      fieldId: fct_ga_source_medium_total_ga_source_medium_revenue
+  tableCalculations: []
+name: iS Clinical Attribution Sankey
+slug: isclinical-attribution-sankey
+spaceSlug: shared
+tableConfig:
+  columnOrder:
+    - fct_ga_source_medium_channel
+    - fct_ga_source_medium_source_medium
+    - fct_ga_source_medium_total_ga_source_medium_revenue
+tableName: fct_ga_source_medium
+verification: null
+version: 1
