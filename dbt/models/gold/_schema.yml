@@ -1289,6 +1289,42 @@ models:
         meta:
           dimension:
             label: "Source / Medium"
+          additional_dimensions:
+            channel:
+              type: string
+              label: "Channel"
+              description: "Name-pattern classification of the GA4 session source/medium into the seven channels used by fct_ga_channel_sessions (Direct, Organic Search, Paid Search, Paid Social, Email / CRM, Referral / Affiliates, Other). Not a native GA4 field: the source/medium Bronze report carries no channel grouping, so it is reconstructed here from source/medium text. Held as a Lightdash additional dimension (query-time SQL, no warehouse column) so it ships with lightdash deploy and is not subject to the slim-CI rebuild lag. Source node of the iS Clinical attribution Sankey."
+              sql: |
+                case
+                  when lower(${TABLE}.session_source) like '%klaviyo%'
+                       or lower(${TABLE}.session_medium) in ('email', 'e-mail')
+                    then 'Email / CRM'
+                  when lower(${TABLE}.session_medium) in ('cpc', 'ppc', 'paid', 'paidsearch', 'paid_search', 'paid-search')
+                       and (lower(${TABLE}.session_source) like '%google%'
+                            or lower(${TABLE}.session_source) like '%bing%'
+                            or lower(${TABLE}.session_source) like '%yahoo%'
+                            or lower(${TABLE}.session_source) like '%duckduckgo%'
+                            or lower(${TABLE}.session_source) like '%ecosia%')
+                    then 'Paid Search'
+                  when lower(${TABLE}.session_medium) in ('paid', 'paid_social', 'paidsocial', 'paid-social', 'social')
+                       or (lower(${TABLE}.session_medium) in ('cpc', 'ppc')
+                           and (lower(${TABLE}.session_source) like '%facebook%'
+                                or lower(${TABLE}.session_source) like '%instagram%'
+                                or lower(${TABLE}.session_source) in ('fb', 'ig', 'meta')
+                                or lower(${TABLE}.session_source) like '%tiktok%'
+                                or lower(${TABLE}.session_source) like '%pinterest%'
+                                or lower(${TABLE}.session_source) like '%linkedin%'
+                                or lower(${TABLE}.session_source) like '%snapchat%'))
+                    then 'Paid Social'
+                  when lower(${TABLE}.session_medium) = 'organic'
+                    then 'Organic Search'
+                  when lower(${TABLE}.session_medium) in ('referral', 'affiliate', 'affiliates')
+                    then 'Referral / Affiliates'
+                  when lower(${TABLE}.session_source) = '(direct)'
+                       and lower(${TABLE}.session_medium) in ('(none)', 'none', '(not set)')
+                    then 'Direct'
+                  else 'Other'
+                end
       - name: sessions
         description: "GA4 session count for the source/medium."
         tests:

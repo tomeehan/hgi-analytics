@@ -1,0 +1,37 @@
+contentType: dashboard
+description: >-
+  GA4 channel attribution for iS Clinical paid orders. The Sankey traces
+  GA-attributed revenue from marketing channel into the underlying traffic
+  source / medium. Use the Date Range filter to scope the period.
+filters:
+  dimensions:
+    - disabled: false
+      id: date-range
+      label: Date Range
+      operator: inBetween
+      target:
+        fieldId: fct_ga_source_medium_session_date
+        tableName: fct_ga_source_medium
+      values:
+        - "2025-05-22"
+        - "2026-05-22"
+  metrics: []
+  tableCalculations: []
+name: iS Clinical Attribution
+slug: isclinical-attribution
+spaceSlug: shared
+tabs: []
+tiles:
+  - h: 18
+    properties:
+      chartName: iS Clinical Attribution Sankey
+      chartSlug: isclinical-attribution-sankey
+      hideTitle: false
+      title: ""
+    tabUuid: null
+    tileSlug: isclinical-attribution-sankey
+    type: saved_chart
+    w: 36
+    x: 0
+    "y": 0
+version: 1
