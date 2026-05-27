@@ -3,78 +3,84 @@ contentType: dashboard
 description: ""
 filters:
   dimensions:
+    # Month range. Targets the real DATE dims (order_month, or send_month on
+    # fct_campaign_performance) rather than the YYYY-MM string label, so the
+    # Lightdash UI is a calendar picker rather than a string dropdown.
+    # Monthly-grain data is stored as YYYY-MM-01, so the default boundaries
+    # are first-of-month / last-of-month for the report's reference month.
     - disabled: false
       label: Month
-      operator: equals
+      operator: inBetween
       target:
-        fieldId: fct_orders_order_month_label
+        fieldId: fct_orders_order_month
         tableName: fct_orders
       tileTargets:
         meta-spend:
-          fieldId: fct_ad_spend_order_month_label
+          fieldId: fct_ad_spend_order_month
           tableName: fct_ad_spend
         isclinical-klaviyo-revenue:
-          fieldId: fct_klaviyo_revenue_order_month_label
+          fieldId: fct_klaviyo_revenue_order_month
           tableName: fct_klaviyo_revenue
         isclinical-ga4-attributed-revenue:
-          fieldId: fct_ga_sessions_order_month_label
+          fieldId: fct_ga_sessions_order_month
           tableName: fct_ga_sessions
         channel-breakdown-table:
-          fieldId: fct_ga_channel_sessions_order_month_label
+          fieldId: fct_ga_channel_sessions_order_month
           tableName: fct_ga_channel_sessions
         isclinical-ga-sessions:
-          fieldId: fct_ga_sessions_order_month_label
+          fieldId: fct_ga_sessions_order_month
           tableName: fct_ga_sessions
         isclinical-ga-users:
-          fieldId: fct_ga_sessions_order_month_label
+          fieldId: fct_ga_sessions_order_month
           tableName: fct_ga_sessions
         isclinical-ga-cvr:
-          fieldId: fct_ga_sessions_order_month_label
+          fieldId: fct_ga_sessions_order_month
           tableName: fct_ga_sessions
         isclinical-ga-rps:
-          fieldId: fct_ga_sessions_order_month_label
+          fieldId: fct_ga_sessions_order_month
           tableName: fct_ga_sessions
         isclinical-ga-aov:
-          fieldId: fct_ga_sessions_order_month_label
+          fieldId: fct_ga_sessions_order_month
           tableName: fct_ga_sessions
         isclinical-top-traffic-sources:
-          fieldId: fct_ga_source_medium_order_month_label
+          fieldId: fct_ga_source_medium_order_month
           tableName: fct_ga_source_medium
         isclinical-top-converting-sources-by-rps:
-          fieldId: fct_ga_source_medium_order_month_label
+          fieldId: fct_ga_source_medium_order_month
           tableName: fct_ga_source_medium
         isclinical-pr-media-highlights:
-          fieldId: fct_ga_source_medium_order_month_label
+          fieldId: fct_ga_source_medium_order_month
           tableName: fct_ga_source_medium
         meta-remarketing-vs-acquisition:
-          fieldId: fct_ad_spend_order_month_label
+          fieldId: fct_ad_spend_order_month
           tableName: fct_ad_spend
         paid-search-shopping:
-          fieldId: fct_google_ads_search_terms_order_month_label
+          fieldId: fct_google_ads_search_terms_order_month
           tableName: fct_google_ads_search_terms
         isclinical-crm-total-revenue:
-          fieldId: fct_klaviyo_revenue_order_month_label
+          fieldId: fct_klaviyo_revenue_order_month
           tableName: fct_klaviyo_revenue
         isclinical-crm-campaign-revenue:
-          fieldId: fct_klaviyo_revenue_order_month_label
+          fieldId: fct_klaviyo_revenue_order_month
           tableName: fct_klaviyo_revenue
         isclinical-crm-flow-revenue:
-          fieldId: fct_klaviyo_revenue_order_month_label
+          fieldId: fct_klaviyo_revenue_order_month
           tableName: fct_klaviyo_revenue
         isclinical-crm-open-rate:
-          fieldId: fct_campaign_performance_order_month_label
+          fieldId: fct_campaign_performance_send_month
           tableName: fct_campaign_performance
         isclinical-crm-click-rate:
-          fieldId: fct_campaign_performance_order_month_label
+          fieldId: fct_campaign_performance_send_month
           tableName: fct_campaign_performance
         isclinical-top-performing-campaigns:
-          fieldId: fct_klaviyo_campaign_revenue_order_month_label
+          fieldId: fct_klaviyo_campaign_revenue_order_month
           tableName: fct_klaviyo_campaign_revenue
         isclinical-top-flows:
-          fieldId: fct_klaviyo_flow_revenue_order_month_label
+          fieldId: fct_klaviyo_flow_revenue_order_month
           tableName: fct_klaviyo_flow_revenue
       values:
-        - 2026-04
+        - "2026-04-01"
+        - "2026-04-30"
   metrics: []
   tableCalculations: []
 name: iS Clinical KPI Report
