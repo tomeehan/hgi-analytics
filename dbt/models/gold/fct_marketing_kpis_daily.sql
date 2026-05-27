@@ -1,10 +1,14 @@
 {{ config(materialized='table') }}
 
+-- gross_sales and net_sales here follow Shopify's strict definitions
+-- (product price x qty before discounts/returns, and gross - discounts -
+-- returns respectively). fct_orders computes these per order; this model
+-- just sums them to the daily grain.
 with orders_daily as (
     select
         created_at::date as date,
         store_id,
-        sum(total_price) as gross_sales,
+        sum(gross_sales) as gross_sales,
         sum(net_sales) as net_sales,
         count(distinct order_id) as orders,
         sum(is_first_order) as new_customer_orders
@@ -35,9 +39,9 @@ sessions_daily as (
 
 all_dates as (
     select date, store_id from orders_daily
-    union
+    union distinct
     select date, store_id from spend_daily
-    union
+    union distinct
     select date, store_id from sessions_daily
 )
 
