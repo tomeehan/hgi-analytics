@@ -30,39 +30,101 @@ models:
             # Keep this CASE in sync with the brand list in CLAUDE.md
             # "Conventions" > store-name display mapping.
             sql: "case ${TABLE}.store_id when 'isclinical' then 'iS Clinical' when 'deese_pro' then 'Deese PRO' when 'geske' then 'Geske' else ${TABLE}.store_id end"
-      - name: total_price
-        description: "Total order value in the order's currency."
+      # Revenue metrics on fct_orders follow Shopify's strict
+      # chart-of-accounts. Each label / tooltip should make absolutely clear
+      # which line of that chart it represents:
+      #
+      #   Gross sales              = product price x qty, no discounts,
+      #                              returns, tax or shipping
+      #   - Discounts
+      #   - Returns                = product portion of refunds
+      #   = Net sales              (the one Shopify headlines as "Sales")
+      #   + Shipping + tax + ...
+      #   = Total sales            (the customer-paid grand total)
+      #
+      # See CLAUDE.md > Conventions > "Shopify Gross / Net / Total sales".
+      - name: gross_sales
+        description: "Shopify-strict Gross sales per order: subtotal_price + total_discounts (= product price x quantity before any discount). Excludes returns, tax and shipping."
         meta:
           metrics:
-            total_revenue:
+            total_gross_sales:
               type: sum
-              label: "Total Revenue"
-              description: "Total gross Shopify revenue for the month: the sum of every order's value before refunds are netted off. Shopify is the source of truth for revenue."
+              label: "Gross Sales (Shopify)"
+              description: "Shopify Gross sales for the month: product price x quantity across every order, before any discount, return, tax or shipping. The top line of Shopify's sales chart-of-accounts."
               format: "gbp"
               round: 0
-            aov:
+            gross_aov:
               type: average
-              label: "Avg Order Value"
-              description: "Average order value: Shopify total revenue divided by Shopify order count for the month. This is the Shopify source-of-truth AOV, distinct from the GA-derived AOV."
+              label: "Gross AOV"
+              description: "Average Gross sales per order: Gross sales divided by order count. Distinct from the Net AOV (which subtracts discounts and returns) and from the GA-derived AOV."
               format: "gbp"
               round: 0
       - name: net_sales
-        description: "total_price minus refunded amount (sum of successful refund transactions)."
+        description: "Shopify-strict Net sales per order: subtotal_price - refund_subtotal (= Gross sales - discounts - returns, in product terms). Excludes tax and shipping on both the credit and debit side."
         meta:
           metrics:
             total_net_sales:
               type: sum
-              label: "Net Sales"
-              description: "Net Shopify revenue for the month: gross order value minus refunds."
+              label: "Net Sales (Shopify)"
+              description: "Shopify Net sales for the month: Gross sales minus discounts minus returns. Excludes tax and shipping. The figure Shopify headlines as 'Sales' on its admin dashboard."
+              format: "gbp"
+              round: 0
+            net_aov:
+              type: average
+              label: "Net AOV"
+              description: "Average Net sales per order: Net sales divided by order count. Lower than Gross AOV by the average discount + return per order."
+              format: "gbp"
+              round: 0
+      - name: total_price
+        description: "Shopify Total sales per order (the customer-paid grand total): Net sales + tax + shipping, before any refund."
+        meta:
+          metrics:
+            # Name kept as total_revenue for back-compat with charts that
+            # already reference fct_orders_total_revenue; the label and
+            # description now make clear this is Shopify's "Total sales"
+            # (incl. tax + shipping, pre-refund), not Gross or Net.
+            total_revenue:
+              type: sum
+              label: "Total Sales (Shopify, pre-refund)"
+              description: "Shopify Total sales for the month: the customer-paid grand total summed across every order, including tax and shipping, before any refunds are netted off. NOT Shopify-strict Gross or Net (use Gross Sales / Net Sales for those)."
+              format: "gbp"
+              round: 0
+            # Name kept as aov for back-compat. Averages total_price, so
+            # this is the Total-sales AOV (incl. tax + shipping).
+            aov:
+              type: average
+              label: "Avg Order Value (Total Sales)"
+              description: "Average Total sales per order: pre-refund grand total divided by orders. Includes tax and shipping, so structurally higher than the Gross AOV (product-only) and Net AOV (after discounts + returns)."
+              format: "gbp"
+              round: 0
+      - name: total_sales_after_returns
+        description: "total_price minus the full refund amount (product + tax + shipping refund portions). Not strict Shopify Net sales; use net_sales for that."
+        meta:
+          metrics:
+            total_sales_after_returns_sum:
+              type: sum
+              label: "Total Sales - Returns (incl. tax + shipping)"
+              description: "Customer-paid grand total minus the full refund amount. Not Shopify's strict Net sales (which excludes tax + shipping); use Net Sales (Shopify) for that. Kept for back-compatibility with the old 'Net Sales' tile."
               format: "gbp"
               round: 0
       - name: refund_amount
-        description: "Refunded amount on this order (0 if no refunds). Sourced from BRONZE_SHOPIFY_*.ORDER_REFUNDS via stg_shopify__order_refunds."
+        description: "Total amount refunded to the customer on this order (product + tax + shipping refund portions), 0 if no refunds. Sourced from the transactions array on BRONZE_SHOPIFY_*.ORDER_REFUNDS."
         meta:
           metrics:
             total_refunds:
               type: sum
-              label: "Refunds"
+              label: "Refunds (incl. tax + shipping)"
+              description: "Total cash refunded to customers in the month, across product + tax + shipping portions."
+              format: "gbp"
+              round: 0
+      - name: refund_subtotal
+        description: "Product portion of refunds on this order (sum of refund_line_items.subtotal_set.shop_money.amount), 0 if no refunds. Used in the strict-Shopify Net sales calculation."
+        meta:
+          metrics:
+            total_returns:
+              type: sum
+              label: "Returns (product only)"
+              description: "Product value of returns in the month: the subtotal portion of refunds, excluding tax and shipping. This is the figure Shopify subtracts from Gross sales to get to Net sales."
               format: "gbp"
               round: 0
       - name: is_first_order
@@ -857,13 +919,13 @@ models:
             total_meta_purchase_value:
               type: sum
               label: "Meta Purchase Value"
-              description: "Total purchase value Meta attributes to its ads in the month, under Meta's 7-day click plus 1-day view attribution window."
+              description: "Total purchase value Meta attributes to its ads in the month, under Meta's 7-day click plus 1-day view attribution window. Meta extracts the value from Pixel purchase events, so it is closest to Shopify's Total sales (the customer-paid grand total including tax + shipping, pre-refund). NOT Shopify-strict Gross or Net."
               format: "gbp"
               round: 0
             total_meta_revenue:
               type: sum
               label: "Meta Revenue"
-              description: "Revenue Meta attributes to its ads in the month. Used as the numerator for Meta ROAS (Meta revenue divided by Meta ad spend)."
+              description: "Revenue Meta attributes to its ads in the month, equivalent to Meta Purchase Value. Closest to Shopify Total sales (incl. tax + shipping, pre-refund); NOT Shopify-strict Gross or Net. Used as the numerator for Meta ROAS."
               format: "gbp"
               round: 0
 
@@ -920,7 +982,7 @@ models:
             total_klaviyo_revenue:
               type: sum
               label: "Klaviyo Revenue"
-              description: "Total revenue Klaviyo claims credit for: the sum of order value across Klaviyo Placed Order events attributed to a campaign or a flow within Klaviyo's 5-day attribution window."
+              description: "Total revenue Klaviyo claims credit for: the sum of order value across Klaviyo Placed Order events attributed to a campaign or a flow within Klaviyo's 5-day attribution window. Klaviyo's $value on a Placed Order event mirrors Shopify's total_price, so this is closest to Shopify Total sales (incl. tax + shipping, pre-refund). NOT Shopify-strict Gross or Net."
               format: "gbp"
               round: 0
         tests:
@@ -991,7 +1053,7 @@ models:
             total_campaign_revenue:
               type: sum
               label: "Revenue"
-              description: "Placed Order revenue Klaviyo attributes to an email campaign within its 5-day attribution window. The campaign-attributed slice of total Klaviyo revenue."
+              description: "Placed Order revenue Klaviyo attributes to an email campaign within its 5-day attribution window. The campaign-attributed slice of total Klaviyo revenue. Closest to Shopify Total sales (incl. tax + shipping, pre-refund); NOT Shopify-strict Gross or Net."
               format: "gbp"
               round: 0
     tests:
@@ -1060,7 +1122,7 @@ models:
             total_flow_revenue:
               type: sum
               label: "Revenue"
-              description: "Placed Order revenue Klaviyo attributes to an automated flow within its 5-day attribution window. The flow-attributed slice of total Klaviyo revenue."
+              description: "Placed Order revenue Klaviyo attributes to an automated flow within its 5-day attribution window. The flow-attributed slice of total Klaviyo revenue. Closest to Shopify Total sales (incl. tax + shipping, pre-refund); NOT Shopify-strict Gross or Net."
               format: "gbp"
               round: 0
     tests:
@@ -1143,7 +1205,7 @@ models:
             ga_total_revenue:
               type: sum
               label: "GA Total Revenue"
-              description: "GA4-attributed revenue for the month: purchase-event revenue GA4 attributes across all channels. Structurally lower than Shopify revenue because GA4 misses sessions without analytics consent or cross-device journeys."
+              description: "GA4-attributed revenue for the month: purchase-event revenue GA4 attributes across all channels. Comes from the gtag purchase event value, which on iS Clinical sends Shopify's total_price, so this is closest to Shopify Total sales (incl. tax + shipping, pre-refund). NOT Shopify-strict Gross or Net. Structurally lower than Shopify's own Total sales figure because GA4 misses sessions without analytics consent or cross-device journeys."
               format: "gbp"
               round: 0
       - name: users
@@ -1225,7 +1287,7 @@ models:
             total_ga_channel_revenue:
               type: sum
               label: "GA Revenue"
-              description: "GA4-attributed revenue for the month, broken down by GA4 display channel."
+              description: "GA4-attributed revenue for the month, broken down by GA4 display channel. Closest to Shopify Total sales (incl. tax + shipping, pre-refund); NOT Shopify-strict Gross or Net."
               format: "gbp"
               round: 0
 
@@ -1347,7 +1409,7 @@ models:
             total_ga_source_medium_revenue:
               type: sum
               label: "GA Revenue"
-              description: "GA4-attributed revenue for the month, broken down by traffic source / medium."
+              description: "GA4-attributed revenue for the month, broken down by traffic source / medium. Closest to Shopify Total sales (incl. tax + shipping, pre-refund); NOT Shopify-strict Gross or Net."
               format: "gbp"
               round: 0
 
@@ -1378,16 +1440,17 @@ models:
               description: "Compact YYYY-MM label; mirrors fct_orders.order_month_label so the KPI Report's Month filter cross-applies via field-name lookup."
               sql: "to_char(${TABLE}.order_month, 'YYYY-MM')"
       - name: shopify_revenue
-        description: "Sum of Shopify total_price for the month and brand."
+        description: "Sum of Shopify total_price for the month and brand. By Shopify's chart-of-accounts this is Total sales (incl. tax + shipping, pre-refund), NOT Gross or Net."
         meta:
           dimension:
-            label: "Revenue (Shopify)"
+            label: "Total Sales (Shopify)"
             format: "gbp"
             round: 0
           metrics:
             total_shopify_revenue:
               type: sum
-              label: "Revenue (Shopify)"
+              label: "Total Sales (Shopify)"
+              description: "Sum of Shopify total_price (customer-paid grand total, incl. tax + shipping, pre-refund). By Shopify's chart-of-accounts this is Total sales, NOT Gross or Net."
               format: "gbp"
               round: 0
       - name: shopify_orders
@@ -1413,7 +1476,7 @@ models:
               label: "Sessions"
               round: 0
       - name: ga_revenue
-        description: "GA4-attributed revenue."
+        description: "GA4-attributed revenue. Closest to Shopify Total sales (incl. tax + shipping, pre-refund); NOT Shopify-strict Gross or Net."
         meta:
           dimension:
             label: "GA Revenue"
@@ -1423,6 +1486,7 @@ models:
             total_ga_revenue:
               type: sum
               label: "GA Revenue"
+              description: "GA4-attributed revenue. Closest to Shopify Total sales (incl. tax + shipping, pre-refund); NOT Shopify-strict Gross or Net."
               format: "gbp"
               round: 0
       - name: ga_transactions
@@ -1672,7 +1736,7 @@ models:
             total_cost:
               type: sum
               label: "Cost"
-              description: "Total Google Ads search-term cost in GBP for the month, within the top-100-search-terms-by-cost scope."
+              description: "Total Google Ads search-term cost (ad spend) in GBP for the month, within the top-100-search-terms-by-cost scope. This is paid-media spend, not revenue, so the Shopify Gross / Net / Total sales distinction does not apply."
               format: "gbp"
               round: 0
       - name: conversions

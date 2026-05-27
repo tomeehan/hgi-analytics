@@ -9,9 +9,11 @@ chartConfig:
   type: table
 contentType: chart
 description: >-
-  iS Clinical Shopify orders split into new and returning customers, with order
-  count, revenue share and AOV per segment. Net revenue is total order value
-  minus refunds; AOV is net revenue divided by orders.
+  iS Clinical Shopify orders split into new and returning customers, with
+  order count, revenue share and AOV per segment. Revenue and AOV here use
+  Shopify Gross sales (product price x quantity, before any discount,
+  return, tax or shipping) so the figures are comparable to the headline
+  Gross Sales tile.
 metricQuery:
   additionalMetrics: []
   customDimensions: []
@@ -33,6 +35,7 @@ metricQuery:
   metricOverrides: {}
   metrics:
     - fct_orders_order_count
+    - fct_orders_total_gross_sales
     - fct_orders_total_net_sales
   sorts:
     - descending: false
@@ -46,20 +49,28 @@ metricQuery:
       sql: >-
         ${fct_orders.order_count} / NULLIF(SUM(${fct_orders.order_count}) OVER
         (), 0)
-    - displayName: "% Revenue"
+    - displayName: "% Gross Revenue"
       format:
         round: 1
         type: percent
       name: pct_revenue
       sql: >-
-        ${fct_orders.total_net_sales} / NULLIF(SUM(${fct_orders.total_net_sales})
+        ${fct_orders.total_gross_sales} / NULLIF(SUM(${fct_orders.total_gross_sales})
         OVER (), 0)
-    - displayName: AOV
+    - displayName: Gross AOV
       format:
         currency: GBP
         round: 2
         type: currency
-      name: aov
+      name: gross_aov
+      sql: >-
+        ${fct_orders.total_gross_sales} / NULLIF(${fct_orders.order_count}, 0)
+    - displayName: Net AOV
+      format:
+        currency: GBP
+        round: 2
+        type: currency
+      name: net_aov
       sql: >-
         ${fct_orders.total_net_sales} / NULLIF(${fct_orders.order_count}, 0)
 name: iS Clinical Customer Mix & AOV Split
@@ -70,9 +81,11 @@ tableConfig:
     - fct_orders_customer_type
     - fct_orders_order_count
     - pct_orders
+    - fct_orders_total_gross_sales
     - fct_orders_total_net_sales
     - pct_revenue
-    - aov
+    - gross_aov
+    - net_aov
 tableName: fct_orders
 verification: null
 version: 1

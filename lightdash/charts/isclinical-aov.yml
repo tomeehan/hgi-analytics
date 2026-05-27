@@ -1,14 +1,20 @@
 chartConfig:
   config:
     flipColors: false
-    label: iS Clinical AOV (Shopify)
-    selectedField: fct_orders_aov
-    showComparison: false
+    label: Gross AOV
+    selectedField: fct_orders_gross_aov
+    showComparison: true
+    comparisonField: fct_orders_net_aov
+    comparisonFormat: raw
+    comparisonLabel: Net AOV
   type: big_number
 contentType: chart
 description: >-
-  Average order value for the iS Clinical Shopify store: total revenue divided
-  by order count.
+  Average Gross sales per Shopify order for iS Clinical: Gross sales divided
+  by order count. Gross sales = product price x quantity before any
+  discount, return, tax or shipping. Lower than Total AOV (which adds tax
+  + shipping back in), and lower-or-equal to Net AOV (which is gross less
+  discounts and returns).
 metricQuery:
   additionalMetrics: []
   customDimensions: []
@@ -28,15 +34,17 @@ metricQuery:
   limit: 1
   metricOverrides: {}
   metrics:
-    - fct_orders_aov
+    - fct_orders_gross_aov
+    - fct_orders_net_aov
   sorts: []
   tableCalculations: []
-name: iS Clinical AOV (Shopify)
+name: iS Clinical Gross AOV (Shopify)
 slug: isclinical-aov
 spaceSlug: shared
 tableConfig:
   columnOrder:
-    - fct_orders_aov
+    - fct_orders_gross_aov
+    - fct_orders_net_aov
 tableName: fct_orders
 verification: null
 version: 1

@@ -1,14 +1,20 @@
 chartConfig:
   config:
     flipColors: false
-    label: iS Clinical Shopify Revenue
-    selectedField: fct_orders_total_revenue
-    showComparison: false
+    label: Gross Sales
+    selectedField: fct_orders_total_gross_sales
+    showComparison: true
+    comparisonField: fct_orders_total_net_sales
+    comparisonFormat: raw
+    comparisonLabel: Net Sales
   type: big_number
 contentType: chart
 description: >-
-  Total gross Shopify revenue (sum of order total_price) for the iS Clinical
-  store.
+  Shopify Gross sales (big number) and Net sales (comparison) for iS Clinical.
+  Gross = product price x quantity, before any discount, return, tax or
+  shipping (the top line of Shopify's sales chart-of-accounts). Net = Gross
+  minus discounts minus returns; still excludes tax and shipping. The gap
+  between the two is discounts + returns for the month.
 metricQuery:
   additionalMetrics: []
   customDimensions: []
@@ -28,7 +34,8 @@ metricQuery:
   limit: 1
   metricOverrides: {}
   metrics:
-    - fct_orders_total_revenue
+    - fct_orders_total_gross_sales
+    - fct_orders_total_net_sales
   sorts: []
   tableCalculations: []
 name: iS Clinical Shopify Revenue
@@ -36,7 +43,8 @@ slug: isclinical-shopify-revenue
 spaceSlug: shared
 tableConfig:
   columnOrder:
-    - fct_orders_total_revenue
+    - fct_orders_total_gross_sales
+    - fct_orders_total_net_sales
 tableName: fct_orders
 verification: null
 version: 1
