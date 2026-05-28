@@ -16,13 +16,13 @@ sources:
     database: HGI
     schema: BRONZE_META_ISCLINICAL
     tables:
-      - name: ads_insights
+      - name: ads_insights_action_type
 
   - name: bronze_meta_deese_pro
     database: HGI
     schema: BRONZE_META_DEESE_PRO
     tables:
-      - name: ads_insights
+      - name: ads_insights_action_type
 
   - name: bronze_google_analytics_isclinical
     database: HGI

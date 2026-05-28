@@ -40,7 +40,7 @@ with
     select
         *,
         {{ audience_type_case }} as audience_type
-    from {{ source('bronze_meta_' ~ brand, 'ads_insights') }}
+    from {{ source('bronze_meta_' ~ brand, 'ads_insights_action_type') }}
     where date_start is not null
 ),
 {{ brand }}_base_daily as (
