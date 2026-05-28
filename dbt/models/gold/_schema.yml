@@ -171,11 +171,18 @@ models:
         description: "Month the order was placed (first day of month)."
         meta:
           dimension:
+            # `type: date` is set explicitly because Lightdash doesn't reliably
+            # infer the warehouse type for this model: an un-typed dimension
+            # falls back to `string`, which then makes date filter operators
+            # (e.g. `inBetween`) fail to render SQL on the KPI Report.
+            #
+            # Don't surface this DATE dim in human-facing dashboard dropdowns:
+            # Lightdash forces a date-picker UI for DATE columns rather than a
+            # dropdown. Use the `order_month_label` additional dim below for
+            # those, and reserve this dim for relative-date operators
+            # (inThePast, inBetween — e.g. "This vs Last Month").
+            type: date
             label: "Month (date)"
-            # Stays a DATE for charts using relative-date operators (inThePast,
-            # inBetween — e.g. "This vs Last Month"). Don't surface this one in
-            # human-facing dashboard filters because Lightdash forces a date
-            # picker UI rather than a dropdown for DATE columns.
           additional_dimensions:
             # Human-facing single-Month dashboard filter.
             # Encoded as a string "YYYY-MM" because Lightdash sorts string
@@ -298,6 +305,7 @@ models:
           - not_null
         meta:
           dimension:
+            type: date
             label: "Send Month (date)"
           additional_dimensions:
             # Mirrors fct_orders.order_month_label so the KPI Report's
@@ -422,6 +430,9 @@ models:
         description: "Raw Cin7 source channel value."
       - name: order_month
         description: "Month the order was placed (first day of month)."
+        meta:
+          dimension:
+            type: date
       - name: ordered_at
         description: "Order timestamp."
       - name: customer_order_number
@@ -553,6 +564,9 @@ models:
         description: "Brand identifier."
       - name: order_month
         description: "Month the order was placed."
+        meta:
+          dimension:
+            type: date
       - name: uk_region
         description: "UK region derived from shipping postcode."
       - name: is_first_order
@@ -824,6 +838,9 @@ models:
         description: "Order timestamp (preferring SALES_ORDER_HEADERS, falling back to transaction)."
       - name: order_month
         description: "First day of the order month."
+        meta:
+          dimension:
+            type: date
       - name: transacted_at
       - name: invoiced_at
       - name: warehouse_code
@@ -845,6 +862,7 @@ models:
         description: "First day of the month spend was recorded (date_trunc month of spend_date). Mirrors fct_orders.order_month so the dashboard Month filter cross-applies."
         meta:
           dimension:
+            type: date
             label: "Month (date)"
           additional_dimensions:
             # Mirrors fct_orders.order_month_label so the KPI Report's Month
@@ -966,6 +984,7 @@ models:
           - not_null
         meta:
           dimension:
+            type: date
             label: "Month (date)"
           additional_dimensions:
             order_month_label:
@@ -1035,6 +1054,7 @@ models:
           - not_null
         meta:
           dimension:
+            type: date
             label: "Month (date)"
           additional_dimensions:
             order_month_label:
@@ -1104,6 +1124,7 @@ models:
           - not_null
         meta:
           dimension:
+            type: date
             label: "Month (date)"
           additional_dimensions:
             order_month_label:
@@ -1166,6 +1187,7 @@ models:
         tests: [not_null]
         meta:
           dimension:
+            type: date
             label: "Month (date)"
           additional_dimensions:
             order_month_label:
@@ -1244,6 +1266,7 @@ models:
         tests: [not_null]
         meta:
           dimension:
+            type: date
             label: "Month (date)"
           additional_dimensions:
             order_month_label:
@@ -1317,6 +1340,7 @@ models:
         tests: [not_null]
         meta:
           dimension:
+            type: date
             label: "Month (date)"
           additional_dimensions:
             order_month_label:
@@ -1432,6 +1456,7 @@ models:
           - not_null
         meta:
           dimension:
+            type: date
             label: "Month (date)"
           additional_dimensions:
             order_month_label:
@@ -1689,6 +1714,7 @@ models:
           - not_null
         meta:
           dimension:
+            type: date
             label: "Month (date)"
           additional_dimensions:
             # Mirrors fct_orders.order_month_label so the KPI Report's Month
