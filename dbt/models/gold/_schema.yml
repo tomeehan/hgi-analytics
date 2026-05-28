@@ -305,6 +305,7 @@ models:
           - not_null
         meta:
           dimension:
+            type: date
             label: "Send Month (date)"
           additional_dimensions:
             # Mirrors fct_orders.order_month_label so the KPI Report's
